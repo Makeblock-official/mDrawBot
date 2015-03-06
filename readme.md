@@ -27,7 +27,7 @@ mSpider is a skilled drawing robot can draw pictures on wall or white boards. Tw
 
 #### **mEggBot**
 
-mEggBot is designed to draw on all kinds of things that are normally impossible to print on, such as eggs or ping pang balls. You can write letters or draw expression on egess or writing on Easter eggs.
+mEggBot is designed to draw on all kinds of things that are normally impossible to print on, such as eggs or ping-pong balls. You can write letters or draw expression on egess or writing on Easter eggs.
 
 ![mEggBot](http://makeblock.qiniudn.com/mDrawBot-github-mEggBot.png)
 
@@ -46,5 +46,6 @@ mDraw is quite a powerful software designed for mDrawBot, here are some features
 
 ## User Guide
 
-User guide translation is not finished. We need your help. :)
+User guide translation is not finished. We need your help. :)  
+
 Download link: [http://makeblock.qiniudn.com/mDrawBot-User-Guide.pdf]
