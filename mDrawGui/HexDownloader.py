@@ -3,11 +3,11 @@ import os
 import threading
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
+import robot_gui
 import threading
 import subprocess
 import platform
 
-# this class only works under windows
 
 class WorkInThread(threading.Thread):
     def __init__(self, target, *args):
@@ -64,15 +64,15 @@ class HexDownloader():
                 
     
     def startDownloadUno(self, com, hexfile):
-        p = os.getcwd()
         systemType = platform.system()
         if "Windows" in systemType:
-            #avrdudepath = u"%s\\avrdude.exe" %(p)
-            avrdudepath = "avrdude.exe"
+            avrdudepath = robot_gui.getPkgPath("avrdude.exe")
+            confpath = robot_gui.getPkgPath("avrdude.conf")
+            hexfile = robot_gui.getPkgPath(hexfile)
         elif "Darwin" in systemType:
-            avrdudepath = "%s/avrdude" %(p)
-        #confpath = u"%s\\avrdude.conf" %(p)
-        confpath = "avrdude.conf"
+            avrdudepath = robot_gui.getPkgPath("avrdude")
+            confpath = robot_gui.getPkgPath("avrdude.conf")
+            hexfile = robot_gui.getPkgPath(hexfile)
         cmd = u"%s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
         self.moveListThread = WorkInThread(self.downloadThread,cmd)
         self.moveListThread.setDaemon(True)

@@ -4,7 +4,7 @@ import os
 import threading
 import Queue
 import time
-from robot_gui import *
+import robot_gui
 from ScaraGui import *
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
@@ -76,7 +76,7 @@ class SvgConverter(QtGui.QWidget):
         #print cmd
         self.moveListThread = WorkInThread(self.potraceBitmap)
         self.moveListThread.setDaemon(True)
-        self.moveListThread.start()
+        self.moveListThread.start()  
     
     def potraceBitmap(self):
         p = os.getcwd()
@@ -84,13 +84,17 @@ class SvgConverter(QtGui.QWidget):
         th = float(self.ui.slideThr.value())/100
         self.svgout = self.bitmapFile+".svg"
         if "Windows" in systemType:
-            cmd = "potrace.exe -k %f -t 5 -s -o %s %s" %(th,self.svgout,self.bitmapFile)
+            #cmd = "potrace.exe -k %f -t 5 -s -o %s %s" %(th,self.svgout,self.bitmapFile)
+            p  = robot_gui.getPkgPath("potrace.exe")
+            cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
+            
         elif "Darwin" in systemType:
-            cmd = "%s/potrace -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
+            p  = robot_gui.getPkgPath("potrace")
+            cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
         # todo: work in unicode only??
         print cmd.__class__
         print cmd.encode('utf-8')
-        p = subprocess.Popen(cmd)
+        p = subprocess.Popen(cmd,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         p.wait()
         self.convertSig.emit("potrace")
         """

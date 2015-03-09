@@ -607,7 +607,7 @@ class MainUI(QtGui.QWidget):
     
     def uploadFirmware(self):
         robotType = str(self.ui.robotCombo.currentText())
-        firmpath = os.getcwd()+"\\"+robotType+".hex"
+        firmpath = robotType+".hex"
         comport = str(self.ui.portCombo.currentText())
         # disconnect any comport before upload
         self.disconnectPort()
@@ -624,11 +624,41 @@ class MainUI(QtGui.QWidget):
         html = response.read()
         # self.dbg(html)
         # todo: parse the received update info
-     
-     
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+def getPkgPath(name):
+    # include every thing , make pyinstaller happy
+    pkg_source={}
+    pkg_source["avrdude"] = resource_path("avrdude")
+    pkg_source["potrace"] = resource_path("potrace")
+    pkg_source["avrdude.exe"] = resource_path("avrdude.exe")
+    pkg_source["potrace.exe"] = resource_path("potrace.exe")
+    pkg_source["avrdude.conf"] = resource_path("avrdude.conf")
+    pkg_source["XY.hex"] = resource_path("XY.hex")
+    pkg_source["mScara.hex"] = resource_path("mScara.hex")
+    pkg_source["mSpider.hex"] = resource_path("mSpider.hex")
+    pkg_source["mEggBot.hex"] = resource_path("mEggBot.hex")
+    pkg_source["mCar.hex"] = resource_path("mCar.hex")
+    print "get pkg",name
+    return pkg_source[name]
+ 
 if __name__ == '__main__':
     #sys.stdout = open("stdout.log", "w")
     #sys.stderr = open("stderr.log", "w")
+    try:
+        print sys._MEIPASS
+    except:
+        pass
+    
     app = QtGui.QApplication(sys.argv)
     ex = MainUI()
     sys.exit(app.exec_())
