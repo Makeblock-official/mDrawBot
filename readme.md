@@ -48,4 +48,4 @@ mDraw is quite a powerful software designed for mDrawBot, here are some features
 
 User guide translation is not finished. We need your help. :)  
 
-Download link: [http://makeblock.qiniudn.com/mDrawBot-User-Guide.pdf]
+Download link: [http://makeblock.qiniudn.com/mDrawBot-github-mDrawBot-User-Guide.pdf]
