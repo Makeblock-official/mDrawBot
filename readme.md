@@ -46,5 +46,5 @@ mDraw is quite a powerful software designed for mDrawBot, here are some features
 
 ## User Guide
 
-User Guide: [http://makeblock.qiniudn.com/mDrawBot-github-mDrawBot-User-Guide.pdf]
+User Guide: [http://makeblock.qiniudn.com/mDrawBot-github-mDrawBot-User-Guide.pdf]  
 Assembling Instructions: [http://makeblock.qiniudn.com/mDrawBot-github-mDrawBot-assembling-instructions.pdf]
