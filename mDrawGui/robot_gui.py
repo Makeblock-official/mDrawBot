@@ -21,7 +21,7 @@ import HexDownloader
 import sys
 import urllib2
 
-robotVersion="1.02 2015-2-28"
+robotVersion="1.03 2015-3-17"
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -64,6 +64,24 @@ class MainUI(QtGui.QWidget):
         self.picWidth = 0
         self.picHeight = 0
         self.initUI()
+        self.initSetting()
+        
+    def initSetting(self):
+        self.settings = QtCore.QSettings("Makeblock","mDraw")
+        penUpPos=self.settings.value("penUpPos",130).toInt()[0]
+        penDownPos=self.settings.value("penDownPos",90).toInt()[0]
+        self.ui.linePenUp.setText("M1 %d" %(penUpPos))
+        self.ui.linePenDown.setText("M1 %d" %(penDownPos))
+        
+    def updateSetting(self):
+        try:
+            penUpPos = int(str(self.ui.linePenUp.text()).split(" ")[1])
+            penDownPos = int(str(self.ui.linePenDown.text()).split(" ")[1])
+            self.settings.setValue("penUpPos",penUpPos)
+            self.settings.setValue("penDownPos",penDownPos)
+        except:
+            pass
+        
 
     def initUI(self):
         self.ui = Ui_Form()
@@ -88,6 +106,9 @@ class MainUI(QtGui.QWidget):
         self.ui.lineSvgWidth.returnPressed.connect(self.userSetSvgRect)
         self.ui.lineSend.returnPressed.connect(self.sendCmd)
         self.ui.btnUpdateFirmware.clicked.connect(self.uploadFirmware)
+        self.ui.linePenUp.returnPressed.connect(self.updateSetting)
+        self.ui.linePenDown.returnPressed.connect(self.updateSetting)
+        
         # init scene
         rect = QRectF( self.ui.graphicsView.rect())
         self.scene = QtGui.QGraphicsScene(rect)
@@ -648,6 +669,9 @@ def getPkgPath(name):
     pkg_source["mSpider.hex"] = resource_path("mSpider.hex")
     pkg_source["mEggBot.hex"] = resource_path("mEggBot.hex")
     pkg_source["mCar.hex"] = resource_path("mCar.hex")
+    pkg_source["cygiconv-2.dll"] = resource_path("cygiconv-2.dll")
+    pkg_source["cygwin1.dll"] = resource_path("cygwin1.dll")
+    pkg_source["libusb0.dll"] = resource_path("libusb0.dll")
     print "get pkg",name
     return pkg_source[name]
  

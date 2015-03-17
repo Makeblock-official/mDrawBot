@@ -104,6 +104,8 @@ class EggBot(QtGui.QGraphicsItem):
         self.laserMode = False
         self.lastx = 9999
         self.lasty = 9999
+        self.ui.label.setText("X(deg)")
+        self.ui.label_2.setText("Y(deg)")
     
 
     def boundingRect(self):

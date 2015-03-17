@@ -106,6 +106,8 @@ class XYBot(QtGui.QGraphicsItem):
         self.laserMode = False
         self.lastx = 9999
         self.lasty = 9999
+        self.ui.label.setText("X(mm)")
+        self.ui.label_2.setText("Y(mm)")
     
     def boundingRect(self):
         return  QRectF(0,0,100,100)

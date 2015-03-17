@@ -128,6 +128,8 @@ class Scara(QtGui.QGraphicsItem):
         self.laserBurnDelay = 0
         self.lastx = 0
         self.lasty = 0
+        self.ui.label.setText("X(mm)")
+        self.ui.label_2.setText("Y(mm)")
         
     def boundingRect(self):
         return  QRectF(0,0,100,100)
