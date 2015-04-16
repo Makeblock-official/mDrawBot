@@ -89,8 +89,8 @@ void thetaToSteps(float th1, float th2)
 //#define STEPDELAY_MIN 200 // micro second
 //#define STEPDELAY_MAX 1000
 int stepAuxDelay=0;
-int stepdelay_min=800;
-int stepdelay_max=2000;
+int stepdelay_min=200;
+int stepdelay_max=1000;
 #define ACCELERATION 2 // mm/s^2 don't get inertia exceed motor could handle
 #define SEGMENT_DISTANCE 10 // 1 mm for each segment
 #define SPEED_STEP 1
@@ -236,6 +236,7 @@ void parseGcode(char * cmd)
       parseCordinate(cmd);
       break;
     case 28: // home
+      stepAuxDelay = 0;
       tarX=-(roboSetup.data.arm0len+roboSetup.data.arm1len-0.01); tarY=0;
       prepareMove();
       break; 

@@ -117,6 +117,7 @@ class Scara(QtGui.QGraphicsItem):
         #print "theta",self.th
         self.moving = False
         self.laserMode = False
+        self.laserPower = 0.0
         self.robotCent = None
         self.sendCmd = None
         self.moveList = None
@@ -223,6 +224,8 @@ class Scara(QtGui.QGraphicsItem):
         if self.moveList == None: return
         moveLen = len(self.moveList)
         moveCnt = 0
+        self.M4(self.laserPower,0) # turn laser power down when perform transition
+        self.q.get()
         for move in self.moveList:
             #loop for all points
             lineNode = len(move)
@@ -252,7 +255,7 @@ class Scara(QtGui.QGraphicsItem):
                             if i>0:
                                 auxDelay = self.laserBurnDelay*1000
                             elif i==0:
-                                self.M4(self.laserPower,0.0) # turn laser power down when perform transition
+                                self.M4(self.laserPower,0) # turn laser power down when perform transition
                                 self.q.get()
                         self.G1(s[0],s[1],auxdelay = auxDelay)
                         while self.robotState==BUSYING:
@@ -261,6 +264,9 @@ class Scara(QtGui.QGraphicsItem):
                         pass
                 #print "segdone",len(segList)
                 # ignore single points (lineNode==1)
+                if self.laserMode and i==0:
+                        self.M4(self.laserPower) # turn laser power back to set value
+                        self.q.get()
                 if not self.laserMode and i==0 and lineNode>1:
                     self.M1(self.penDownPos)
                     self.q.get()
@@ -374,9 +380,9 @@ class Scara(QtGui.QGraphicsItem):
         self.robotState = BUSYING
         self.sendCmd(cmd)
     
-    def M4(self,laserPower): # setup laser power
+    def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
-        cmd = "M4 %d\n" %(laserPower)
+        cmd = "M4 %d\n" %(int(laserPower*rate))
         self.laserPower = laserPower
         self.robotState = BUSYING
         self.sendCmd(cmd)
