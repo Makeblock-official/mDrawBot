@@ -21,7 +21,7 @@ def sliceSegment(x,y,tarX,tarY):
     dx = tarX - x
     dy = tarY - y
     maxD = max(abs(dx),abs(dy))
-    maxSteps = int(ceil(maxD))*2 # 1:1mm per segment, 2:0.5mm
+    maxSteps = int(ceil(maxD)) # 1:1mm per segment, 2:0.5mm
     if maxSteps==0:
         return []
     dxStep = float(dx)/maxSteps

@@ -4,12 +4,16 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
+// morgan struct for mkb internal hackthon
+
 // data stored in eeprom
 union{
     struct{
       char name[8];
       unsigned char motoADir;
       unsigned char motoBDir;
+      int arm0len;
+      int arm1len;
     }data;
     char buf[64];
 }roboSetup;
@@ -18,23 +22,20 @@ union{
 float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
 float tarX,tarY,tarZ; // target xyz position
-// step value
-long curA,curB;
-long tarA,tarB;
-
-MePort stpA(PORT_1);
+float curTh1, curTh2;
+float tarTh1, tarTh2; // target angle of joint
+int tarA,tarB,posA,posB; // target stepper position
+int8_t motorAfw,motorAbk;
+int8_t motorBfw,motorBbk;
 MePort stpB(PORT_2);
-MePort ylimit(PORT_3);
-int ylimit_pin1 = ylimit.pin1();
-int ylimit_pin2 = ylimit.pin2();
-MePort xlimit(PORT_6);
-int xlimit_pin1 = xlimit.pin1();
-int xlimit_pin2 = xlimit.pin2();
+MePort stpA(PORT_1);
 MeDCMotor laser(M2);
 MePort servoPort(PORT_7);
 int servopin =  servoPort.pin2();
 Servo servoPen;
 
+#define ARML1 168
+#define ARML2 206
 /************** motor movements ******************/
 void stepperMoveA(int dir)
 {
@@ -60,14 +61,33 @@ void stepperMoveB(int dir)
   stpB.dWrite2(LOW);
 }
 
+float A = 80.0;
+float B = 160.0;
+float th1,th2;
+//2*atan((2*B*y - (-(x^2 + y^2)*(- 4*B^2 + x^2 + y^2))^(1/2))/(x^2 - 2*B*x + y^2))
+//2*atan((2*B*y - (-(A^2 - 2*A*x + x^2 + y^2)*(A^2 - 2*A*x - 4*B^2 + x^2 + y^2))^(1/2))/(A^2 - 2*A*x - 2*B*A + x^2 + 2*B*x + y^2))
+void morganInverseKinect(float x, float y)
+{
+  th1 = 2*atan((2*B*y - sqrt(-(x*x + y*y)*(- 4*B*B + x*x + y*y)))/(x*x - 2*B*x + y*y));
+  th2 = 2*atan((2*B*y - sqrt(-(A*A - 2*A*x + x*x + y*y)*(A*A - 2*A*x - 4*B*B + x*x + y*y)))/(A*A - 2*A*x - 2*B*A + x*x + 2*B*x + y*y));
+  //Serial.print("th1 ");Serial.println(th1/PI*180);
+  //Serial.print("th2 ");Serial.println(th2/PI*180);
+}
+
+#define STEPS_PER_CIRCLE 16000.0f
+long pos1,pos2;
+void thetaToSteps(float th1, float th2)
+{
+  pos1 = round(th1/PI*STEPS_PER_CIRCLE/2);
+  pos2 = round(th2/PI*STEPS_PER_CIRCLE/2);
+}
 
 /************** calculate movements ******************/
 //#define STEPDELAY_MIN 200 // micro second
 //#define STEPDELAY_MAX 1000
 int stepAuxDelay=0;
-int stepdelay_min=500;
-int stepdelay_max=2000;
-#define YRATIO 5
+int stepdelay_min=400;
+int stepdelay_max=1000;
 #define ACCELERATION 2 // mm/s^2 don't get inertia exceed motor could handle
 #define SEGMENT_DISTANCE 10 // 1 mm for each segment
 #define SPEED_STEP 1
@@ -79,41 +99,34 @@ void doMove()
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
   int d;
-  dA = tarA - curA;
-  dB = tarB - curB;
+  dA = tarA - posA;
+  dB = tarB - posB;
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
-  Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
-  Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
-  for(int i=0;i<maxD;i++){
+  //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
+  //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
+  //for(int i=0;i<=maxD;i++){
+    for(int i=0;i<maxD;i++){
     //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
     // move A
-    if(curA!=tarA){
+    if(posA!=tarA){
       cntA+=stepA;
       if(cntA>=1){
-        if(roboSetup.data.motoADir==0){
-          d = dA>0?-1:1;
-        }else{
-          d = dA>0?1:-1;
-        }
+        d = dA>0?motorAfw:motorAbk;
         stepperMoveA(d);
         cntA-=1;
-        curA+=d;
+        posA+=d;
       }
     }
     // move B
-    if(curB!=tarB){
+    if(posB!=tarB){
       cntB+=stepB;
       if(cntB>=1){
-        if(roboSetup.data.motoBDir==0){
-          d = dB>0?-1:1;
-        }else{
-          d = dB>0?1:-1;
-        }
+        d = dB>0?motorBfw:motorBbk;
         stepperMoveB(d);
         cntB-=1;
-        curB+=d;
+        posB+=d;
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
@@ -123,27 +136,27 @@ void doMove()
     }
   }
   //Serial.printf("finally %d A:%d B;%d\n",maxD,posA,posB);
-  curA = tarA;
-  curB = tarB;
+  posA = tarA;
+  posB = tarB;
 }
 
-/******** mapping xy position to steps ******/
-#define STEPS_PER_CIRCLE 3200.0f
 void prepareMove()
 {
   int maxD;
   unsigned long t0,t1;
+  float segInterval;
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);
   float distanceMoved=0,distanceLast=0;
   //Serial.print("distance=");Serial.println(distance);
-  if (distance < 0.001)
+  if (distance < 0.001) 
     return;
-  tarA = tarX*STEPS_PER_CIRCLE/360;
-  tarB = tarY*STEPS_PER_CIRCLE/360*YRATIO;
-  Serial.print("tarX:");Serial.print(tarX);Serial.print(' ');Serial.print("tarY:");Serial.println(tarY);
-  Serial.printf("tar Pos %ld %ld\r\n",tarA,tarB);
+  morganInverseKinect(tarX,tarY);
+  thetaToSteps(th1, th2);
+  tarA = pos1;tarB = pos2;
+  //Serial.print("theta:");Serial.print(th1/PI*180);Serial.print(' ');Serial.println(th2/PI*180);
+  //Serial.printf("tar Pos %d %d\r\n",tarA,tarB);
   doMove();
   curX = tarX;
   curY = tarY;
@@ -151,9 +164,14 @@ void prepareMove()
 
 void initPosition()
 {
-  curX=0; curY=60;
-  curA = 0;
-  curB = (STEPS_PER_CIRCLE*curY/360*YRATIO);
+  curX = 40;
+  curY = 317.49;
+  morganInverseKinect(curX,curY);
+  curTh1=th1;curTh2=th2;
+  thetaToSteps(curTh1,curTh2);
+  posA = pos1;
+  posB = pos2;
+  Serial.print("Init: ");Serial.print(posA);Serial.print(",");Serial.println(posB);
 }
 
 /************** calculate movements ******************/
@@ -162,17 +180,13 @@ void parseCordinate(char * cmd)
   char * tmp;
   char * str;
   str = strtok_r(cmd, " ", &tmp);
-  tarX = curX;
-  tarY = curY;
   while(str!=NULL){
     str = strtok_r(0, " ", &tmp);
     //Serial.printf("%s;",str);
     if(str[0]=='X'){
       tarX = atof(str+1);
-      //Serial.print("tarX ");Serial.print(tarX);
     }else if(str[0]=='Y'){
       tarY = atof(str+1);
-      //Serial.print("tarY ");Serial.print(tarY);
     }else if(str[0]=='Z'){
       tarZ = atof(str+1);
     }else if(str[0]=='F'){
@@ -182,18 +196,17 @@ void parseCordinate(char * cmd)
       stepAuxDelay = atoi(str+1);
     }
   }
-  //Serial.print("G1 ");Serial.print(tarX);Serial.print(" ");Serial.println(tarY);
   prepareMove();
 }
 
-void echoRobotSetup()
+
+void parseServo(char * cmd)
 {
-  Serial.print("M10 EGG ");
-  Serial.print(STEPS_PER_CIRCLE);
-  Serial.print(' ');Serial.print(curX);
-  Serial.print(' ');Serial.print(curY);
-  Serial.print(" A");Serial.print((int)roboSetup.data.motoADir);
-  Serial.print(" B");Serial.println((int)roboSetup.data.motoBDir);
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  int pos = atoi(tmp);
+  servoPen.write(pos);
 }
 
 void parseAuxDelay(char * cmd)
@@ -213,13 +226,31 @@ void parseLaserPower(char * cmd)
   laser.run(pwm);
 }
 
-void parsePen(char * cmd)
+void parseGcode(char * cmd)
 {
-  char * tmp;
-  char * str;
-  str = strtok_r(cmd, " ", &tmp);
-  int pos = atoi(tmp);
-  servoPen.write(pos);
+  int code;
+  code = atoi(cmd);
+  switch(code){
+    case 1: // xyz move
+      parseCordinate(cmd);
+      break;
+    case 28: // home
+      stepAuxDelay = 0;
+      tarX=-(roboSetup.data.arm0len+roboSetup.data.arm1len-0.01); tarY=0;
+      prepareMove();
+      break; 
+  }
+}
+
+void echoArmSetup(char * cmd)
+{
+  Serial.print("M10 MSCARA ");
+  Serial.print(roboSetup.data.arm0len);Serial.print(' ');
+  Serial.print(roboSetup.data.arm1len);Serial.print(' ');
+  Serial.print(curX);Serial.print(' ');
+  Serial.print(curY);Serial.print(' ');
+  Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
+  Serial.print(" B");Serial.println((int)roboSetup.data.motoBDir);
 }
 
 void parseRobotSetup(char * cmd)
@@ -231,13 +262,30 @@ void parseRobotSetup(char * cmd)
     str = strtok_r(0, " ", &tmp);
     if(str[0]=='A'){
       roboSetup.data.motoADir = atoi(str+1);
-      //Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
+      Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
     }else if(str[0]=='B'){
       roboSetup.data.motoBDir = atoi(str+1);
-      //Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
+      Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
+    }else if(str[0]=='M'){
+      roboSetup.data.arm0len = atoi(str+1);
+      Serial.print("ARML1 ");Serial.print(roboSetup.data.arm0len);
+    }else if(str[0]=='N'){
+      roboSetup.data.arm1len = atoi(str+1);
+      Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
     }
   }
   syncRobotSetup();
+}
+
+void parseColorPalate(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  uint8_t pos = atoi(tmp);
+  Wire.beginTransmission(4);
+  Wire.write(pos); 
+  Wire.endTransmission();
 }
 
 void parseMcode(char * cmd)
@@ -246,7 +294,10 @@ void parseMcode(char * cmd)
   code = atoi(cmd);
   switch(code){
     case 1:
-      parsePen(cmd);
+      parseServo(cmd);
+      break;
+    case 2:
+    
       break;
     case 3:
       parseAuxDelay(cmd);
@@ -257,26 +308,16 @@ void parseMcode(char * cmd)
     case 5:
       parseRobotSetup(cmd);
       break;
-    case 10:
-      echoRobotSetup();
+    case 10: // echo robot config
+      echoArmSetup(cmd);
+      break;
+    case 11:
+      parseColorPalate(cmd);
       break;
   }
+
 }
 
-void parseGcode(char * cmd)
-{
-  int code;
-  code = atoi(cmd);
-  switch(code){
-    case 1: // xyz move
-      parseCordinate(cmd);
-      break;
-    case 28: // home
-      tarX=0; tarY=60;
-      prepareMove();
-      break; 
-  }
-}
 
 void parseCmd(char * cmd)
 {
@@ -300,14 +341,27 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"EGG",3)!=0){
+  if(strncmp(roboSetup.data.name,"SCARA",5)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"EGG",3);
+    memcpy(roboSetup.data.name,"SCARA",5);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
+    roboSetup.data.arm0len = ARML1;
+    roboSetup.data.arm1len = ARML2;
     syncRobotSetup();
+  }
+  // init motor direction
+  if(roboSetup.data.motoADir==0){
+    motorAfw=1;motorAbk=-1;
+  }else{
+    motorAfw=-1;motorAbk=1;
+  }
+  if(roboSetup.data.motoBDir==0){
+    motorBfw=1;motorBbk=-1;
+  }else{
+    motorBfw=-1;motorBbk=1;
   }
 }
 
@@ -321,13 +375,16 @@ void syncRobotSetup()
 
 /************** arduino ******************/
 void setup() {
+  Wire.begin(); // join i2c bus (address optional for master)
   Serial.begin(115200);
   initRobotSetup();
-  initPosition();
+  
   servoPen.attach(servopin);
-  servoPen.write(0);
-}
+  servoPen.write(10);
+  initPosition();
 
+}
+int colorPos;
 char buf[64];
 char bufindex;
 char buf2[64];
@@ -343,5 +400,5 @@ void loop() {
       bufindex = 0;
     }
   }
-}
 
+}

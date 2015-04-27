@@ -14,6 +14,15 @@ IDLE = 0
 BUSYING = 1
 motorSelectedStyle = "border: 1px solid rgb(67,67,67);\r\nborder-radius: 4px;\r\n"
 
+class WorkInThread(threading.Thread):
+    def __init__(self, target, *args):
+        self._target = target
+        self._args = args
+        threading.Thread.__init__(self)
+ 
+    def run(self):
+        self._target(*self._args)
+
 class RobotSetupUI(QtGui.QWidget):
     def __init__(self,uidialog,robot):
         super(RobotSetupUI, self).__init__()
@@ -28,7 +37,19 @@ class RobotSetupUI(QtGui.QWidget):
         self.ui.motoB_CCK.mousePressEvent = self.setMotorBcck
         self.ui.btnOk.clicked.connect(self.applySetup)
         self.show()
-        
+        self.updating = True
+        self.moveThread = WorkInThread(self.updateEndStopThread)
+        self.moveThread.setDaemon(False)
+        self.moveThread.start()
+    
+    def updateEndStopThread(self):
+        while self.updating:
+            time.sleep(0.2)
+            self.robot.M11()
+            
+    def closeEvent(self, event):
+        self.updating = False
+    
     def updateUI(self):
         self.ui.lineWidth.setText(str(self.robot.width))
         self.ui.lineHeight.setText(str(self.robot.height))
@@ -68,15 +89,6 @@ class RobotSetupUI(QtGui.QWidget):
         self.robot.motoBDir = 1
         self.updateUI()
         
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
-
 class XYBot(QtGui.QGraphicsItem):
     
     def __init__(self, scene, ui, parent=None):
@@ -157,6 +169,10 @@ class XYBot(QtGui.QGraphicsItem):
                 self.motoBDir = 1
             self.initRobotCanvas()
             self.robotState = IDLE
+        elif "M11" in msg:
+            t = msg.split()
+            self.robotSetup.ui.label_8.setText("X-:%s X+:%s Y-:%s Y+:%s " %(t[1],t[2],t[3],t[4]))
+            
 
     def paint(self, painter, option, widget=None):
         painter.setBrush(QtCore.Qt.darkGray)
@@ -273,6 +289,10 @@ class XYBot(QtGui.QGraphicsItem):
 
     def M10(self): # read robot arm setup and init pos
         cmd = "M10\n"
+        self.sendCmd(cmd)
+        
+    def M11(self): # read end stop value form xy
+        cmd = "M11\n"
         self.sendCmd(cmd)
         
     def moveOverList(self):

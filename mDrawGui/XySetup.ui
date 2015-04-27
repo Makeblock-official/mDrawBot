@@ -217,32 +217,6 @@
      <string>Anti ClockWise</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>80</y>
-      <width>121</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Limit Switch Status:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_8">
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>80</y>
-      <width>181</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>X-:0 X+:0 Y-:0 Y+:0 </string>
-    </property>
-   </widget>
   </widget>
   <widget class="QPushButton" name="btnOk">
    <property name="geometry">
