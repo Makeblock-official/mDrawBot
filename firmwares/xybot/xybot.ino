@@ -88,8 +88,8 @@ void doMove()
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
-  Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
-  Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
+  //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
+  //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
   for(int i=0;i<maxD;i++){
     //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
     // move A
