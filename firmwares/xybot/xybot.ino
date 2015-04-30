@@ -10,6 +10,7 @@ union{
       char name[8];
       unsigned char motoADir;
       unsigned char motoBDir;
+      int8_t motorSwitch;
       int height;
       int width;
     }data;
@@ -23,6 +24,8 @@ float tarX,tarY,tarZ; // target xyz position
 // step value
 long curA,curB;
 long tarA,tarB;
+int8_t motorAfw,motorAbk;
+int8_t motorBfw,motorBbk;
 
 MePort stpA(PORT_1);
 MePort stpB(PORT_2);
@@ -40,7 +43,7 @@ Servo servoPen;
 /************** motor movements ******************/
 void stepperMoveA(int dir)
 {
-//  Serial.printf("stepper A %d\n",dir);
+  //Serial.printf("stepper A %d\n",dir);
   if(dir>0){
     stpA.dWrite1(LOW);
   }else{
@@ -52,7 +55,7 @@ void stepperMoveA(int dir)
 
 void stepperMoveB(int dir)
 {
-//  Serial.printf("stepper B %d\n",dir);
+  //Serial.printf("stepper B %d\n",dir);
   if(dir>0){
     stpB.dWrite1(LOW);
   }else{
@@ -93,30 +96,28 @@ void doMove()
     if(curA!=tarA){
       cntA+=stepA;
       if(cntA>=1){
-        d = dA>0?-1:1;
-        stepperMoveA(d);
+        d = dA>0?motorAfw:motorAbk;
+        if(roboSetup.data.motorSwitch){
+          stepperMoveA(d);
+        }else{
+          stepperMoveB(d);
+        }
         cntA-=1;
         curA+=d;
-        if(d>0 && digitalRead(xlimit_pin2)==0){
-          tarA = curA;
-        }else if(d<0 && digitalRead(xlimit_pin1)==0){
-          tarA = curA;
-        }
       }
     }
     // move B
     if(curB!=tarB){
       cntB+=stepB;
       if(cntB>=1){
-        d = dB>0?-1:1;
-        stepperMoveB(d);
+        d = dB>0?motorBfw:motorBbk;
+        if(roboSetup.data.motorSwitch){
+          stepperMoveB(d);
+        }else{
+          stepperMoveA(d);
+        }
         cntB-=1;
         curB+=d;
-        if(d>0 && digitalRead(ylimit_pin2)==0){
-          tarB = curB;
-        }else if(d<0 && digitalRead(ylimit_pin1)==0){
-          tarB = curB;
-        }
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
@@ -135,8 +136,8 @@ void doMove()
 #define WIDTH 380
 #define HEIGHT 310
 #define DIAMETER 11 // the diameter of stepper wheel
-#define STEPS_PER_MM (STEPS_PER_CIRCLE/PI/DIAMETER) 
-
+//#define STEPS_PER_MM (STEPS_PER_CIRCLE/PI/DIAMETER) 
+#define STEPS_PER_MM 87.58 // the same as 3d printer
 void prepareMove()
 {
   int maxD;
@@ -160,11 +161,12 @@ void prepareMove()
 
 void goHome()
 {
-  while(digitalRead(ylimit_pin2)==1){
+  // stop on either endstop touches
+  while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
     stepperMoveB(1);
     delayMicroseconds(stepdelay_min);
   }
-  while(digitalRead(xlimit_pin2)==1){
+  while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
     stepperMoveA(1);
     delayMicroseconds(stepdelay_min);
   }
@@ -219,7 +221,17 @@ void echoRobotSetup()
   Serial.print(curX);Serial.print(' ');
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
-  Serial.print(" B");Serial.println((int)roboSetup.data.motoBDir);
+  Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
+  Serial.print(" S");Serial.println((int)roboSetup.data.motorSwitch);
+}
+
+void echoEndStop()
+{
+  Serial.print("M11 ");
+  Serial.print(digitalRead(xlimit_pin1)); Serial.print(" ");
+  Serial.print(digitalRead(xlimit_pin2)); Serial.print(" ");
+  Serial.print(digitalRead(ylimit_pin1)); Serial.print(" ");
+  Serial.println(digitalRead(ylimit_pin2));
 }
 
 void parseRobotSetup(char * cmd)
@@ -241,6 +253,9 @@ void parseRobotSetup(char * cmd)
     }else if(str[0]=='W'){
       roboSetup.data.width = atoi(str+1);
       Serial.print("Width ");Serial.print(roboSetup.data.width);
+    }else if(str[0]=='S'){
+      roboSetup.data.motorSwitch = atoi(str+1);
+      Serial.print("Switch ");Serial.print(roboSetup.data.motorSwitch);
     }
   }
   syncRobotSetup();
@@ -292,6 +307,9 @@ void parseMcode(char * cmd)
     case 10:
       echoRobotSetup();
       break;
+    case 11:
+      echoEndStop();
+      break;
   }
 }
 
@@ -300,6 +318,7 @@ void parseGcode(char * cmd)
   int code;
   code = atoi(cmd);
   switch(code){
+    case 0:
     case 1: // xyz move
       parseCordinate(cmd);
       break;
@@ -337,11 +356,24 @@ void initRobotSetup()
     // set to default setup
     memset(roboSetup.buf,0,64);
     memcpy(roboSetup.data.name,"XY",2);
-    roboSetup.data.motoADir = 0;
-    roboSetup.data.motoBDir = 0;
+    // default connection move inversely
+    roboSetup.data.motoADir = 1;
+    roboSetup.data.motoBDir = 1;
     roboSetup.data.width = WIDTH;
     roboSetup.data.height = HEIGHT;
+    roboSetup.data.motorSwitch = 0;
     syncRobotSetup();
+  }
+  // init motor direction
+  if(roboSetup.data.motoADir==0){
+    motorAfw=1;motorAbk=-1;
+  }else{
+    motorAfw=-1;motorAbk=1;
+  }
+  if(roboSetup.data.motoBDir==0){
+    motorBfw=1;motorBbk=-1;
+  }else{
+    motorBfw=-1;motorBbk=1;
   }
 }
 

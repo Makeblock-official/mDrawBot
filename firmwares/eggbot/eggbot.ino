@@ -84,8 +84,8 @@ void doMove()
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
-  //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
-  //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
+  Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
+  Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
   for(int i=0;i<maxD;i++){
     //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
     // move A
@@ -142,8 +142,8 @@ void prepareMove()
     return;
   tarA = tarX*STEPS_PER_CIRCLE/360;
   tarB = tarY*STEPS_PER_CIRCLE/360*YRATIO;
-  //Serial.print("tarX:");Serial.print(tarX);Serial.print(' ');Serial.print("tarY:");Serial.println(tarY);
-  //Serial.printf("tar Pos %ld %ld\r\n",tarA,tarB);
+  Serial.print("tarX:");Serial.print(tarX);Serial.print(' ');Serial.print("tarY:");Serial.println(tarY);
+  Serial.printf("tar Pos %ld %ld\r\n",tarA,tarB);
   doMove();
   curX = tarX;
   curY = tarY;
@@ -153,7 +153,7 @@ void initPosition()
 {
   curX=0; curY=60;
   curA = 0;
-  curB = (STEPS_PER_CIRCLE*curY/360);
+  curB = (STEPS_PER_CIRCLE*curY/360*YRATIO);
 }
 
 /************** calculate movements ******************/

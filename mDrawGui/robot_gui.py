@@ -21,7 +21,7 @@ import HexDownloader
 import sys
 import urllib2
 
-robotVersion="1.03 2015-3-17"
+robotVersion="1.04 2015-4-27"
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -212,6 +212,8 @@ class MainUI(QtGui.QWidget):
                     elif "MCAR" in msg and str(self.ui.robotCombo.currentText())!="mCar":
                         self.ui.robotCombo.setCurrentIndex(3)
                     self.bufferedM10msg = msg
+                    self.robot.parseEcho(msg)
+                elif "M11" in msg:
                     self.robot.parseEcho(msg)
         except:
             """todo: may screw if we connect to a wrong serial port"""
