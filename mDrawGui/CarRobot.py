@@ -21,6 +21,7 @@ class RobotSetupUI(QtGui.QWidget):
         self.robot = robot
         self.setWindowTitle('Car Setup')
         self.updateUI()
+        self.laserMode = False
         self.ui.motoA_CK.mousePressEvent = self.setMotorAck
         self.ui.motoA_CCK.mousePressEvent = self.setMotorAcck
         self.ui.motoB_CK.mousePressEvent = self.setMotorBck
@@ -232,24 +233,30 @@ class CarBot(QtGui.QGraphicsItem):
                 x=(p[0]-self.robotCent[0])/self.scaler
                 y=-(p[1]-self.robotCent[1])/self.scaler
                 print "goto",x,y
-                try:
-                    if self.printing == False:
-                        return
-                    self.G1(x,y)
-                    dx = x - self.x
-                    dy = y - self.y
+                #try:
+                if self.printing == False:
+                    return
+                self.G1(x,y)
+                dx = x - self.x
+                dy = y - self.y
+                if dx==0:
+                    if dy>0:
+                        self.dir = 90
+                    else:
+                        self.dir = -90
+                else:
                     self.dir = atan(dy/dx)/pi*180
-                    if dx<0:
-                        self.dir+=180
-                    self.x = x
-                    self.y = y
+                if dx<0:
+                    self.dir+=180
+                self.x = x
+                self.y = y
+                self.q.get()
+                if i == 0:
+                    self.M1(self.penDownPos)
                     self.q.get()
-                    if i == 0:
-                        self.M1(self.penDownPos)
-                        self.q.get()
-                        time.sleep(0.2)
-                except:
-                    pass
+                    time.sleep(0.2)
+                #except:
+                #    pass
             self.M1(self.penUpPos)
             self.q.get()
             time.sleep(0.2)
