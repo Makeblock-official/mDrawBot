@@ -358,7 +358,6 @@ class Scara(QtGui.QGraphicsItem):
         self.robotState = BUSYING
         self.sendCmd(cmd)
     
-    
     def G28(self):
         if self.robotState != IDLE: return
         cmd = "G28\n"

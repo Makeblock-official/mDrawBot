@@ -13,6 +13,9 @@ IDLE = 0
 BUSYING = 1
 motorSelectedStyle = "border: 1px solid rgb(67,67,67);\r\nborder-radius: 4px;\r\n"
 
+def hermitInterpolation(x0,y0,x1,y1):
+    ""
+
 class RobotSetupUI(QtGui.QWidget):
     def __init__(self,uidialog,robot):
         super(RobotSetupUI, self).__init__()
@@ -30,6 +33,7 @@ class RobotSetupUI(QtGui.QWidget):
         self.show()
 
     def updateUI(self):
+        self.ui.lineWidth.setText(str(self.robot.carWidth))
         self.ui.lineScale.setText(str(self.robot.scaler))
         if self.robot.motoADir == 0:
             self.ui.motoA_CK.setStyleSheet(motorSelectedStyle)
@@ -46,7 +50,8 @@ class RobotSetupUI(QtGui.QWidget):
 
     def applySetup(self):
         self.robot.scaler = float(str(self.ui.lineScale.text()))
-        #self.robot.M5()
+        self.robot.carWidth = float(str(self.ui.lineWidth.text()))
+        self.robot.M5()
         self.hide()
         self.robot.initRobotCanvas()
 
@@ -86,6 +91,7 @@ class CarBot(QtGui.QGraphicsItem):
         self.x = 0
         self.y = 0
         self.dir = 0
+        self.carWidth = 123
         self.scaler = 0.5
         self.motoADir = 0
         self.motoBDir = 0
@@ -116,10 +122,10 @@ class CarBot(QtGui.QGraphicsItem):
         painter.setBrush(QtCore.Qt.darkGray)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         
-        #x = self.x*self.scaler
-        #y = -self.y*self.scaler
-        x = self.x
-        y = -self.y
+        x = self.x*self.scaler
+        y = -self.y*self.scaler
+        #x = self.x
+        #y = -self.y
         
         painter.setBrush(QtCore.Qt.darkGray)
         painter.drawEllipse(-5,-5,10,10)
@@ -196,13 +202,23 @@ class CarBot(QtGui.QGraphicsItem):
     
     def parseEcho(self,msg):
         if "M10" in msg:
-            ""
+            tmp = msg.split()
+            if tmp[1]!="MCAR": return
+            self.carWidth = int(tmp[2])
+            self.initRobotCanvas()
+            self.robotState = IDLE
     
     def M1(self,pos):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
         print cmd
+        self.robotState = BUSYING
+        self.sendCmd(cmd)
+    
+    def M5(self):
+        if self.robotState != IDLE: return
+        cmd = "M5 W%d\n" %(self.carWidth)
         self.robotState = BUSYING
         self.sendCmd(cmd)
     

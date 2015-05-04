@@ -10,6 +10,15 @@ MePort servoPort(PORT_7);
 int servopin =  servoPort.pin2();
 Servo servoPen;
 
+// data stored in eeprom
+union{
+    struct{
+      char name[8];
+      int width;
+    }data;
+    char buf[64];
+}roboSetup;
+
 // arduino only handle A,B step mapping
 float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
@@ -127,7 +136,7 @@ void prepareMove()
   }else if(dAng<-PI){
     dAng+=(2*PI);
   }
-  float dL = (dAng)/2*WIDTH;
+  float dL = (dAng)/2*roboSetup.data.width;
   float dStep = dL*STEP_PER_MM;
   tarA = curA+dStep;
   tarB = curB+dStep;
@@ -198,7 +207,7 @@ void parseGcode(char * cmd)
 void echoRobotSetup()
 {
   Serial.print("M10 MCAR ");
-  Serial.print(WIDTH);Serial.print(' ');
+  Serial.print(roboSetup.data.width);Serial.print(' ');
   Serial.print(DIAMETER);Serial.print(' ');
   Serial.print(curX);Serial.print(' ');
   Serial.print(curY);Serial.print(' ');
@@ -214,6 +223,51 @@ void parsePen(char * cmd)
   servoPen.write(pos);
 }
 
+void parseRobotSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='W'){
+      roboSetup.data.width = atoi(str+1);
+      Serial.print("Width ");Serial.print(roboSetup.data.width);
+    }
+  }
+  syncRobotSetup();
+}
+
+void syncRobotSetup()
+{
+  int i;
+  for(i=0;i<64;i++){
+    EEPROM.write(i,roboSetup.buf[i]);
+  }
+}
+
+
+// local data
+void initRobotSetup()
+{
+  int i;
+  //Serial.println("read eeprom");
+  for(i=0;i<64;i++){
+    roboSetup.buf[i] = EEPROM.read(i);
+    //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
+  }
+  //Serial.println();
+  if(strncmp(roboSetup.data.name,"CAR",3)!=0){
+    Serial.println("set to default setup");
+    // set to default setup
+    memset(roboSetup.buf,0,64);
+    memcpy(roboSetup.data.name,"CAR",3);
+    // default connection move inversely
+    roboSetup.data.width = WIDTH;
+    syncRobotSetup();
+  }
+}
+
 void parseMcode(char * cmd)
 {
   int code;
@@ -221,6 +275,9 @@ void parseMcode(char * cmd)
   switch(code){
     case 1:
       parsePen(cmd);
+      break;
+    case 5:
+      parseRobotSetup(cmd);
       break;
     case 10:
       echoRobotSetup();
@@ -244,6 +301,7 @@ void parseCmd(char * cmd)
 void setup() {
   Serial.begin(115200);
   servoPen.attach(servopin);
+  initRobotSetup();
   initPosition();
 }
 
