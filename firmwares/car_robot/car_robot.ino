@@ -23,6 +23,8 @@ union{
 float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
 float tarX,tarY,tarZ; // target xyz position
+float curVecX,curVecY;
+float tarVecX,tarVecY;
 // step value
 long curA,curB;
 long tarA,tarB;
@@ -109,47 +111,124 @@ void doMove()
   curB = tarB;
 }
 
+#define A 0.5f //tangents tightness
+float tmpVecX,tmpVecY;
+void calcVector(float x0, float y0, float x, float y)
+{
+  float dx = x-x0;
+  float dy = y-y0;
+  float dis = sqrt(dx*dx+dy*dy);
+  tmpVecX = dx/dis;
+  tmpVecY = dy/dis;
+}
+
+float hx,hy;
+void updateHermitVector(float s)
+{
+  float h1,h2,h3,h4;
+  h1 = 2*s*s*s-3*s*s+1;  
+  h2 = -2*s*s*s+3*s*s;
+  h3 = s*s*s-2*s*s+s;
+  h4 = s*s*s-s*s;
+  hx = h1*curX+h2*tarX+h3*curVecX+h4*tarVecX;
+  hy = h1*curY+h2*tarY+h3*curVecY+h4*tarVecY;
+}
+
 #define STEPS_PER_CIRCLE 3200 // 200*16
 #define DIAMETER 64.0 // wheel diameter mm
-#define WIDTH 123.5 // distance between wheel
+#define WIDTH 141     // distance between wheel
 #define STEP_PER_MM (STEPS_PER_CIRCLE/PI/DIAMETER)
 void prepareMove()
 {
-  int maxD; 
+  int maxD,segs,i; 
   unsigned long t0,t1;
   float segInterval;
+  float ang0,x0,y0;
+  float ang,dLeft,dRight;
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);
   float distanceMoved=0,distanceLast=0;
   //Serial.print("distance=");Serial.println(distance);
-  if (distance < 0.001) 
+  if (distance < 0.001)
+  {
     return;
-  // heading to correct direction 
-  tarD = atan2(dy,dx);
-  if(tarD>PI){
-    tarD-=(2*PI);
   }
-  float dAng = tarD - curD; 
-  if(dAng>PI){
-    dAng-=(2*PI);
-  }else if(dAng<-PI){
-    dAng+=(2*PI);
+  if(distance > 20)
+  {
+    // update new vector
+    calcVector(curX,curY,tarX,tarY);
+    curVecX = tmpVecX;  curVecY = tmpVecY;
+
+    // heading to correct direction 
+    tarD = atan2(dy,dx);
+    if(tarD>PI)
+    {
+      tarD-=(2*PI);
+    }
+    float dAng = tarD - curD; 
+    if(dAng>PI)
+    {
+      dAng-=(2*PI);
+    }
+    else if(dAng<-PI)
+    {
+      dAng+=(2*PI);
+    }
+    float dL = (dAng)/2*roboSetup.data.width;
+    float dStep = dL*STEP_PER_MM;
+    tarA = curA+dStep;
+    tarB = curB+dStep;
+    Serial.print("dir:"); Serial.print((tarD)/PI*180);
+    Serial.print(" "); Serial.print(dx);Serial.print(" "); Serial.print(dy);Serial.print(" "); Serial.println(dL);
+    doMove();
+    curD = tarD;
+    // move to targe xy position
+    dStep = distance*STEP_PER_MM;
+    tarA = curA+dStep;
+    tarB = curB-dStep;
+    Serial.print("dis:"); Serial.println(distance);
+    doMove();  
   }
-  float dL = (dAng)/2*roboSetup.data.width;
-  float dStep = dL*STEP_PER_MM;
-  tarA = curA+dStep;
-  tarB = curB+dStep;
-  Serial.print("dir:"); Serial.print((tarD)/PI*180);
-  Serial.print(" "); Serial.print(dx);Serial.print(" "); Serial.print(dy);Serial.print(" "); Serial.println(dL);
-  doMove();
-  curD = tarD;
-  // move to targe xy position
-  dStep = distance*STEP_PER_MM;
-  tarA = curA+dStep;
-  tarB = curB-dStep;
-  Serial.print("dis:"); Serial.println(distance);
-  doMove();
+  else
+  {
+    // update new vector
+    calcVector(curX,curY,tarX,tarY);
+    tarVecX = tmpVecX;  tarVecY = tmpVecY;
+    segs = (int)distance+1;
+    x0 = curX; y0=curY;
+    Serial.print("Move:");Serial.print(curVecX);Serial.print(" ");Serial.print(curVecY);Serial.print(" ");Serial.print(tarVecX);Serial.print(" ");Serial.println(tarVecY);
+    ang0 = atan2(curVecY,curVecX); 
+    if(ang0>PI) 
+    {
+      ang0-=(2*PI);
+    }
+    for(i=1;i<=segs;i++)
+    {
+      updateHermitVector((float)i/segs);
+      // inverse to left right movement
+      dx = hx-x0; dy = hy-y0;
+      float dv = sqrt(dx*dx+dy*dy);
+      ang = atan2(dy,dx); 
+      if(ang>PI)
+      {
+        ang-=(2*PI);
+      }
+      float dw = ang-ang0;
+      if(dw>PI)
+      {
+        dw-=(2*PI);
+      }
+      else if(dw<-PI)
+      {
+        dw+=(2*PI);
+      }
+      
+      Serial.print(i);Serial.print("hermit ");Serial.print(hx);Serial.print(" ");Serial.print(hy);Serial.print(" ");Serial.print(dv);Serial.print(" ");Serial.print(dw/PI*180);
+      Serial.print(" ");Serial.println(dw/2*roboSetup.data.width);
+      dLeft = (dv+dw/2*roboSetup.data.width)*STEP_PER_MM;
+      dRight = (dv-dw/2*roboSetup.data.width)*STEP_PER_MM;
+      Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
  
   curX = tarX;
   curY = tarY;
@@ -157,9 +236,12 @@ void prepareMove()
 
 void initPosition()
 {
+  //servoPen.write(120);
   curX=0; curY=0;
   curA = 0;
   curB = 0;
+  curVecX=1;
+  curVecY=0;
   curD = 0;
 }
 
@@ -200,6 +282,7 @@ void parseGcode(char * cmd)
     case 28: // home
       tarX=0; tarY=0;
       prepareMove();
+      initPosition();
       break; 
   }
 }
