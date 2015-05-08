@@ -111,7 +111,7 @@ void doMove()
   curB = tarB;
 }
 
-#define A 0.5f //tangents tightness
+//#define A 0.5f //tangents tightness
 float tmpVecX,tmpVecY;
 void calcVector(float x0, float y0, float x, float y)
 {
@@ -229,7 +229,8 @@ void prepareMove()
       dLeft = (dv+dw/2*roboSetup.data.width)*STEP_PER_MM;
       dRight = (dv-dw/2*roboSetup.data.width)*STEP_PER_MM;
       Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
- 
+    }
+  }
   curX = tarX;
   curY = tarY;
 }
@@ -404,3 +405,5 @@ void loop() {
     }
   }
 }
+
+

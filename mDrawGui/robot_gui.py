@@ -21,7 +21,7 @@ import HexDownloader
 import sys
 import urllib2
 
-robotVersion="1.05 2015-5-04"
+robotVersion="1.06 2015-5-08"
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
