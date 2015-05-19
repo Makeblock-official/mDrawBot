@@ -31,5 +31,5 @@ exe = EXE(pyz,
           upx=True,
           console=False , icon='mDraw.icns')
 app = BUNDLE(exe,
-             name='robot_gui.app',
+             name='mDraw.app',
              icon='mDraw.icns')
