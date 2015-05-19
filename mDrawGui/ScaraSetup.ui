@@ -86,7 +86,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>130</y>
+      <y>140</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -99,7 +99,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>190</y>
+      <y>200</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -112,7 +112,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>110</y>
+      <y>120</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -129,7 +129,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>170</y>
+      <y>180</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -146,7 +146,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>110</y>
+      <y>120</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -159,7 +159,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>170</y>
+      <y>180</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -199,7 +199,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>230</y>
+      <y>240</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -212,13 +212,42 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>230</y>
+      <y>240</y>
       <width>91</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
      <string>Anti ClockWise</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="slidSpeed">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>90</y>
+      <width>160</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>50</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSpeed">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Speed (50%):</string>
     </property>
    </widget>
   </widget>

@@ -309,7 +309,7 @@ void parseMcode(char * cmd)
 void parseCmd(char * cmd)
 {
   if(cmd[0]=='G'){ // gcode
-    parseGcode(cmd+1);  
+    parseGcode(cmd+1);
     Serial.println("OK");
   }else if(cmd[0]=='M'){ // mcode
     parseMcode(cmd+1);

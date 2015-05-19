@@ -36,6 +36,7 @@ class RobotSetupUI(QtGui.QWidget):
         self.ui.motoB_CK.mousePressEvent = self.setMotorBck
         self.ui.motoB_CCK.mousePressEvent = self.setMotorBcck
         self.ui.btnOk.clicked.connect(self.applySetup)
+        self.ui.slidSpeed.valueChanged.connect(self.updateSpeed)
         self.show()
         self.updating = True
         self.moveThread = WorkInThread(self.updateEndStopThread)
@@ -65,11 +66,18 @@ class RobotSetupUI(QtGui.QWidget):
         else:
             self.ui.motoB_CK.setStyleSheet("")
             self.ui.motoB_CCK.setStyleSheet(motorSelectedStyle)
+        self.ui.labelSpeed.setText("Speed (%d%%)" %(self.robot.speed))
+        self.ui.slidSpeed.setValue(self.robot.speed)
+        
+    def updateSpeed(self,value):
+        self.ui.labelSpeed.setText("Speed (%d%%)" %(value))
+        self.robot.speed = value
 
     def applySetup(self):
         self.robot.width = float(str(self.ui.lineWidth.text()))
         self.robot.height = float(str(self.ui.lineHeight.text()))
         self.robot.M5()
+        self.updating = False
         self.hide()
         self.robot.initRobotCanvas()
 
@@ -107,6 +115,7 @@ class XYBot(QtGui.QGraphicsItem):
         self.txtPtr=[]
         self.motoADir = 0
         self.motoBDir = 0
+        self.speed = 50
         self.laserBurnDelay = 0
         self.origin = None
         self.xyorigin = None
@@ -167,6 +176,9 @@ class XYBot(QtGui.QGraphicsItem):
                 self.motoBDir = 0
             else:
                 self.motoBDir = 1
+            if "D" in msg:
+                self.speed = int(tmp[9][1:])
+                
             self.initRobotCanvas()
             self.robotState = IDLE
         elif "M11" in msg:
@@ -283,7 +295,7 @@ class XYBot(QtGui.QGraphicsItem):
 
     def M5(self):
         if self.robotState != IDLE: return
-        cmd = "M5 A%d B%d H%d W%d\n" %(self.motoADir,self.motoBDir,self.height,self.width)
+        cmd = "M5 A%d B%d H%d W%d D%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.speed)
         self.robotState = BUSYING
         self.sendCmd(cmd)
 

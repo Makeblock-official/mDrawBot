@@ -12,6 +12,7 @@ union{
       unsigned char motoBDir;
       int arm0len;
       int arm1len;
+      int speed;
     }data;
     char buf[64];
 }roboSetup;
@@ -90,7 +91,7 @@ void thetaToSteps(float th1, float th2)
 //#define STEPDELAY_MAX 1000
 int stepAuxDelay=0;
 int stepdelay_min=200;
-int stepdelay_max=1000;
+int stepdelay_max=2000;
 #define ACCELERATION 2 // mm/s^2 don't get inertia exceed motor could handle
 #define SEGMENT_DISTANCE 10 // 1 mm for each segment
 #define SPEED_STEP 1
@@ -251,7 +252,8 @@ void echoArmSetup(char * cmd)
   Serial.print(curX);Serial.print(' ');
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
-  Serial.print(" B");Serial.println((int)roboSetup.data.motoBDir);
+  Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
+  Serial.print(" D");Serial.println((int)roboSetup.data.speed);
 }
 
 void parseRobotSetup(char * cmd)
@@ -273,6 +275,9 @@ void parseRobotSetup(char * cmd)
     }else if(str[0]=='N'){
       roboSetup.data.arm1len = atoi(str+1);
       Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
+    }else if(str[0]=='D'){
+      roboSetup.data.speed = atoi(str+1);
+      Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
   syncRobotSetup();
@@ -329,15 +334,16 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"SCARA",5)!=0){
+  if(strncmp(roboSetup.data.name,"SCARA3",6)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"SCARA",5);
+    memcpy(roboSetup.data.name,"SCARA3",6);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
     roboSetup.data.arm0len = ARML1;
     roboSetup.data.arm1len = ARML2;
+    roboSetup.data.speed = 80;
     syncRobotSetup();
   }
   // init motor direction
@@ -351,6 +357,10 @@ void initRobotSetup()
   }else{
     motorBfw=-1;motorBbk=1;
   }
+  int spd = 100 - roboSetup.data.speed;
+  stepdelay_min = spd*10;
+  stepdelay_max = spd*100;
+  //Serial.printf("spd %d %d\n",stepdelay_min,stepdelay_max);
 }
 
 void syncRobotSetup()

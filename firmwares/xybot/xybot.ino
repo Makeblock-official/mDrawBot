@@ -13,6 +13,7 @@ union{
       int8_t motorSwitch;
       int height;
       int width;
+      int speed;
     }data;
     char buf[64];
 }roboSetup;
@@ -222,7 +223,8 @@ void echoRobotSetup()
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
   Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
-  Serial.print(" S");Serial.println((int)roboSetup.data.motorSwitch);
+  Serial.print(" S");Serial.print((int)roboSetup.data.motorSwitch);
+  Serial.print(" D");Serial.println((int)roboSetup.data.speed);
 }
 
 void echoEndStop()
@@ -256,6 +258,9 @@ void parseRobotSetup(char * cmd)
     }else if(str[0]=='S'){
       roboSetup.data.motorSwitch = atoi(str+1);
       Serial.print("Switch ");Serial.print(roboSetup.data.motorSwitch);
+    }else if(str[0]=='D'){
+      roboSetup.data.speed = atoi(str+1);
+      Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
   syncRobotSetup();
@@ -351,17 +356,18 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"XY",2)!=0){
+  if(strncmp(roboSetup.data.name,"XY3",3)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"XY",2);
+    memcpy(roboSetup.data.name,"XY3",3);
     // default connection move inversely
     roboSetup.data.motoADir = 1;
     roboSetup.data.motoBDir = 1;
     roboSetup.data.width = WIDTH;
     roboSetup.data.height = HEIGHT;
     roboSetup.data.motorSwitch = 0;
+    roboSetup.data.speed = 80;
     syncRobotSetup();
   }
   // init motor direction
@@ -375,6 +381,9 @@ void initRobotSetup()
   }else{
     motorBfw=-1;motorBbk=1;
   }
+  int spd = 100 - roboSetup.data.speed;
+  stepdelay_min = spd*10;
+  stepdelay_max = spd*100;
 }
 
 void syncRobotSetup()
