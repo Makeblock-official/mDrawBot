@@ -16,7 +16,7 @@ a.datas += [
      ('mEggBot.hex',os.getcwd()+'/mEggBot.hex','DATA'),
      ('mCar.hex',os.getcwd()+'/mCar.hex','DATA'),
      ]
-print "\n\n#### package ####",a.datas
+print "\n\n#### package ####",a
 print "\n\n"
 
 pyz = PYZ(a.pure)

@@ -49,7 +49,7 @@ class HexDownloader():
                 #sys.stdout.write(out)
                 #sys.stdout.flush()
                 #self.sig.emit(out)
-                print out
+                #print out
                 if "writing flash" in out:
                     state=1
                     progress = 0
