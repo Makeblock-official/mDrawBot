@@ -116,6 +116,7 @@ class MainUI(QtGui.QWidget):
         self.ui.graphicsView.setScene(self.scene)
         self.ui.progressBar.setVisible(False)
         self.ui.labelPic.setVisible(False)
+        self.ui.pushButton.clicked.connect(self.linkToFAQ)
         #fix the 1 pix margin of graphic view
         rcontent = self.ui.graphicsView.contentsRect();
         self.ui.graphicsView.setSceneRect(0, 0, rcontent.width(), rcontent.height());
@@ -647,6 +648,9 @@ class MainUI(QtGui.QWidget):
         html = response.read()
         # self.dbg(html)
         # todo: parse the received update info
+        
+    def linkToFAQ(self):
+        QtGui.QDesktopServices.openUrl(QUrl("http://forum.makeblock.cc/t/the-lastest-update-of-mdrawbot-faqs/1116"))
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
