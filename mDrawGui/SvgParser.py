@@ -44,7 +44,7 @@ def buildQuadraticBezierSegment(p0, p1, p2):
         curvePointY = (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1];
         dis = sqrt( (curvePointX - currentSegmentX) ** 2 + (curvePointY - currentSegmentY) ** 2)
         if dis > 1:
-            segList.append(curvePointX, curvePointY);
+            segList.append((curvePointX, curvePointY))
             currentSegmentX = curvePointX;
             currentSegmentY = curvePointY;
 
