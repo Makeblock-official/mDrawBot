@@ -670,6 +670,7 @@ def getPkgPath(name):
     pkg_source["avrdude.exe"] = resource_path("avrdude.exe")
     pkg_source["potrace.exe"] = resource_path("potrace.exe")
     pkg_source["avrdude.conf"] = resource_path("avrdude.conf")
+    pkg_source["avrdude.linux.conf"] = resource_path("avrdude.linux.conf")
     pkg_source["XY.hex"] = resource_path("XY.hex")
     pkg_source["mScara.hex"] = resource_path("mScara.hex")
     pkg_source["mSpider.hex"] = resource_path("mSpider.hex")
