@@ -2,31 +2,27 @@
 import sys
 import os
 import threading
-import Queue
+import queue
 import time
-import robot_gui
+import mDraw
 from ScaraGui import *
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
+
+from PyQt5.QtGui import*
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtSvg import *
+from RobotUtils import *
 from math import *
 import ParserGUI
 import subprocess
 import platform
 
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
-        
-class SvgConverter(QtGui.QWidget):
+       
+class SvgConverter(QWidget):
     convertSig = pyqtSignal(str)
     def __init__(self,uidialog,bitmapFile,sig):
         super(SvgConverter, self).__init__()
-        self.bitmapFile = bitmapFile.decode('utf-8')
+        self.bitmapFile = str(bitmapFile)
         self.ui = uidialog()
         self.ui.setupUi(self)
         self.svgout = None
@@ -43,23 +39,28 @@ class SvgConverter(QtGui.QWidget):
         
     def setupUI(self):
         rect = QRectF( self.ui.graphicsView.rect())
-        self.scene = QtGui.QGraphicsScene(rect)
+        self.scene = QGraphicsScene(rect)
         self.ui.graphicsView.setScene(self.scene)
         
     
     def parseConvertSig(self,cmd):
-        print "svg sig",cmd
+        print("svg sig",cmd)
         if "mkbitmap"  in cmd:
             self.potraceBitmap()
         elif "potrace" in cmd:
-            pm = QtGui.QPixmap(self.svgout)
-            print "svg pm",pm
+            """
+            pm = QPixmap(self.svgout)
+            print("svg pm",pm)
             pBitmap = self.scene.addPixmap(pm)
             pBitmap.setOffset(100,100)
+            self.scene.update()
+            """
+            pm = QGraphicsSvgItem(self.svgout)
+            self.scene.addItem(pm)
     
     def loadBitmap(self):
         self.scene.clear()
-        pBitmap = self.scene.addPixmap(QtGui.QPixmap(self.bitmapFile))
+        pBitmap = self.scene.addPixmap(QPixmap(self.bitmapFile))
         pBitmap.setOffset(100,100)
         self.scene.setSceneRect(pBitmap.boundingRect())
     
@@ -85,15 +86,10 @@ class SvgConverter(QtGui.QWidget):
         self.svgout = self.bitmapFile+".svg"
         if "Windows" in systemType:
             #cmd = "potrace.exe -k %f -t 5 -s -o %s %s" %(th,self.svgout,self.bitmapFile)
-            p  = robot_gui.getPkgPath("potrace.exe")
+            p  ="potrace.exe"
             cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
-            
         elif "Darwin" in systemType:
-            p  = robot_gui.getPkgPath("potrace")
             cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
-        # todo: work in unicode only??
-        print cmd.__class__
-        print cmd.encode('utf-8')
         p = subprocess.Popen(cmd,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         p.wait()
         self.convertSig.emit("potrace")
@@ -113,7 +109,7 @@ class SvgConverter(QtGui.QWidget):
     def convertToBitmap(self,cmd):
         p = subprocess.Popen(cmd)
         p.wait()
-        print "bitmap finished"
+        print("bitmap finished")
         self.convertSig.emit("mkbitmap")
         """
         while True:

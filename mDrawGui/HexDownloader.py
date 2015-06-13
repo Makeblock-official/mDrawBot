@@ -1,23 +1,10 @@
 import sys
 import os
 import threading
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
-import robot_gui
 import threading
 import subprocess
 import platform
-
-
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
-
+from RobotUtils import *
 
 class HexDownloader():
     def __init__(self, sig):
@@ -28,7 +15,7 @@ class HexDownloader():
         lines  = f.readlines()
         for line in lines:
             [addr,t,cnt,data,crc] = self.parseHexLine(line)
-            print "%x %s" %(addr,data)
+            print("%x %s" %(addr,data))
         f.close()
         # save hex size
     
@@ -38,7 +25,7 @@ class HexDownloader():
         p = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         self.sig.emit("download start")
         while True:
-            out = p.stderr.readline()
+            out = p.stderr.readline().decode("utf-8")
             if out == '' and p.poll() != None: # not work in py-installer
                 if state==2:
                     self.sig.emit("download finished")
@@ -49,7 +36,7 @@ class HexDownloader():
                 #sys.stdout.write(out)
                 #sys.stdout.flush()
                 #self.sig.emit(out)
-                #print out
+                print(out)
                 if "writing flash" in out:
                     state=1
                     progress = 0
@@ -66,13 +53,11 @@ class HexDownloader():
     def startDownloadUno(self, com, hexfile):
         systemType = platform.system()
         if "Windows" in systemType:
-            avrdudepath = robot_gui.getPkgPath("avrdude.exe")
-            confpath = robot_gui.getPkgPath("avrdude.conf")
-            hexfile = robot_gui.getPkgPath(hexfile)
+            avrdudepath = "avrdude.exe"
+            confpath = "avrdude.conf"
         elif "Darwin" in systemType:
-            avrdudepath = robot_gui.getPkgPath("avrdude")
-            confpath = robot_gui.getPkgPath("avrdude.conf")
-            hexfile = robot_gui.getPkgPath(hexfile)
+            avrdudepath = "avrdude"
+            confpath = "avrdude.conf"
         cmd = u"%s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
         self.moveListThread = WorkInThread(self.downloadThread,cmd)
         self.moveListThread.setDaemon(True)

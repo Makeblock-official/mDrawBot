@@ -2,8 +2,8 @@ import sys
 import os
 import time
 from xml.dom import minidom
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
+from PyQt5 import QtGui
+from PyQt5.QtCore import *
 from math import *
 
 
@@ -428,7 +428,7 @@ class SvgParser():
                     self.lineTo(ax,ay)
                 else:
                     ptr+=1
-                    print "unknow state",state
+                    print("unknow state",state)
         return
         
     def parseRect(self,node):
@@ -436,7 +436,7 @@ class SvgParser():
         h = float(node.getAttribute("height"))+self.xbias
         x = float(node.getAttribute("x"))+self.ybias
         y = float(node.getAttribute("y"))+self.ybias
-        print ">> Rect",w,h,x,y
+        print(">> Rect",w,h,x,y)
         self.moveTo(x,y)
         self.lineTo(x+w,y)
         self.lineTo(x+w,y+h)
@@ -449,7 +449,7 @@ class SvgParser():
         x2 = float(node.getAttribute("x2"))+self.xbias
         y1 = float(node.getAttribute("y1"))+self.ybias
         y2 = float(node.getAttribute("y2"))+self.ybias
-        print ">> Line",x1,y1,x2,y2
+        print(">> Line",x1,y1,x2,y2)
         #path = QtGui.QPainterPath()
         #path.moveTo(x1,y1)
         self.moveTo(x1,y1)
@@ -465,7 +465,7 @@ class SvgParser():
         tmp = []
         pstr = node.getAttribute("points")
         points = pstr.split(" ")
-        print ">> polygon:"
+        print(">> polygon:")
         isinit=0
         #path = QtGui.QPainterPath()
         initx=0
@@ -473,7 +473,7 @@ class SvgParser():
         for p in points:
             if len(p)==0: continue
             xstr,ystr = p.split(',')
-            print ">>\t",xstr,ystr
+            print(">>\t",xstr,ystr)
             x=float(xstr)+self.xbias
             y=float(ystr)+self.ybias
             tmp.append((x,y))
@@ -498,14 +498,14 @@ class SvgParser():
         tmp = []
         pstr = node.getAttribute("points")
         points = pstr.split(" ")
-        print ">> polyline:"
+        print(">> polyline:")
         isinit=0
         #path = QtGui.QPainterPath()
         #pen(0)
         for p in points:
             if len(p)==0: continue
             xstr,ystr = p.split(',')
-            print ">>\t",xstr,ystr
+            print(">>\t",xstr,ystr)
             x=float(xstr)+self.xbias
             y=float(ystr)+self.ybias
             tmp.append((x,y))
@@ -548,7 +548,7 @@ class SvgParser():
             return None
         attrs = sib._attrs
         if "transform" in attrs:
-            print "trans",attrs
+            print("trans",attrs)
             tf = [1,0,0,1,0,0]
             trans = attrs["transform"].value.split()
             for t in trans:
@@ -581,17 +581,17 @@ class SvgParser():
             for t in trans:
                 if "scale" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf[0] = tmp[0]
                     tf[3] = tmp[1]
                 elif "translate" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf[4] = tmp[0]
                     tf[5] = tmp[1]
                 elif "matrix" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf = tmp
             self.tf.append(tf)
             return trans
@@ -599,7 +599,7 @@ class SvgParser():
             return None
         
     def parseNode(self,node,deep):
-        print " "*deep,">>",node.nodeName,node.nodeType
+        print(" "*deep,">>",node.nodeName,node.nodeType)
         tf = None
         if node.nodeType==1:
             tf = self.parseTransform(node)
@@ -616,11 +616,11 @@ class SvgParser():
         elif node.nodeName=="circle":
             self.parseCircle(node)
         else:
-            print " "*deep,"unknow",node.nodeName
+            print(" "*deep,"unknow",node.nodeName)
         return tf
     
     def parseChildNodes(self,node,deep=1):
-        print " "*deep,"parse->",node.nodeName
+        print(" "*deep,"parse->",node.nodeName)
         # escape marker
         if node.nodeName == "marker" or node.nodeName == "clipPath":
             return
