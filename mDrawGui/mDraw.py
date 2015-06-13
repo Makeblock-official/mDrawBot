@@ -5,6 +5,10 @@ import SerialCom
 import SvgParser
 import SvgConverter
 import ScaraRobot
+import XYRobot
+import CarRobot
+import WallRobot
+import EggBot
 import ParserGUI
 import HexDownloader
 
@@ -70,6 +74,9 @@ class MainUI(QWidget):
         self.ui.slideLaserPower.valueChanged.connect(self.laserValue)
         self.ui.slideLaserDelay.valueChanged.connect(self.laserDelay)
         self.ui.btnLaserStart.clicked.connect(self.laserMode)
+        
+        self.ui.tabWidget.currentChanged.connect(self.tabWidgetChanged)
+        self.ui.robotCombo.currentIndexChanged.connect(self.tabChanged)
         
         # init scene
         rect = QRectF( self.ui.graphicsView.rect())
@@ -351,6 +358,33 @@ class MainUI(QWidget):
         self.refreshCom()
         self.ui.portCombo.showPopup()
    
+    def tabChanged(self,tabindex):
+        #print "tab changed",tabindex
+        ssTemplate = "background-color: rgb(247, 247, 247);border-image: url(:/images/model.png);"
+        if tabindex==0:
+            self.robot = ScaraRobot.Scara(self.scene, self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "scara"))
+        elif tabindex==1:
+            self.robot = WallRobot.WallRobot(self.scene, self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "spider"))
+        elif tabindex==4:
+            self.robot = XYRobot.XYBot(self.scene,self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "xy"))
+        elif tabindex==2:
+            self.robot = EggBot.EggBot(self.scene,self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "egg"))
+        elif tabindex==3:
+            self.robot = CarRobot.CarBot(self.scene,self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "car"))
+        # connect robot delegate
+        self.robot.sendCmd = self.sendCmd
+        self.robot.robotSig = self.robotSig
+        self.ui.labelPic.setVisible(False)
+        self.initGraphView()
+        self.robot.initRobotCanvas()
+        self.robot.parseEcho(self.bufferedM10msg)
+        self.bufferedM10msg = ""
+   
     def dbg(self,log,level=DEBUG_NORMAL):
         print(level,log)
         if level == DEBUG_ERR:
@@ -488,12 +522,12 @@ class MainUI(QWidget):
 
 
     def plotPenUp(self):
-        mStr = str(self.ui.linePenUp.text())
+        mStr = str(self.ui.penUpSpin.value())
         pos = int(mStr.split()[1])
         self.robot.M1(pos)
     
     def plotPenDown(self):
-        mStr = str(self.ui.linePenDown.text())
+        mStr = str(self.ui.penDownSpin.value())
         pos = int(mStr.split()[1])
         self.robot.M1(pos)
       
