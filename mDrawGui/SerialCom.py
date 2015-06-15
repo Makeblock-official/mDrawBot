@@ -4,6 +4,8 @@ import sys
 import serial
 import platform
 import threading
+import time
+import platform
 
 try:
     import _winreg
@@ -42,7 +44,6 @@ class serialRead(threading.Thread):
     def run(self):
         while self.running:
             l = self.ser.readline()
-            print l
             self.cb(l)
 
 class serialCom():
@@ -52,6 +53,12 @@ class serialCom():
         return
     
     def connect(self,port,baud=115200):
+        if "Linux" in platform.system():
+            connection = serial.serial_for_url(port, baud, timeout=2, rtscts=True)
+            time.sleep(0.1)
+            connection.close()
+            time.sleep(2)
+
         self.ser = serial.Serial(port, baud)
         self.rxth = serialRead(self.ser,self.rxcb)
         self.rxth.setDaemon(True)
@@ -68,6 +75,7 @@ class serialCom():
         if self.ser == None:
             return
         self.ser.write(msg)
+        self.ser.flush()
         
 
 
