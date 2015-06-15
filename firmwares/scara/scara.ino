@@ -4,6 +4,18 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
+/*
+	Version		1.0.1
+	HISTORY
+		Date			Author		Changes
+		----			------		-------
+		2015/June/8   - Robbo1		Fixed error with parameters being corrupted during the decoding of the cmd line  (Scara seemed to have a mind of its own)
+		2015/June/8   - Robbo1		Fixed potential buffer overflow problem if newline character was ever corrupted/lost
+		2015/June/8   - Robbo1		Fixed positional accuracy error.  Caused by using a test that allowed for finishing moving before all stepping complete
+		
+		
+*/
+
 // data stored in eeprom
 union{
     struct{
@@ -13,6 +25,8 @@ union{
       int arm0len;
       int arm1len;
       int speed;
+      int penUpPos;
+      int penDownPos;
     }data;
     char buf[64];
 }roboSetup;
@@ -86,6 +100,20 @@ void thetaToSteps(float th1, float th2)
   pos2 = round(th2/PI*STEPS_PER_CIRCLE/2);
 }
 
+/*
+	Robbo1 8/June/2015
+	
+	Fixed loop test where the movement may not have actually stopped
+	
+	Sympton  - The movement would stop sometimes one step short because of floating point values 
+	           not always the exact amount and 'N' additions of 'N' segments may not add up to 
+			   the whole.  The best way is to loop until all steps have been done.
+			   
+	Solution - Change the loop finish test from 'i<maxD' to '(posA!=tarA)||(posB!=tarB)'
+	           That is test for movement not yet finished
+			   This is a miniminal change to enable the least changes to the code
+			   
+*/
 /************** calculate movements ******************/
 //#define STEPDELAY_MIN 200 // micro second
 //#define STEPDELAY_MAX 1000
@@ -111,7 +139,8 @@ void doMove()
   //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
   //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
   //for(int i=0;i<=maxD;i++){
-    for(int i=0;i<maxD;i++){
+  //for(int i=0;i<maxD;i++){                                           // Robbo1 2015/6/8 Removed - kept for now to show what the loop looked like before
+  for(int i=0;(posA!=tarA)||(posB!=tarB);i++){                         // Robbo1 2015/6/8 Changed - change loop terminate test to test for moving not finished rather than a preset amount of moves
     //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
     // move A
     if(posA!=tarA){
@@ -176,14 +205,45 @@ void initPosition()
   posB = pos2;
 }
 
+/*
+	Robbo1 8/June/2015
+	
+	Fixed loop test where phantom parameters overwrite actual parameters and cause wild motions in scara
+	
+	Sympton  - The test was testing the previous loop's pointer and when last token/parameter is processed 
+	           It would then loop one more time.  This meant that the loop used the NULL pointer as the 
+			   string pointer.  Now if the bytes at address zero happened to start with the characters X or Y or Z or F or A
+			   the loop would process that phantom string and convert the following bytes into a number and 
+			   replace the actual parameters value with the phantom one.
+			  
+			   While this happened only in certain circumstances, it did happen for some svg files that 
+			   happened to be placed in certain areas, because it seems the conversion codes would place 
+			   intermediate data at addres 0 and if that data resulted in the byte at addres 0 being
+			   one of the parameter labels (X Y Z F A) then the problem occurred.
+			  
+			   This explains why some people had wild things happen with the arms rotating all the way and 
+			   crashing into the framework
+			  
+	Solution - Move the strtok_r to the while loop test which means that the loop test is done on the
+	           current pointer.  This means that when there are no more tokens (str == NULL) the loop
+			   terminates without processing it.
+			   
+	Other identified issues
+				If the code is changed prior to calling the function, the initial strtok_r may gobble 
+				up a parameter.  It is currently there because the "G" code is not removed from the 
+				cmd string prior to calling the function and has to be removed prior to processing the
+				parameters.
+				
+*/
+
 /************** calculate movements ******************/
 void parseCordinate(char * cmd)
 {
   char * tmp;
   char * str;
-  str = strtok_r(cmd, " ", &tmp);
-  while(str!=NULL){
-    str = strtok_r(0, " ", &tmp);
+  str = strtok_r(cmd, " ", &tmp);             // Robbo1 2015/6/8 comment - this removes the G code token from the input string - potential for future errors if method of processing G codes changes
+  while((str=strtok_r(0, " ", &tmp))!=NULL){  // Robbo1 2015/6/8 changed - placed strtok_r into loop test so that the pointer tested is the one used in the current loop
+    //str = strtok_r(0, " ", &tmp);           // Robbo1 2015/6/8 removed - removed from here and place in the while loop test
     //Serial.printf("%s;",str);
     if(str[0]=='X'){
       tarX = atof(str+1);
@@ -253,7 +313,9 @@ void echoArmSetup(char * cmd)
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
   Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
-  Serial.print(" D");Serial.println((int)roboSetup.data.speed);
+  Serial.print(" S");Serial.print((int)roboSetup.data.speed);
+  Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
+  Serial.print(" D");Serial.println((int)roboSetup.data.penDownPos);
 }
 
 void parseRobotSetup(char * cmd)
@@ -265,24 +327,40 @@ void parseRobotSetup(char * cmd)
     str = strtok_r(0, " ", &tmp);
     if(str[0]=='A'){
       roboSetup.data.motoADir = atoi(str+1);
-      Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
+      //Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
     }else if(str[0]=='B'){
       roboSetup.data.motoBDir = atoi(str+1);
-      Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
+      //Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
     }else if(str[0]=='M'){
       roboSetup.data.arm0len = atoi(str+1);
-      Serial.print("ARML1 ");Serial.print(roboSetup.data.arm0len);
+      //Serial.print("ARML1 ");Serial.print(roboSetup.data.arm0len);
     }else if(str[0]=='N'){
       roboSetup.data.arm1len = atoi(str+1);
-      Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
+      //Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
     }else if(str[0]=='D'){
       roboSetup.data.speed = atoi(str+1);
-      Serial.print("Speed ");Serial.print(roboSetup.data.speed);
+      //Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
   syncRobotSetup();
 }
 
+void parsePenPosSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='U'){
+      roboSetup.data.penUpPos = atoi(str+1);
+    }else if(str[0]=='D'){
+      roboSetup.data.penDownPos = atoi(str+1);    
+    }
+  }
+  Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
+  syncRobotSetup();
+}
 
 void parseMcode(char * cmd)
 {
@@ -292,8 +370,8 @@ void parseMcode(char * cmd)
     case 1:
       parseServo(cmd);
       break;
-    case 2:
-    
+    case 2: // set pen position
+      parsePenPosSetup(cmd);
       break;
     case 3:
       parseAuxDelay(cmd);
@@ -334,16 +412,18 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"SCARA3",6)!=0){
+  if(strncmp(roboSetup.data.name,"SCARA4",6)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"SCARA3",6);
+    memcpy(roboSetup.data.name,"SCARA4",6);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
     roboSetup.data.arm0len = ARML1;
     roboSetup.data.arm1len = ARML2;
     roboSetup.data.speed = 80;
+    roboSetup.data.penUpPos = 160;
+    roboSetup.data.penDownPos = 90;
     syncRobotSetup();
   }
   // init motor direction
@@ -385,15 +465,25 @@ char bufindex;
 char buf2[64];
 char bufindex2;
 
+/*
+	Robbo1 8/June/2015
+	
+	Fixed potential probelms from buffer overflow and first cmd string not being null terminated
+	
+*/
+
 void loop() {
   if(Serial.available()){
     char c = Serial.read();
-    buf[bufindex++]=c;
+    //buf[bufindex++]=c;                 // Robbo1 2015/6/8 Removed - Do not store the \n
     if(c=='\n'){
+      buf[bufindex++]='\0';              // Robbo1 2015/6/8 Add     - Null terminate the string - Essential for first use of 'buf' and good programming practice
       parseCmd(buf);
       memset(buf,0,64);
       bufindex = 0;
-    }
+    }else if(bufindex<64){               // Robbo1 2015/6/8 Add     - Only add char to string if the string can fit it and still be null terminated 
+      buf[bufindex++]=c;                 // Robbo1 2015/6/8 Moved   - Store the character here now
+	}
   }
 
 }

@@ -246,6 +246,32 @@ class Ui_Form(object):
         self.penDownSpin.setMaximum(180)
         self.penDownSpin.setProperty("value", 90)
         self.penDownSpin.setObjectName("penDownSpin")
+        self.btnSavePos = QtWidgets.QPushButton(self.tabPen)
+        self.btnSavePos.setGeometry(QtCore.QRect(10, 100, 121, 23))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.btnSavePos.setFont(font)
+        self.btnSavePos.setStyleSheet(" QPushButton {\n"
+"     color: rgb(230,230,230);\n"
+"     border: 1px solid rgb(67,67,67);\n"
+"     border-radius: 3px;\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);\n"
+" }\n"
+"\n"
+" QPushButton::hover {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);\n"
+" }\n"
+"\n"
+" QPushButton:pressed {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);\n"
+" }\n"
+"\n"
+"")
+        self.btnSavePos.setObjectName("btnSavePos")
         self.tabWidget.addTab(self.tabPen, "")
         self.tabLaser = QtWidgets.QWidget()
         self.tabLaser.setObjectName("tabLaser")
@@ -798,6 +824,7 @@ class Ui_Form(object):
         self.robotCombo.setItemText(4, _translate("Form", "XY"))
         self.btnPenUp.setText(_translate("Form", "Pen Up"))
         self.btnPenDown.setText(_translate("Form", "Pen Down"))
+        self.btnSavePos.setText(_translate("Form", "Save to EEPROM"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPen), _translate("Form", "Pen"))
         self.labelLaserDelay.setText(_translate("Form", "0"))
         self.label_13.setText(_translate("Form", "Delay"))

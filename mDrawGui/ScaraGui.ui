@@ -437,6 +437,46 @@ QTabBar::tab {
        <number>90</number>
       </property>
      </widget>
+     <widget class="QPushButton" name="btnSavePos">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>121</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"> QPushButton {
+	 color: rgb(230,230,230);
+     border: 1px solid rgb(67,67,67);
+     border-radius: 3px;
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
+ }
+
+ QPushButton::hover {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);
+ }
+
+ QPushButton:pressed {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);
+ }
+
+</string>
+      </property>
+      <property name="text">
+       <string>Save to EEPROM</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tabLaser">
      <attribute name="title">

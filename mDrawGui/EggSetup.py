@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 306)
+        Form.resize(806, 306)
         self.groupBox = QtWidgets.QGroupBox(Form)
         self.groupBox.setGeometry(QtCore.QRect(10, 20, 381, 241))
         font = QtGui.QFont()
@@ -83,6 +83,11 @@ class Ui_Form(object):
         self.btnOk = QtWidgets.QPushButton(Form)
         self.btnOk.setGeometry(QtCore.QRect(290, 270, 91, 23))
         self.btnOk.setObjectName("btnOk")
+        self.label_7 = QtWidgets.QLabel(Form)
+        self.label_7.setGeometry(QtCore.QRect(400, 30, 401, 231))
+        self.label_7.setText("")
+        self.label_7.setPixmap(QtGui.QPixmap(":/images/mEggBot_setup.png"))
+        self.label_7.setObjectName("label_7")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

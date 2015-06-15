@@ -338,8 +338,14 @@ class Scara(QGraphicsItem):
                 self.motoBDir = 0
             else:
                 self.motoBDir = 1
-            if "D" in msg:
+            if msg.find("S")>-1:
                 self.speed = int(tmp[8][1:])
+            if msg.find("U")>-1:
+                self.penUpPos = int(tmp[9][1:])
+                self.ui.penUpSpin.setValue(self.penUpPos)
+            if msg.find("D")>-1:
+                self.penDownPos = int(tmp[10][1:])
+                self.ui.penDownSpin.setValue(self.penDownPos)
             self.th = self.scaraInverseKinect(pos)
             self.initRobotCanvas()
             self.robotState = IDLE
@@ -366,6 +372,14 @@ class Scara(QGraphicsItem):
         cmd = "M1 %d" %(pos)
         cmd += '\n'
         print(cmd)
+        self.robotState = BUSYING
+        self.sendCmd(cmd)
+        
+    def M2(self):
+        if self.robotState != IDLE: return
+        posUp = int(self.ui.penUpSpin.value())
+        posDown = int(self.ui.penDownSpin.value())
+        cmd = "M2 U%d D%d\n" %(posUp,posDown)
         self.robotState = BUSYING
         self.sendCmd(cmd)
             

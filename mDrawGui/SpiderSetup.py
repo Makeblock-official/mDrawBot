@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(400, 310)
+        Form.resize(752, 310)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -89,6 +89,11 @@ class Ui_Form(object):
         self.btnOk = QtWidgets.QPushButton(Form)
         self.btnOk.setGeometry(QtCore.QRect(290, 280, 91, 23))
         self.btnOk.setObjectName("btnOk")
+        self.label_8 = QtWidgets.QLabel(Form)
+        self.label_8.setGeometry(QtCore.QRect(410, 20, 321, 251))
+        self.label_8.setText("")
+        self.label_8.setPixmap(QtGui.QPixmap(":/images/mSpider_setup.png"))
+        self.label_8.setObjectName("label_8")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)

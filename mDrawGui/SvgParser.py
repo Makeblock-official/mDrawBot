@@ -2,8 +2,10 @@ import sys
 import os
 import time
 from xml.dom import minidom
-from PyQt5 import QtGui
+from PyQt5.QtGui import*
+from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from RobotUtils import *
 from math import *
 
 
@@ -17,16 +19,39 @@ def buildBezierSegment(p0,p1,p2,p3):
         x00=p0[0]+(p1[0]-p0[0])*ratio;y00=p0[1]+(p1[1]-p0[1])*ratio
         x01=p1[0]+(p2[0]-p1[0])*ratio;y01=p1[1]+(p2[1]-p1[1])*ratio
         x02=p2[0]+(p3[0]-p2[0])*ratio;y02=p2[1]+(p3[1]-p2[1])*ratio
-        x10=(x01-x00)*ratio+x00;y10=(y01-y00)*ratio+y00;
-        x11=(x02-x01)*ratio+x01;y11=(y02-y01)*ratio+y01;
-        x20=(x11-x10)*ratio+x10;y20=(y11-y10)*ratio+y10;
-        dx = x20-px;dy = y20 - py;
+        x10=(x01-x00)*ratio+x00;
+        y10=(y01-y00)*ratio+y00;
+        x11=(x02-x01)*ratio+x01;
+        y11=(y02-y01)*ratio+y01;
+        x20=(x11-x10)*ratio+x10;
+        y20=(y11-y10)*ratio+y10;
+        dx = x20-px;
+        dy = y20 - py;
         dis = sqrt(dx*dx+dy*dy)
         if dis>1:
             segList.append((x20,y20))
             px=x20;py=y20;
     if len(segList)==0:
         segList.append((p3[0],p3[1]))
+    return segList
+
+def buildQuadraticBezierSegment(p0, p1, p2):
+    segList = []
+    currentSegmentX = p0[0]
+    currentSegmentY = p0[1]
+
+    for i in range(1,100):
+        t = float(i)/100
+        curvePointX = (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0];
+        curvePointY = (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1];
+        dis = sqrt( (curvePointX - currentSegmentX) ** 2 + (curvePointY - currentSegmentY) ** 2)
+        if dis > 1:
+            segList.append((curvePointX, curvePointY))
+            currentSegmentX = curvePointX;
+            currentSegmentY = curvePointY;
+
+    if len(segList) == 0:
+        segList.append(p2[0], p2[1])
     return segList
 
 def buildArcSegment(rx,ry,phi,fA,fS,x1,y1,x2,y2):
@@ -142,9 +167,9 @@ class SvgParser():
     
     def plotToScene(self):
         self.ptrList = []
-        pen = QtGui.QPen(QtGui.QColor(124, 124, 124))
+        pen = QPen(QColor(124, 124, 124))
         for line in self.pathList:
-            tmpPath = QtGui.QPainterPath()
+            tmpPath = QPainterPath()
             for i in range(len(line)):
                 point = line[i]
                 if i==0:
@@ -215,6 +240,7 @@ class SvgParser():
         ds = d.replace("e-","ee")
         ds=ds.replace("-"," -").replace("s", " s ").replace("S", " S ").replace("c", " c ").replace("C", " C ").replace("v", " v ").replace("V", " V ")
         ds=ds.replace("l", " l ").replace("L"," L ").replace("A", " A ").replace("a", " a ").replace(",", " ").replace("M", "M ").replace("h", " h ").replace("H", " H ").replace("m"," m ").replace('z',' z ')
+        ds=ds.replace("q", " q ").replace("Q", " Q ")
         ss=ds.split()
         for i in range(len(ss)):
             ss[i] = ss[i].replace("ee","e-")
@@ -236,7 +262,7 @@ class SvgParser():
                 state = ss[ptr]
                 ptr+=1
                 curvecnt=0
-                if state=='C' or state=='c':
+                if state=='C' or state=='c' or state=='Q' or state == 'q':
                     pbuff=[(x,y)]
                 elif state=='z' or state=='Z':
                     x=x0;y=y0;
@@ -349,6 +375,38 @@ class SvgParser():
                     if curvecnt==3:
                         bzseg = buildBezierSegment(pbuff[0],pbuff[1],pbuff[2],pbuff[3])
                         lastControl = pbuff[2]
+                        for s in bzseg:
+                            #path.lineTo(s[0],s[1])
+                            self.lineTo(s[0],s[1])
+                        pbuff=[(ax,ay)]
+                        x=ax;y=ay
+                        curvecnt = 0
+                elif state == 'q':
+                    dx=float(ss[ptr])
+                    dy=float(ss[ptr+1])
+                    pbuff.append((x+dx,y+dy))
+                    ptr+=2
+                    curvecnt+=1
+                    #print ">>\tc:X",x,"Y",y,"x",dx,"y",dy,"cnt",curvecnt
+                    if curvecnt==2:
+                        bzseg = buildQuadraticBezierSegment(pbuff[0],pbuff[1],pbuff[2])
+                        lastControl = pbuff[1]
+                        for s in bzseg:
+                            #path.lineTo(s[0],s[1])
+                            self.lineTo(s[0],s[1])
+                        x=x+dx;y=y+dy
+                        pbuff=[(x,y)]
+                        curvecnt = 0
+                elif state == 'Q':
+                    ax = float(ss[ptr])+self.xbias
+                    ay = float(ss[ptr+1])+self.ybias
+                    pbuff.append((ax,ay))
+                    ptr+=2
+                    curvecnt+=1
+                    #print ">>\tC:x",ax,"y",ay,"cnt",curvecnt
+                    if curvecnt==2:
+                        bzseg = buildQuadraticBezierSegment(pbuff[0],pbuff[1],pbuff[2])
+                        lastControl = pbuff[1]
                         for s in bzseg:
                             #path.lineTo(s[0],s[1])
                             self.lineTo(s[0],s[1])

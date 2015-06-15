@@ -65,6 +65,8 @@ class MainUI(QWidget):
         self.ui.lineSend.returnPressed.connect(self.sendCmd)
         self.ui.btnUpdateFirmware.clicked.connect(self.uploadFirmware)
         self.ui.btnHome.clicked.connect(self.robotGoHome)
+        self.ui.btnSavePos.clicked.connect(self.savePenPos)
+        
         # connect pen widget
         self.ui.btnPenUp.clicked.connect(self.plotPenUp)
         self.ui.btnPenDown.clicked.connect(self.plotPenDown)
@@ -321,7 +323,6 @@ class MainUI(QWidget):
                 self.ui.progressBar.hide()
                 self.dbg(msg)
         elif "OK" in msg:
-            self.dbg(msg, DEBUG_DEBUG)
             self.robot.robotState = IDLE
             self.robot.q.put(1)
         elif "M10" in msg:
@@ -436,6 +437,9 @@ class MainUI(QWidget):
         
     def robotGoHome(self):
         self.robot.G28()
+    
+    def savePenPos(self):
+        self.robot.M2()
         
     def refreshCom(self):
         self.commList = {}
@@ -523,12 +527,12 @@ class MainUI(QWidget):
 
     def plotPenUp(self):
         mStr = str(self.ui.penUpSpin.value())
-        pos = int(mStr.split()[1])
+        pos = int(mStr)
         self.robot.M1(pos)
     
     def plotPenDown(self):
         mStr = str(self.ui.penDownSpin.value())
-        pos = int(mStr.split()[1])
+        pos = int(mStr)
         self.robot.M1(pos)
       
     def laserValue(self):

@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(400, 310)
+        Dialog.resize(766, 310)
         font = QtGui.QFont()
         font.setFamily("Arial")
         Dialog.setFont(font)
@@ -93,6 +93,11 @@ class Ui_Dialog(object):
         self.btnOk = QtWidgets.QPushButton(Dialog)
         self.btnOk.setGeometry(QtCore.QRect(290, 280, 91, 23))
         self.btnOk.setObjectName("btnOk")
+        self.label_7 = QtWidgets.QLabel(Dialog)
+        self.label_7.setGeometry(QtCore.QRect(410, 30, 331, 231))
+        self.label_7.setText("")
+        self.label_7.setPixmap(QtGui.QPixmap(":/images/mScara_setup.png"))
+        self.label_7.setObjectName("label_7")
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)

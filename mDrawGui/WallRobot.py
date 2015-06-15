@@ -11,10 +11,6 @@ from RobotUtils import *
 from math import *
 import SpiderSetup
 
-IDLE = 0
-BUSYING = 1
-motorSelectedStyle = "border: 1px solid rgb(67,67,67);\r\nborder-radius: 4px;\r\n"
-
 class RobotSetupUI(QWidget):
     def __init__(self,uidialog,robot):
         super(RobotSetupUI, self).__init__()
@@ -74,15 +70,6 @@ class RobotSetupUI(QWidget):
     def setMotorBcck(self,event):
         self.robot.motoBDir = 1
         self.updateUI()
-
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
 
 class WallRobot(QGraphicsItem):
     

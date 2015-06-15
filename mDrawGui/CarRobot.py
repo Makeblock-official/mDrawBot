@@ -66,16 +66,6 @@ class RobotSetupUI(QWidget):
         self.robot.motoBDir = 1
         self.updateUI()
 
-
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
-
 class CarBot(QGraphicsItem):
     
     def __init__(self, scene, ui, parent=None):
