@@ -77,7 +77,6 @@ class HexDownloader():
             avrdudepath = '/usr/bin/avrdude'
             confpath = robot_gui.getPkgPath("avrdude.linux.conf")
             hexfile = robot_gui.getPkgPath(hexfile)
-        print systemType
         cmd = u"%s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
         self.moveListThread = WorkInThread(self.downloadThread,cmd)
         self.moveListThread.setDaemon(True)
