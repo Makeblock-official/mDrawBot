@@ -11,7 +11,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(711, 313)
+        Form.resize(717, 313)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
+        Form.setSizePolicy(sizePolicy)
+        Form.setMinimumSize(QtCore.QSize(717, 313))
+        Form.setMaximumSize(QtCore.QSize(711, 313))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)

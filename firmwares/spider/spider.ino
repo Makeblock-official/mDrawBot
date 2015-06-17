@@ -140,7 +140,7 @@ void prepareMove()
   int maxD;
   unsigned long t0,t1;
   float segInterval;
-  tarX = -tarX; // fix for x axis direction
+  //tarX = -tarX; // fix for x axis direction
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);

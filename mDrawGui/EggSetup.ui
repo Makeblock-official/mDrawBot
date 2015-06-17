@@ -10,6 +10,24 @@
     <height>306</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>806</width>
+    <height>306</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>806</width>
+    <height>306</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -36,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>110</y>
+      <y>70</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -49,7 +67,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>170</y>
+      <y>130</y>
       <width>131</width>
       <height>16</height>
      </rect>
@@ -62,7 +80,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>90</y>
+      <y>50</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -79,7 +97,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>150</y>
+      <y>110</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -96,7 +114,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>90</y>
+      <y>50</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -109,7 +127,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>150</y>
+      <y>110</y>
       <width>51</width>
       <height>51</height>
      </rect>
@@ -149,7 +167,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>210</y>
+      <y>170</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -162,59 +180,13 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>210</y>
+      <y>170</y>
       <width>101</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
      <string>Anti ClockWise</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineAB">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>30</y>
-      <width>113</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>171</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Stretch Diameter (degree):</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>30</y>
-      <width>171</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Stretch Center (degree):</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="lineHeight">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>60</y>
-      <width>113</width>
-      <height>20</height>
-     </rect>
     </property>
    </widget>
   </widget>

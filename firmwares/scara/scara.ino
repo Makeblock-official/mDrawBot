@@ -299,6 +299,8 @@ void parseGcode(char * cmd)
     case 28: // home
       stepAuxDelay = 0;
       tarX=-(roboSetup.data.arm0len+roboSetup.data.arm1len-0.01); tarY=0;
+      servoPen.write(roboSetup.data.penUpPos);
+      laser.run(0);
       prepareMove();
       break; 
   }
@@ -456,7 +458,7 @@ void setup() {
   Serial.begin(115200);
   initRobotSetup();
   servoPen.attach(servopin);
-  servoPen.write(10);
+  servoPen.write(roboSetup.data.penUpPos);
   initPosition();
 }
 

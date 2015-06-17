@@ -350,14 +350,17 @@ class Scara(QGraphicsItem):
             self.initRobotCanvas()
             self.robotState = IDLE
 
+    def robotGoBusy(self):
+        self.robotState = BUSYING
+        self.ui.labelMachineState.setText("BUSY")
+
     def G1(self,x,y,feedrate=0,auxdelay=None):
         if self.robotState != IDLE: return
         cmd = "G1 X%.2f Y%.2f" %(x,y)
         if auxdelay!=None:
             cmd += " A%d" %(auxdelay)
         cmd += '\n'
-        print(cmd)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def G28(self):
@@ -371,8 +374,7 @@ class Scara(QGraphicsItem):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        print(cmd)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
         
     def M2(self):
@@ -380,27 +382,28 @@ class Scara(QGraphicsItem):
         posUp = int(self.ui.penUpSpin.value())
         posDown = int(self.ui.penDownSpin.value())
         cmd = "M2 U%d D%d\n" %(posUp,posDown)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
             
     def M3(self,auxdelay): # aux delay
         if self.robotState != IDLE: return
         cmd = "M3 %d\n" %(auxdelay)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
         cmd = "M4 %d\n" %(int(laserPower*rate))
         self.laserPower = laserPower
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def M5(self):
         if self.robotState != IDLE: return
         cmd = "M5 A%d B%d M%d N%d D%d\n" %(self.motoADir,self.motoBDir,self.L1,self.L2,self.speed)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
+        self.robotSig.emit("toggleComPort")
         
     def M10(self): # read robot arm setup and init pos
         cmd = "M10\n"

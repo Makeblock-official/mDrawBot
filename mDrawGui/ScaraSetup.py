@@ -12,6 +12,13 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(766, 310)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Dialog.sizePolicy().hasHeightForWidth())
+        Dialog.setSizePolicy(sizePolicy)
+        Dialog.setMinimumSize(QtCore.QSize(766, 310))
+        Dialog.setMaximumSize(QtCore.QSize(766, 310))
         font = QtGui.QFont()
         font.setFamily("Arial")
         Dialog.setFont(font)

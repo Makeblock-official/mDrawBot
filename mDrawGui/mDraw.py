@@ -36,6 +36,7 @@ class MainUI(QWidget):
         self.mouseOverPic = False
         self.mouseResizePic = False
         self.bufferedM10msg = ""
+        self.firstClickMillis = 0
         self.picX0 = 300
         self.picY0 = 200
         self.picWidth = 0
@@ -70,12 +71,13 @@ class MainUI(QWidget):
         # connect pen widget
         self.ui.btnPenUp.clicked.connect(self.plotPenUp)
         self.ui.btnPenDown.clicked.connect(self.plotPenDown)
+        
         # connect laser widget
         self.ui.slideLaserPower.setEnabled(False)
         self.ui.slideLaserDelay.setEnabled(False)
         self.ui.slideLaserPower.valueChanged.connect(self.laserValue)
         self.ui.slideLaserDelay.valueChanged.connect(self.laserDelay)
-        self.ui.btnLaserStart.clicked.connect(self.laserMode)
+        self.ui.radioLaserMode.toggled.connect(self.laserMode)
         
         self.ui.tabWidget.currentChanged.connect(self.tabWidgetChanged)
         self.ui.robotCombo.currentIndexChanged.connect(self.tabChanged)
@@ -85,6 +87,7 @@ class MainUI(QWidget):
         self.scene = QGraphicsScene(rect)
         item = QGraphicsEllipseItem(75, 10, 60, 40)
         self.ui.graphicsView.setScene(self.scene)
+        self.ui.labelEstTime.setVisible(False)
         self.ui.progressBar.setVisible(False)
         self.ui.labelPic.setVisible(False)
         self.ui.pushButton.clicked.connect(self.linkToFAQ)
@@ -96,6 +99,7 @@ class MainUI(QWidget):
         self.ui.graphicsView.mousePressEvent = self.graphMouseClick
         self.ui.graphicsView.mouseMoveEvent = self.graphMouseMove
         self.ui.graphicsView.mouseReleaseEvent = self.graphMouseRelease
+        
         # path from user paint
         self.userPaint = None
         # init robot parts (default to scara robot)
@@ -122,7 +126,8 @@ class MainUI(QWidget):
             self.ui.progressBar.setValue(0)
             self.robot.printPic()
             self.ui.progressBar.setVisible(True)
-            #self.ui.btnPrintPic.setText("Stop")
+            self.ui.labelEstTime.setVisible(True)
+            self.ui.labelEstTime.setText("TotalTime %s" %(self.pic.pathLen))
             self.switchPrintButton("Pause")
         else:
             if self.robot.pausing == False:
@@ -136,6 +141,7 @@ class MainUI(QWidget):
         if self.robot.printing:
             self.robot.stopPrinting()
             self.ui.progressBar.setVisible(False)
+            self.ui.labelEstTime.setVisible(False)
             self.switchPrintButton("Go")
     
     def switchPrintButton(self,s):
@@ -195,13 +201,21 @@ class MainUI(QWidget):
         #self.userPaint.lineTo(event.pos())
         #self.pathptr.setPath(self.userPaint)
         if self.tempPicRect==None:
-            pos = event.pos()-self.robotCent
-            #print "POS",pos
-            try:
-                self.robot.moveTo(pos)
-            except Exception as e:
-                pass
-                
+            if self.firstClickMillis==0:
+                self.firstClickMillis = int(round(time.time() * 1000))
+            else:
+                millisDiff = int(round(time.time() * 1000)) - self.firstClickMillis
+                self.firstClickMillis = 0
+                #print("click",millisDiff)
+                if millisDiff<400:
+                    pos = event.pos()-self.robotCent
+                    try:
+                        self.robot.moveTo(pos)
+                    except Exception as e:
+                        pass
+                elif millisDiff>1000:
+                    self.firstClickMillis = int(round(time.time() * 1000))
+                    
         else:
             if self.mouseOverPic:
                 w = self.picWidth
@@ -300,15 +314,26 @@ class MainUI(QWidget):
             self.sceneUpdateSig.emit()
             time.sleep(0.05)
     
+    def toggleComPort(self):
+        time.sleep(2)
+        self.disconnectPort()
+        time.sleep(0.5)
+        self.connectPort()
+    
     def parseRobotSig(self,msg):
         msg=str(msg)
-        if "pg" in msg:
+        if "OK" in msg:
+            self.robot.robotState = IDLE
+            self.ui.labelMachineState.setText("IDLE")
+            self.robot.q.put(1)
+        elif "pg" in msg:
             tmp = msg.split()
             progress = int(tmp[1])
             self.ui.progressBar.setValue(progress)
         elif "done" in msg:
             self.robot.stopPrinting()
             self.ui.progressBar.setVisible(False)
+            self.ui.labelEstTime.setVisible(False)
             self.switchPrintButton("Go")
             if self.robot.laserMode:
                 self.laserMode("Off")
@@ -322,9 +347,10 @@ class MainUI(QWidget):
             else: # finished or failed
                 self.ui.progressBar.hide()
                 self.dbg(msg)
-        elif "OK" in msg:
-            self.robot.robotState = IDLE
-            self.robot.q.put(1)
+        elif "toggleComPort" in msg:
+            toggleInThread = WorkInThread(self.toggleComPort)
+            toggleInThread.setDaemon(True)
+            toggleInThread.start()
         elif "M10" in msg:
             self.dbg(msg, DEBUG_DEBUG)
             if "MSCARA" in msg and str(self.ui.robotCombo.currentText())!="mScara":
@@ -460,6 +486,8 @@ class MainUI(QWidget):
         self.comm.send(cmd)
     
     def clearPic(self):
+        if self.robot.printing:
+            return
         if self.pic == None: return
         if self.ptrPicRect!=None:
             for path in self.pic.ptrList:
@@ -473,6 +501,8 @@ class MainUI(QWidget):
         self.ptrPicRez = None      
     
     def loadPic(self,filename=False):
+        if self.robot.printing:
+            return        
         self.clearPic()
         if filename==False:
             filename = QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg;.bmp(*.svg;*.bmp)")[0]
@@ -536,9 +566,10 @@ class MainUI(QWidget):
         self.robot.M1(pos)
       
     def laserValue(self):
-        value = self.ui.slideLaserPower.value()
+        value = int(self.ui.slideLaserPower.value())
+        laserpwm = value*255/100
         self.ui.labelLaserPower.setText(str(value))
-        self.robot.M4(value)
+        self.robot.M4(laserpwm)
         
     def laserDelay(self):
         delay = self.ui.slideLaserDelay.value()
@@ -547,19 +578,20 @@ class MainUI(QWidget):
     
     def laserMode(self,txt=False):
         if txt==False:
-            txt = str(self.ui.btnLaserStart.text())
+            if self.ui.radioLaserMode.isDown():
+                txt = "On"
+            else:
+                txt = "Off"
         if txt=="Off":
             self.ui.slideLaserPower.setEnabled(False)
             self.ui.slideLaserDelay.setEnabled(False)
             self.ui.slideLaserPower.setValue(0)
             self.ui.slideLaserDelay.setValue(0)
             self.robot.laserMode = False
-            self.ui.btnLaserStart.setText("On")
         else:
             self.ui.slideLaserPower.setEnabled(True)
             self.ui.slideLaserDelay.setEnabled(True)
             self.robot.laserMode = True
-            self.ui.btnLaserStart.setText("Off")
     
     def tabWidgetChanged(self,i):
         ssTemplate = "background-color: rgb(247, 247, 247);border-image: url(:/images/model.png);"

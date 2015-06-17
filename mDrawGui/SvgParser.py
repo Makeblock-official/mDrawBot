@@ -135,6 +135,7 @@ class SvgParser():
         self.tmpPath = None
         self.xbias = 0
         self.ybias = 0
+        self.pathLen = 0
         self.whratio = 1
         self.scene = scene
         self.scale = scale
@@ -178,15 +179,16 @@ class SvgParser():
                     tmpPath.lineTo(point[0],point[1])
             ptr = self.scene.addPath(tmpPath,pen=pen)
             self.ptrList.append(ptr)
-    
    
     def resize(self,drawRect=(150,150,150,150)):
         #self.pathList = copy.deepcopy(self.originPathList)
         self.pathList=[]
+        self.pathLen = 0
         for p in self.originPathList:
             self.pathList.append(p)
         
         (x,y) = self.pathList[0][0]
+        (x0,y0) = (x,y)
         xmin = x*self.scale[0]
         xmax = x*self.scale[0]
         ymin = y*self.scale[1]
@@ -196,6 +198,10 @@ class SvgParser():
             for p in line:
                 x = p[0]*self.scale[0]
                 y = p[1]*self.scale[1]
+                tmpdx = x-x0
+                tmpdy = y-y0
+                self.pathLen+=sqrt(tmpdx*tmpdx+tmpdy*tmpdy)
+                (x0,y0) = (x,y)
                 if x<xmin:
                     xmin = p[0]
                 if x>xmax:
@@ -217,6 +223,7 @@ class SvgParser():
                 x = (x-xmin)*scaler+drawRect[0]                    
                 y = (y-ymin)*scaler+drawRect[1]
                 self.pathList[i][j] = (x,y)
+        print("total len",self.pathLen)
         return (dx*scaler,dy*scaler)
     
     # stretch for eggbot surface curve

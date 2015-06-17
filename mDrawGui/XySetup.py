@@ -12,6 +12,13 @@ class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(400, 320)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
+        Form.setSizePolicy(sizePolicy)
+        Form.setMinimumSize(QtCore.QSize(400, 320))
+        Form.setMaximumSize(QtCore.QSize(400, 320))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)

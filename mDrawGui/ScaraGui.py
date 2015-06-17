@@ -238,16 +238,18 @@ class Ui_Form(object):
         self.btnPenDown.setObjectName("btnPenDown")
         self.penUpSpin = QtWidgets.QSpinBox(self.tabPen)
         self.penUpSpin.setGeometry(QtCore.QRect(100, 20, 71, 22))
+        self.penUpSpin.setStyleSheet("color: rgb(230,230,230)")
         self.penUpSpin.setMaximum(180)
         self.penUpSpin.setProperty("value", 130)
         self.penUpSpin.setObjectName("penUpSpin")
         self.penDownSpin = QtWidgets.QSpinBox(self.tabPen)
         self.penDownSpin.setGeometry(QtCore.QRect(100, 60, 71, 22))
+        self.penDownSpin.setStyleSheet("color: rgb(230,230,230);")
         self.penDownSpin.setMaximum(180)
         self.penDownSpin.setProperty("value", 90)
         self.penDownSpin.setObjectName("penDownSpin")
         self.btnSavePos = QtWidgets.QPushButton(self.tabPen)
-        self.btnSavePos.setGeometry(QtCore.QRect(10, 100, 121, 23))
+        self.btnSavePos.setGeometry(QtCore.QRect(10, 100, 75, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -276,7 +278,7 @@ class Ui_Form(object):
         self.tabLaser = QtWidgets.QWidget()
         self.tabLaser.setObjectName("tabLaser")
         self.slideLaserPower = QtWidgets.QSlider(self.tabLaser)
-        self.slideLaserPower.setGeometry(QtCore.QRect(10, 20, 121, 19))
+        self.slideLaserPower.setGeometry(QtCore.QRect(20, 60, 121, 19))
         self.slideLaserPower.setStyleSheet("QSlider::handle:horizontal {\n"
 "    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);\n"
 "     border: 1px solid #5c5c5c;\n"
@@ -290,11 +292,11 @@ class Ui_Form(object):
 "    background-color: rgb(53, 53, 53);\n"
 "    border: 1px solid #5c5c5c;\n"
 "}")
-        self.slideLaserPower.setMaximum(254)
+        self.slideLaserPower.setMaximum(100)
         self.slideLaserPower.setOrientation(QtCore.Qt.Horizontal)
         self.slideLaserPower.setObjectName("slideLaserPower")
         self.labelLaserDelay = QtWidgets.QLabel(self.tabLaser)
-        self.labelLaserDelay.setGeometry(QtCore.QRect(130, 70, 41, 16))
+        self.labelLaserDelay.setGeometry(QtCore.QRect(130, 100, 41, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -304,7 +306,7 @@ class Ui_Form(object):
         self.labelLaserDelay.setAlignment(QtCore.Qt.AlignCenter)
         self.labelLaserDelay.setObjectName("labelLaserDelay")
         self.slideLaserDelay = QtWidgets.QSlider(self.tabLaser)
-        self.slideLaserDelay.setGeometry(QtCore.QRect(10, 70, 121, 19))
+        self.slideLaserDelay.setGeometry(QtCore.QRect(20, 110, 121, 19))
         self.slideLaserDelay.setStyleSheet("QSlider::handle:horizontal {\n"
 "    background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #b4b4b4, stop:1 #8f8f8f);\n"
 "     border: 1px solid #5c5c5c;\n"
@@ -322,7 +324,7 @@ class Ui_Form(object):
         self.slideLaserDelay.setOrientation(QtCore.Qt.Horizontal)
         self.slideLaserDelay.setObjectName("slideLaserDelay")
         self.label_13 = QtWidgets.QLabel(self.tabLaser)
-        self.label_13.setGeometry(QtCore.QRect(10, 50, 41, 16))
+        self.label_13.setGeometry(QtCore.QRect(20, 90, 71, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -331,7 +333,7 @@ class Ui_Form(object):
         self.label_13.setStyleSheet("color:rgb(204,204,204);")
         self.label_13.setObjectName("label_13")
         self.label_12 = QtWidgets.QLabel(self.tabLaser)
-        self.label_12.setGeometry(QtCore.QRect(10, 0, 51, 16))
+        self.label_12.setGeometry(QtCore.QRect(20, 40, 51, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -340,7 +342,7 @@ class Ui_Form(object):
         self.label_12.setStyleSheet("color:rgb(204,204,204);")
         self.label_12.setObjectName("label_12")
         self.labelLaserPower = QtWidgets.QLabel(self.tabLaser)
-        self.labelLaserPower.setGeometry(QtCore.QRect(130, 20, 41, 16))
+        self.labelLaserPower.setGeometry(QtCore.QRect(130, 50, 41, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -349,59 +351,46 @@ class Ui_Form(object):
         self.labelLaserPower.setStyleSheet("color:rgb(204,204,204);")
         self.labelLaserPower.setAlignment(QtCore.Qt.AlignCenter)
         self.labelLaserPower.setObjectName("labelLaserPower")
-        self.btnLaserStart = QtWidgets.QPushButton(self.tabLaser)
-        self.btnLaserStart.setGeometry(QtCore.QRect(10, 110, 61, 23))
+        self.radioLaserMode = QtWidgets.QRadioButton(self.tabLaser)
+        self.radioLaserMode.setGeometry(QtCore.QRect(20, 10, 131, 16))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
         font.setWeight(75)
-        self.btnLaserStart.setFont(font)
-        self.btnLaserStart.setStyleSheet(" QPushButton {\n"
-"     color: rgb(230,230,230);\n"
-"     border: 1px solid rgb(67,67,67);\n"
-"     border-radius: 3px;\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);\n"
-" }\n"
-"\n"
-" QPushButton::hover {\n"
-"     color: rgb(231,231,231);\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);\n"
-" }\n"
-"\n"
-" QPushButton:pressed {\n"
-"     color: rgb(231,231,231);\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);\n"
-" }\n"
-"\n"
+        self.radioLaserMode.setFont(font)
+        self.radioLaserMode.setStyleSheet("     color: rgb(230,230,230);\n"
 "")
-        self.btnLaserStart.setObjectName("btnLaserStart")
-        self.btnLaserReset = QtWidgets.QPushButton(self.tabLaser)
-        self.btnLaserReset.setGeometry(QtCore.QRect(100, 110, 61, 23))
-        font = QtGui.QFont()
-        font.setFamily("Arial")
-        font.setBold(True)
-        font.setWeight(75)
-        self.btnLaserReset.setFont(font)
-        self.btnLaserReset.setStyleSheet(" QPushButton {\n"
-"     color: rgb(230,230,230);\n"
-"     border: 1px solid rgb(67,67,67);\n"
-"     border-radius: 3px;\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);\n"
-" }\n"
-"\n"
-" QPushButton::hover {\n"
-"     color: rgb(231,231,231);\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);\n"
-" }\n"
-"\n"
-" QPushButton:pressed {\n"
-"     color: rgb(231,231,231);\n"
-"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);\n"
-" }\n"
-"\n"
-"")
-        self.btnLaserReset.setObjectName("btnLaserReset")
+        self.radioLaserMode.setObjectName("radioLaserMode")
         self.tabWidget.addTab(self.tabLaser, "")
+        self.tabUtil = QtWidgets.QWidget()
+        self.tabUtil.setObjectName("tabUtil")
+        self.btnPenUp_2 = QtWidgets.QPushButton(self.tabUtil)
+        self.btnPenUp_2.setGeometry(QtCore.QRect(10, 10, 151, 23))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.btnPenUp_2.setFont(font)
+        self.btnPenUp_2.setStyleSheet(" QPushButton {\n"
+"     color: rgb(230,230,230);\n"
+"     border: 1px solid rgb(67,67,67);\n"
+"     border-radius: 4px;\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);\n"
+" }\n"
+"\n"
+" QPushButton::hover {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);\n"
+" }\n"
+"\n"
+" QPushButton:pressed {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);\n"
+" }\n"
+"\n"
+"")
+        self.btnPenUp_2.setObjectName("btnPenUp_2")
+        self.tabWidget.addTab(self.tabUtil, "")
         self.btnSetRobot = QtWidgets.QPushButton(Form)
         self.btnSetRobot.setGeometry(QtCore.QRect(892, 10, 61, 31))
         self.btnSetRobot.setStyleSheet(" QPushButton {\n"
@@ -809,6 +798,26 @@ class Ui_Form(object):
         self.label_6.setStyleSheet("color: rgb(124, 124, 124);\n"
 "background-color:  rgb(243,243,243);")
         self.label_6.setObjectName("label_6")
+        self.labelEstTime = QtWidgets.QLabel(Form)
+        self.labelEstTime.setGeometry(QtCore.QRect(320, 660, 161, 20))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.labelEstTime.setFont(font)
+        self.labelEstTime.setStyleSheet("color: rgb(124, 124, 124);\n"
+"background-color: rgb(249, 249, 249);")
+        self.labelEstTime.setObjectName("labelEstTime")
+        self.labelMachineState = QtWidgets.QLabel(Form)
+        self.labelMachineState.setGeometry(QtCore.QRect(20, 70, 41, 20))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.labelMachineState.setFont(font)
+        self.labelMachineState.setStyleSheet("color: rgb(124, 124, 124);\n"
+"background-color: rgb(249, 249, 249);")
+        self.labelMachineState.setObjectName("labelMachineState")
 
         self.retranslateUi(Form)
         self.tabWidget.setCurrentIndex(0)
@@ -824,15 +833,16 @@ class Ui_Form(object):
         self.robotCombo.setItemText(4, _translate("Form", "XY"))
         self.btnPenUp.setText(_translate("Form", "Pen Up"))
         self.btnPenDown.setText(_translate("Form", "Pen Down"))
-        self.btnSavePos.setText(_translate("Form", "Save to EEPROM"))
+        self.btnSavePos.setText(_translate("Form", "Save"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabPen), _translate("Form", "Pen"))
         self.labelLaserDelay.setText(_translate("Form", "0"))
-        self.label_13.setText(_translate("Form", "Delay"))
-        self.label_12.setText(_translate("Form", "Power"))
+        self.label_13.setText(_translate("Form", "Delay (ms)"))
+        self.label_12.setText(_translate("Form", "Power %"))
         self.labelLaserPower.setText(_translate("Form", "0"))
-        self.btnLaserStart.setText(_translate("Form", "On"))
-        self.btnLaserReset.setText(_translate("Form", "Reset"))
+        self.radioLaserMode.setText(_translate("Form", "Enable Laser Mode"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabLaser), _translate("Form", "Laser"))
+        self.btnPenUp_2.setText(_translate("Form", "Sync Position (G92)"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabUtil), _translate("Form", "Utils"))
         self.portCombo.setItemText(0, _translate("Form", "No Connection"))
         self.portCombo.setItemText(1, _translate("Form", "新建项目"))
         self.btnConnect.setText(_translate("Form", "Connect"))
@@ -844,5 +854,7 @@ class Ui_Form(object):
         self.label_4.setText(_translate("Form", "Scale:"))
         self.label_5.setText(_translate("Form", "width"))
         self.label_6.setText(_translate("Form", "height"))
+        self.labelEstTime.setText(_translate("Form", "Time Left: 00:00:00"))
+        self.labelMachineState.setText(_translate("Form", "IDLE"))
 
 import images_rc
