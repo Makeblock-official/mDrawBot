@@ -164,11 +164,11 @@ void goHome()
 {
   // stop on either endstop touches
   while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
-    stepperMoveB(1);
+    stepperMoveB(motorBfw);
     delayMicroseconds(stepdelay_min);
   }
   while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
-    stepperMoveA(1);
+    stepperMoveA(motorAfw);
     delayMicroseconds(stepdelay_min);
   }
   curA = 0;
