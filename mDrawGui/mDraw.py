@@ -11,6 +11,8 @@ import WallRobot
 import EggBot
 import ParserGUI
 import HexDownloader
+import WireHelper
+import WireGui
 
 from PyQt5.QtGui import*
 from PyQt5.QtWidgets import *
@@ -67,6 +69,13 @@ class MainUI(QWidget):
         self.ui.btnUpdateFirmware.clicked.connect(self.uploadFirmware)
         self.ui.btnHome.clicked.connect(self.robotGoHome)
         self.ui.btnSavePos.clicked.connect(self.savePenPos)
+        
+        self.ui.btnHFlip.clicked.connect(self.xReflect)
+        self.ui.btnVFlip.clicked.connect(self.yReflect)
+        self.ui.btnRollC.clicked.connect(self.rollClockwise)
+        self.ui.btnRollAC.clicked.connect(self.rollAntiClockwise)
+        
+        self.ui.btnWiring.clicked.connect(self.showWire)
         
         # connect pen widget
         self.ui.btnPenUp.clicked.connect(self.plotPenUp)
@@ -498,7 +507,7 @@ class MainUI(QWidget):
         self.picWidth = 0
         self.picHeight = 0
         self.ptrPicRect = None
-        self.ptrPicRez = None      
+        self.ptrPicRez = None
     
     def loadPic(self,filename=False):
         if self.robot.printing:
@@ -539,9 +548,9 @@ class MainUI(QWidget):
         (w,h) = self.pic.resize((x,y,w,h)) # get rect of target svg
         #stretch for eggbot
         #ycent = self.robot.origin[1]+self.robot.height/2
-        if self.robot.__class__.__name__=="EggBot" and self.robot.stretch!=None:
-            ycent = y+h/2
-            self.pic.stretch(ycent,self.robot.stretch)
+        #if self.robot.__class__.__name__=="EggBot" and self.robot.stretch!=None:
+        #    ycent = y+h/2
+        #    self.pic.stretch(ycent,self.robot.stretch)
         
         self.picWidth = w
         self.picHeight = h
@@ -554,7 +563,89 @@ class MainUI(QWidget):
         self.robot.moveList = self.pic.pathList
         self.pic.plotToScene()
 
-
+    def xReflect(self):
+        if self.pic==None:
+            return
+        """
+        1  0  0
+        0 -1  0
+        0  0  1
+        """
+        newtf = [0,0,0,0,0,0]
+        newtf[0] = 1*self.pic.usertf[0]
+        newtf[1] = -1*self.pic.usertf[1]
+        newtf[2] = 1*self.pic.usertf[2]
+        newtf[3] = -1*self.pic.usertf[3]
+        newtf[4] = 1*self.pic.usertf[4]
+        newtf[5] = -1*self.pic.usertf[5]
+        self.pic.usertf = newtf
+        self.updatePic()
+        
+    def yReflect(self):
+        if self.pic==None:
+            return
+        """
+       -1  0  0
+        0  1  0
+        0  0  1
+        """
+        newtf = [0,0,0,0,0,0]
+        newtf[0] = -1*self.pic.usertf[0]
+        newtf[1] = 1*self.pic.usertf[1]
+        newtf[2] = -1*self.pic.usertf[2]
+        newtf[3] = 1*self.pic.usertf[3]
+        newtf[4] = -1*self.pic.usertf[4]
+        newtf[5] = 1*self.pic.usertf[5]
+        self.pic.usertf = newtf
+        self.updatePic()
+        
+        
+    def rollClockwise(self):
+        if self.pic==None:
+            return
+        """
+        0  1  0
+       -1  0  0
+        0  0  1
+        """
+        newtf = [0,0,0,0,0,0]
+        newtf[0] = 1*self.pic.usertf[1]
+        newtf[1] = -1*self.pic.usertf[0]
+        newtf[2] = 1*self.pic.usertf[3]
+        newtf[3] = -1*self.pic.usertf[2]
+        newtf[4] = 1*self.pic.usertf[5]
+        newtf[5] = -1*self.pic.usertf[4]
+        self.pic.usertf = newtf
+        w = self.picWidth
+        h = self.picHeight
+        self.picWidth = h
+        self.picHeight = w
+        self.updatePic()
+        
+        
+    def rollAntiClockwise(self):
+        if self.pic==None:
+            return
+        """
+        0 -1  0
+        1  0  0
+        0  0  1
+        """
+        newtf = [0,0,0,0,0,0]
+        newtf[0] = -1*self.pic.usertf[1]
+        newtf[1] = 1*self.pic.usertf[0]
+        newtf[2] = -1*self.pic.usertf[3]
+        newtf[3] = 1*self.pic.usertf[2]
+        newtf[4] = -1*self.pic.usertf[5]
+        newtf[5] = 1*self.pic.usertf[4]
+        self.pic.usertf = newtf
+        w = self.picWidth
+        h = self.picHeight
+        self.picWidth = h
+        self.picHeight = w
+        self.updatePic()
+        
+        
     def plotPenUp(self):
         mStr = str(self.ui.penUpSpin.value())
         pos = int(mStr)
@@ -613,12 +704,17 @@ class MainUI(QWidget):
     def closeEvent(self, event):
         if hasattr(self.robot, 'robotSetup'):
             self.robot.robotSetup.close()
+        if hasattr(self,'wireHelp'):
+            self.wireHelp.close()
 
     def linkToFAQ(self):
         QDesktopServices.openUrl(QUrl("http://forum.makeblock.cc/t/the-lastest-update-of-mdrawbot-faqs/1116"))
 
     def showRobotSetup(self):
         self.robot.showSetup()
+    
+    def showWire(self):
+        self.wireHelp =  WireHelper.WireHelper(WireGui.Ui_Form)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

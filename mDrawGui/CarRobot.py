@@ -107,10 +107,11 @@ class CarBot(QGraphicsItem):
         painter.setBrush(QtCore.Qt.darkGray)
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         
-        x = self.x*self.scaler
-        y = -self.y*self.scaler
-        #x = self.x
-        #y = -self.y
+        #x = self.x*self.scaler
+        #y = -self.y*self.scaler
+        # don't show scale on canvas
+        x = self.x
+        y = -self.y
         
         painter.setBrush(QtCore.Qt.darkGray)
         painter.drawEllipse(-5,-5,10,10)

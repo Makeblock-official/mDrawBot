@@ -1176,7 +1176,7 @@ border-image: url(:/images/scara.png);</string>
      <rect>
       <x>10</x>
       <y>150</y>
-      <width>131</width>
+      <width>111</width>
       <height>23</height>
      </rect>
     </property>
@@ -1239,6 +1239,46 @@ border-image: url(:/images/scara.png);</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnWiring">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>150</y>
+      <width>41</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"> QPushButton {
+	 color: rgb(230,230,230);
+     border: 1px solid rgb(67,67,67);
+     border-radius: 4px;
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
+ }
+
+ QPushButton::hover {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);
+ }
+
+ QPushButton:pressed {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);
+ }
+
+</string>
+    </property>
+    <property name="text">
+     <string>Wire</string>
     </property>
    </widget>
   </widget>
@@ -1486,8 +1526,8 @@ background-color: rgb(249, 249, 249);</string>
   <widget class="QLabel" name="labelMachineState">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>70</y>
+     <x>720</x>
+     <y>200</y>
      <width>41</width>
      <height>20</height>
     </rect>
@@ -1505,6 +1545,58 @@ background-color: rgb(249, 249, 249);</string>
    </property>
    <property name="text">
     <string>IDLE</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnHFlip">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>20</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>HFlip</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnVFlip">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>20</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>HFlip</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRollC">
+   <property name="geometry">
+    <rect>
+     <x>470</x>
+     <y>20</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>HFlip</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRollAC">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>20</y>
+     <width>41</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>HFlip</string>
    </property>
   </widget>
  </widget>

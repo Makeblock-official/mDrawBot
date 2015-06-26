@@ -140,6 +140,7 @@ class SvgParser():
         self.scene = scene
         self.scale = scale
         self.tf = []
+        self.usertf = [1,0,0,1,0,0]
         self.parse(filename)
     
     # tranform matrix = [ a c e ]
@@ -179,13 +180,30 @@ class SvgParser():
                     tmpPath.lineTo(point[0],point[1])
             ptr = self.scene.addPath(tmpPath,pen=pen)
             self.ptrList.append(ptr)
-   
+
     def resize(self,drawRect=(150,150,150,150)):
         #self.pathList = copy.deepcopy(self.originPathList)
         self.pathList=[]
         self.pathLen = 0
+        
+        # avoid the deep copy
         for p in self.originPathList:
-            self.pathList.append(p)
+            self.pathList.append(list(p))
+        
+        #print("resize",len(self.pathList))
+        #print(self.originPathList[0][0])
+        #print(self.pathList[0][0])
+        
+        # user define transform
+        for i in range(len(self.pathList)):
+            for j in range(len(self.pathList[i])):
+                x = self.pathList[i][j][0]
+                y = self.pathList[i][j][1]
+                x1=self.usertf[0]*x+self.usertf[2]*y+self.usertf[4]
+                y1=self.usertf[1]*x+self.usertf[3]*y+self.usertf[5]
+                self.pathList[i][j] = (x1,y1)
+        
+        #print(self.pathList[0][0])
         
         (x,y) = self.pathList[0][0]
         (x0,y0) = (x,y)
@@ -631,7 +649,7 @@ class SvgParser():
                     self.tf.append(tf)
                 elif "matrix" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = map(float,list(t[p0+1:-1].split(",")))
                     tf = tmp
                     self.tf.append(tf)
             return tf

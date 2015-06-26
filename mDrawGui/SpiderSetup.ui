@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>752</width>
-    <height>310</height>
+    <width>990</width>
+    <height>480</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>752</width>
-    <height>310</height>
+    <width>990</width>
+    <height>480</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>752</width>
-    <height>310</height>
+    <width>990</width>
+    <height>480</height>
    </size>
   </property>
   <property name="font">
@@ -275,10 +275,10 @@
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>20</y>
-     <width>321</width>
-     <height>251</height>
+     <x>400</x>
+     <y>10</y>
+     <width>581</width>
+     <height>471</height>
     </rect>
    </property>
    <property name="text">

@@ -647,7 +647,7 @@ class Ui_Form(object):
         self.labelModel.setText("")
         self.labelModel.setObjectName("labelModel")
         self.btnUpdateFirmware = QtWidgets.QPushButton(self.groupBox_2)
-        self.btnUpdateFirmware.setGeometry(QtCore.QRect(10, 150, 131, 23))
+        self.btnUpdateFirmware.setGeometry(QtCore.QRect(10, 150, 111, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -691,6 +691,32 @@ class Ui_Form(object):
 "")
         self.pushButton.setText("")
         self.pushButton.setObjectName("pushButton")
+        self.btnWiring = QtWidgets.QPushButton(self.groupBox_2)
+        self.btnWiring.setGeometry(QtCore.QRect(130, 150, 41, 23))
+        font = QtGui.QFont()
+        font.setFamily("Arial")
+        font.setBold(True)
+        font.setWeight(75)
+        self.btnWiring.setFont(font)
+        self.btnWiring.setStyleSheet(" QPushButton {\n"
+"     color: rgb(230,230,230);\n"
+"     border: 1px solid rgb(67,67,67);\n"
+"     border-radius: 4px;\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);\n"
+" }\n"
+"\n"
+" QPushButton::hover {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);\n"
+" }\n"
+"\n"
+" QPushButton:pressed {\n"
+"     color: rgb(231,231,231);\n"
+"     background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);\n"
+" }\n"
+"\n"
+"")
+        self.btnWiring.setObjectName("btnWiring")
         self.label_3 = QtWidgets.QLabel(Form)
         self.label_3.setGeometry(QtCore.QRect(650, 80, 101, 16))
         font = QtGui.QFont()
@@ -809,7 +835,7 @@ class Ui_Form(object):
 "background-color: rgb(249, 249, 249);")
         self.labelEstTime.setObjectName("labelEstTime")
         self.labelMachineState = QtWidgets.QLabel(Form)
-        self.labelMachineState.setGeometry(QtCore.QRect(20, 70, 41, 20))
+        self.labelMachineState.setGeometry(QtCore.QRect(720, 200, 41, 20))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -818,6 +844,18 @@ class Ui_Form(object):
         self.labelMachineState.setStyleSheet("color: rgb(124, 124, 124);\n"
 "background-color: rgb(249, 249, 249);")
         self.labelMachineState.setObjectName("labelMachineState")
+        self.btnHFlip = QtWidgets.QPushButton(Form)
+        self.btnHFlip.setGeometry(QtCore.QRect(350, 20, 41, 41))
+        self.btnHFlip.setObjectName("btnHFlip")
+        self.btnVFlip = QtWidgets.QPushButton(Form)
+        self.btnVFlip.setGeometry(QtCore.QRect(410, 20, 41, 41))
+        self.btnVFlip.setObjectName("btnVFlip")
+        self.btnRollC = QtWidgets.QPushButton(Form)
+        self.btnRollC.setGeometry(QtCore.QRect(470, 20, 41, 41))
+        self.btnRollC.setObjectName("btnRollC")
+        self.btnRollAC = QtWidgets.QPushButton(Form)
+        self.btnRollAC.setGeometry(QtCore.QRect(530, 20, 41, 41))
+        self.btnRollAC.setObjectName("btnRollAC")
 
         self.retranslateUi(Form)
         self.tabWidget.setCurrentIndex(0)
@@ -850,11 +888,16 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "X(mm):"))
         self.label_2.setText(_translate("Form", "Y(mm):"))
         self.btnUpdateFirmware.setText(_translate("Form", "Update Firmware"))
+        self.btnWiring.setText(_translate("Form", "Wire"))
         self.label_3.setText(_translate("Form", "Extruder Position"))
         self.label_4.setText(_translate("Form", "Scale:"))
         self.label_5.setText(_translate("Form", "width"))
         self.label_6.setText(_translate("Form", "height"))
         self.labelEstTime.setText(_translate("Form", "Time Left: 00:00:00"))
         self.labelMachineState.setText(_translate("Form", "IDLE"))
+        self.btnHFlip.setText(_translate("Form", "HFlip"))
+        self.btnVFlip.setText(_translate("Form", "HFlip"))
+        self.btnRollC.setText(_translate("Form", "HFlip"))
+        self.btnRollAC.setText(_translate("Form", "HFlip"))
 
 import images_rc

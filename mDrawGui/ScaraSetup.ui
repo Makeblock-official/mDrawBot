@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>766</width>
-    <height>310</height>
+    <width>1053</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -18,14 +18,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>766</width>
-    <height>310</height>
+    <width>1053</width>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>766</width>
-    <height>310</height>
+    <width>1053</width>
+    <height>500</height>
    </size>
   </property>
   <property name="font">
@@ -272,7 +272,7 @@
   <widget class="QPushButton" name="btnOk">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>300</x>
      <y>280</y>
      <width>91</width>
      <height>23</height>
@@ -285,10 +285,10 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>410</x>
+     <x>400</x>
      <y>30</y>
-     <width>331</width>
-     <height>231</height>
+     <width>651</width>
+     <height>431</height>
     </rect>
    </property>
    <property name="text">

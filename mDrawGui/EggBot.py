@@ -147,6 +147,9 @@ class EggBot(QGraphicsItem):
         x = self.x+self.origin[0]-self.robotCent[0]
         y = self.y+self.origin[1]-self.robotCent[1]+self.height
         
+        img = QtGui.QImage(":/images/mEggBot_machine.png")
+        painter.translate(0,0);
+        painter.drawImage(-450,-220,img) # minus the center of image
         #painter.drawText(x-30,y+10,"(%.2f,%.2f)" %(self.x,-self.y))
         pen = QtGui.QPen(QtGui.QColor(124, 124, 124))
         painter.setBrush(QtCore.Qt.darkGray)
