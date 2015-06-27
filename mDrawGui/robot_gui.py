@@ -337,7 +337,7 @@ class MainUI(QtGui.QWidget):
     def loadPic(self,filename=False):
         self.clearPic()
         if filename==False:
-            filename = str(QtGui.QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg;.bmp(*.svg;*.bmp)").toUtf8())
+            filename = str(QtGui.QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg .bmp (*.svg *.bmp)").toUtf8())
         self.dbg(filename)
         if len(filename)==0:
             return
