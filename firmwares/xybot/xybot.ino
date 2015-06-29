@@ -5,7 +5,7 @@
 #include <Wire.h>
 
 // data stored in eeprom
-union{
+static union{
     struct{
       char name[8];
       unsigned char motoADir;
@@ -141,12 +141,9 @@ void doMove()
 #define STEPS_PER_MM 87.58 // the same as 3d printer
 void prepareMove()
 {
-  int maxD;
-  unsigned long t0,t1;
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);
-  float distanceMoved=0,distanceLast=0;
   //Serial.print("distance=");Serial.println(distance);
   if (distance < 0.001)
     return;
@@ -236,6 +233,14 @@ void echoEndStop()
   Serial.println(digitalRead(ylimit_pin2));
 }
 
+void syncRobotSetup()
+{
+  int i;
+  for(i=0;i<64;i++){
+    EEPROM.write(i,roboSetup.buf[i]);
+  }
+}
+
 void parseRobotSetup(char * cmd)
 {
   char * tmp;
@@ -269,16 +274,14 @@ void parseRobotSetup(char * cmd)
 void parseAuxDelay(char * cmd)
 {
   char * tmp;
-  char * str;
-  str = strtok_r(cmd, " ", &tmp);
+  strtok_r(cmd, " ", &tmp);
   stepAuxDelay = atoi(tmp);
 }
 
 void parseLaserPower(char * cmd)
 {
   char * tmp;
-  char * str;
-  str = strtok_r(cmd, " ", &tmp);
+  strtok_r(cmd, " ", &tmp);
   int pwm = atoi(tmp);
   laser.run(pwm);
 }
@@ -286,8 +289,7 @@ void parseLaserPower(char * cmd)
 void parsePen(char * cmd)
 {
   char * tmp;
-  char * str;
-  str = strtok_r(cmd, " ", &tmp);
+  strtok_r(cmd, " ", &tmp);
   int pos = atoi(tmp);
   servoPen.write(pos);
 }
@@ -386,14 +388,6 @@ void initRobotSetup()
   stepdelay_max = spd*100;
 }
 
-void syncRobotSetup()
-{
-  int i;
-  for(i=0;i<64;i++){
-    EEPROM.write(i,roboSetup.buf[i]);
-  }
-}
-
 
 /************** arduino ******************/
 void setup() {
@@ -408,7 +402,7 @@ void setup() {
 }
 
 char buf[64];
-char bufindex;
+int8_t bufindex;
 char buf2[64];
 char bufindex2;
 
