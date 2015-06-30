@@ -673,7 +673,7 @@ class Ui_Form(object):
 "")
         self.btnUpdateFirmware.setObjectName("btnUpdateFirmware")
         self.pushButton = QtWidgets.QPushButton(self.groupBox_2)
-        self.pushButton.setGeometry(QtCore.QRect(150, 120, 18, 18))
+        self.pushButton.setGeometry(QtCore.QRect(140, 20, 18, 18))
         self.pushButton.setStyleSheet(" QPushButton {\n"
 "    background-color: rgba(255, 255, 255, 0);\n"
 "    border-image: url(:/images/mDraw-info-icon.png) 0;\n"
@@ -845,16 +845,84 @@ class Ui_Form(object):
 "background-color: rgb(249, 249, 249);")
         self.labelMachineState.setObjectName("labelMachineState")
         self.btnHFlip = QtWidgets.QPushButton(Form)
-        self.btnHFlip.setGeometry(QtCore.QRect(350, 20, 41, 41))
+        self.btnHFlip.setGeometry(QtCore.QRect(350, 20, 60, 40))
+        self.btnHFlip.setStyleSheet(" QPushButton {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image:url(:/images/mDraw_UI-icon-VSymmetric.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:hover {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-VSymmetric-hover.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:pressed  {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-VSymmetric-click.png) 0;\n"
+" }\n"
+"\n"
+"")
+        self.btnHFlip.setText("")
         self.btnHFlip.setObjectName("btnHFlip")
         self.btnVFlip = QtWidgets.QPushButton(Form)
-        self.btnVFlip.setGeometry(QtCore.QRect(410, 20, 41, 41))
+        self.btnVFlip.setGeometry(QtCore.QRect(420, 20, 60, 40))
+        self.btnVFlip.setStyleSheet(" QPushButton {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image:url(:/images/mDraw_UI-icon-HSymmetric.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:hover {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-HSymmetric-hover.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:pressed  {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-HSymmetric-click.png) 0;\n"
+" }\n"
+"\n"
+"")
+        self.btnVFlip.setText("")
         self.btnVFlip.setObjectName("btnVFlip")
         self.btnRollC = QtWidgets.QPushButton(Form)
-        self.btnRollC.setGeometry(QtCore.QRect(470, 20, 41, 41))
+        self.btnRollC.setGeometry(QtCore.QRect(490, 20, 60, 40))
+        self.btnRollC.setStyleSheet(" QPushButton {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image:url(:/images/mDraw_UI-icon-clockwise-rotation.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:hover {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-clockwise-rotation-hover.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:pressed  {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-clockwise-rotation-click.png) 0;\n"
+" }\n"
+"\n"
+"")
+        self.btnRollC.setText("")
         self.btnRollC.setObjectName("btnRollC")
         self.btnRollAC = QtWidgets.QPushButton(Form)
-        self.btnRollAC.setGeometry(QtCore.QRect(530, 20, 41, 41))
+        self.btnRollAC.setGeometry(QtCore.QRect(560, 20, 60, 40))
+        self.btnRollAC.setStyleSheet(" QPushButton {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image:url(:/images/mDraw_UI-icon-anticlockwise-rotation.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:hover {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-anticlockwise-rotation-hover.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:pressed  {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-anticlockwise-rotation-click.png) 0;\n"
+" }\n"
+"\n"
+"")
+        self.btnRollAC.setText("")
         self.btnRollAC.setObjectName("btnRollAC")
 
         self.retranslateUi(Form)
@@ -895,9 +963,5 @@ class Ui_Form(object):
         self.label_6.setText(_translate("Form", "height"))
         self.labelEstTime.setText(_translate("Form", "Time Left: 00:00:00"))
         self.labelMachineState.setText(_translate("Form", "IDLE"))
-        self.btnHFlip.setText(_translate("Form", "HFlip"))
-        self.btnVFlip.setText(_translate("Form", "HFlip"))
-        self.btnRollC.setText(_translate("Form", "HFlip"))
-        self.btnRollAC.setText(_translate("Form", "HFlip"))
 
 import images_rc

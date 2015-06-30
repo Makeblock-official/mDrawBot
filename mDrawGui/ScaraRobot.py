@@ -281,6 +281,9 @@ class Scara(QGraphicsItem):
         self.penUpPos = int(mStr)
         mStr = str(self.ui.penDownSpin.value())
         self.penDownPos = int(mStr)
+        value = int(self.ui.slideLaserPower.value())
+        laserpwm = value*255/100
+        self.laserPower = laserpwm
         
         while not self.q.empty():
             self.q.get()
@@ -394,7 +397,6 @@ class Scara(QGraphicsItem):
     def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
         cmd = "M4 %d\n" %(int(laserPower*rate))
-        self.laserPower = laserPower
         self.robotGoBusy()
         self.sendCmd(cmd)
     

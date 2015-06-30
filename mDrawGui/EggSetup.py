@@ -91,8 +91,8 @@ class Ui_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
         self.groupBox.setTitle(_translate("Form", "Eggbot Setups"))
-        self.label_3.setText(_translate("Form", "Stepper A Direction:"))
-        self.label_4.setText(_translate("Form", "Stepper B Direction:"))
+        self.label_3.setText(_translate("Form", "Motor A Direction:"))
+        self.label_4.setText(_translate("Form", "Motor B Direction:"))
         self.label_5.setText(_translate("Form", "ClockWise"))
         self.label_6.setText(_translate("Form", "Anti ClockWise"))
         self.btnOk.setText(_translate("Form", "Ok"))

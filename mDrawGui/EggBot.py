@@ -110,12 +110,12 @@ class EggBot(QGraphicsItem):
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
         
-        pTxt = self.scene.addText("Y")
+        pTxt = self.scene.addText("Latitude")
         cent = QPointF(self.origin[0]-10,self.origin[1]-10)
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
         
-        pTxt = self.scene.addText("X")
+        pTxt = self.scene.addText("Longitude")
         cent = QPointF(self.origin[0]+self.width,self.origin[1]+self.height)
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
@@ -245,7 +245,6 @@ class EggBot(QGraphicsItem):
     def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
         cmd = "M4 %d\n" %(int(laserPower*rate))
-        self.laserPower = laserPower
         self.robotState = BUSYING
         self.sendCmd(cmd)
     

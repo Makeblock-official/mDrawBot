@@ -89,7 +89,7 @@ mDraw = Target(
     # dest_base = "mDraw",
 
     # Icon resources:[(resource_id, path to .ico file), ...]
-    # icon_resources=[(1, r"mDraw.ico")]
+    icon_resources=[(1, r"mDraw.ico")],
 
     other_resources = [(RT_MANIFEST, 1, (manifest_template % dict(prog="mDraw", level="asInvoker")).encode("utf-8")),
     # for bitmap resources, the first 14 bytes must be skipped when reading the file:
@@ -156,10 +156,10 @@ py2exe_options = dict(
 
 setup(name="name",
       # console based executables
-      console=[mDraw],
+      console=[],
 
       # windows subsystem executables (no console)
-      windows=[],
+      windows=[mDraw],
 
       # py2exe options
       zipfile=None,

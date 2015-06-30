@@ -165,8 +165,15 @@ class XYBot(QGraphicsItem):
                 self.motoBDir = 0
             else:
                 self.motoBDir = 1
-            if "D" in msg:
+                
+            if msg.find("S")>-1:
                 self.speed = int(tmp[9][1:])
+            if msg.find("U")>-1:
+                self.penUpPos = int(tmp[10][1:])
+                self.ui.penUpSpin.setValue(self.penUpPos)
+            if msg.find("D")>-1:
+                self.penDownPos = int(tmp[11][1:])
+                self.ui.penDownSpin.setValue(self.penDownPos)
                 
             self.initRobotCanvas()
             self.robotState = IDLE
@@ -244,13 +251,17 @@ class XYBot(QGraphicsItem):
         self.moveThread.setDaemon(True)
         self.moveThread.start()
 
+    def robotGoBusy(self):
+        self.robotState = BUSYING
+        self.ui.labelMachineState.setText("BUSY")
+
     def G1(self,x,y,feedrate=0,auxdelay=None):
         if self.robotState != IDLE: return
         cmd = "G1 X%.2f Y%.2f" %(x,y)
         if auxdelay!=None:
             cmd += " A%d" %(auxdelay)
         cmd += '\n'
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
 
     def G28(self):
@@ -264,27 +275,35 @@ class XYBot(QGraphicsItem):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        self.robotState = BUSYING
+        self.robotGoBusy()
+        self.sendCmd(cmd)
+    
+    def M2(self):
+        if self.robotState != IDLE: return
+        posUp = int(self.ui.penUpSpin.value())
+        posDown = int(self.ui.penDownSpin.value())
+        cmd = "M2 U%d D%d\n" %(posUp,posDown)
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def M3(self,auxdelay): # aux delay
         if self.robotState != IDLE: return
         cmd = "M3 %d\n" %(auxdelay)
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
         cmd = "M4 %d\n" %(int(laserPower*rate))
-        self.laserPower = laserPower
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
 
     def M5(self):
         if self.robotState != IDLE: return
-        cmd = "M5 A%d B%d H%d W%d D%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.speed)
-        self.robotState = BUSYING
+        cmd = "M5 A%d B%d H%d W%d S%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.speed)
+        self.robotGoBusy()
         self.sendCmd(cmd)
+        self.robotSig.emit("toggleComPort")
 
     def M10(self): # read robot arm setup and init pos
         cmd = "M10\n"
@@ -341,11 +360,13 @@ class XYBot(QGraphicsItem):
     
     def printPic(self):
         #update pen servo position
-        #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
+        value = int(self.ui.slideLaserPower.value())
+        laserpwm = value*255/100
+        self.laserPower = laserpwm
         
         while not self.q.empty():
             self.q.get()

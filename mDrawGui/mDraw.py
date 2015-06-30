@@ -82,8 +82,6 @@ class MainUI(QWidget):
         self.ui.btnPenDown.clicked.connect(self.plotPenDown)
         
         # connect laser widget
-        self.ui.slideLaserPower.setEnabled(False)
-        self.ui.slideLaserDelay.setEnabled(False)
         self.ui.slideLaserPower.valueChanged.connect(self.laserValue)
         self.ui.slideLaserDelay.valueChanged.connect(self.laserDelay)
         self.ui.radioLaserMode.toggled.connect(self.laserMode)
@@ -129,6 +127,7 @@ class MainUI(QWidget):
         self.refreshThread.setDaemon(True)
         self.refreshThread.start()
 
+        self.ui.slideLaserDelay.setValue(25)
         
     def robotPrint(self):
         if not self.robot.printing:
@@ -222,7 +221,7 @@ class MainUI(QWidget):
                         self.robot.moveTo(pos)
                     except Exception as e:
                         pass
-                elif millisDiff>1000:
+                else:
                     self.firstClickMillis = int(round(time.time() * 1000))
                     
         else:
@@ -600,7 +599,7 @@ class MainUI(QWidget):
         self.updatePic()
         
         
-    def rollClockwise(self):
+    def rollAntiClockwise(self):
         if self.pic==None:
             return
         """
@@ -623,7 +622,7 @@ class MainUI(QWidget):
         self.updatePic()
         
         
-    def rollAntiClockwise(self):
+    def rollClockwise(self):
         if self.pic==None:
             return
         """
@@ -660,6 +659,8 @@ class MainUI(QWidget):
         value = int(self.ui.slideLaserPower.value())
         laserpwm = value*255/100
         self.ui.labelLaserPower.setText(str(value))
+        if self.ui.radioLaserMode.isChecked()==False:
+            return
         self.robot.M4(laserpwm)
         
     def laserDelay(self):
@@ -669,20 +670,14 @@ class MainUI(QWidget):
     
     def laserMode(self,txt=False):
         if txt==False:
-            if self.ui.radioLaserMode.isDown():
+            if self.ui.radioLaserMode.isChecked():
                 txt = "On"
             else:
                 txt = "Off"
         if txt=="Off":
-            self.ui.slideLaserPower.setEnabled(False)
-            self.ui.slideLaserDelay.setEnabled(False)
-            self.ui.slideLaserPower.setValue(0)
-            self.ui.slideLaserDelay.setValue(0)
-            self.robot.laserMode = False
+            self.robot.M4(0)
         else:
-            self.ui.slideLaserPower.setEnabled(True)
-            self.ui.slideLaserDelay.setEnabled(True)
-            self.robot.laserMode = True
+            self.laserValue()
     
     def tabWidgetChanged(self,i):
         ssTemplate = "background-color: rgb(247, 247, 247);border-image: url(:/images/model.png);"
@@ -691,6 +686,10 @@ class MainUI(QWidget):
                 self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "scara"))
             else:
                 self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "scara_laser"))
+        if i==1:
+            self.robot.laserMode = True
+        else:
+            self.robot.laserMode = False
    
     def uploadFirmware(self):
         robotType = str(self.ui.robotCombo.currentText())

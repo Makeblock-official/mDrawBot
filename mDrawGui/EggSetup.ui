@@ -60,7 +60,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper A Direction:</string>
+     <string>Motor A Direction:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -73,7 +73,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper B Direction:</string>
+     <string>Motor B Direction:</string>
     </property>
    </widget>
    <widget class="QLabel" name="motoA_CK">
