@@ -90,6 +90,7 @@ class WallRobot(QGraphicsItem):
         self.y = 0
         self.motoADir = 0
         self.motoBDir = 0
+        self.speed = 50
         self.q = queue.Queue()
         self.pXLine = None
         self.pYLine = None
@@ -166,6 +167,15 @@ class WallRobot(QGraphicsItem):
                 self.motoBDir = 0
             else:
                 self.motoBDir = 1
+            if msg.find("S")>-1:
+                self.speed = int(tmp[9][1:])
+            if msg.find("U")>-1:
+                self.penUpPos = int(tmp[10][1:])
+                self.ui.penUpSpin.setValue(self.penUpPos)
+            if msg.find("D")>-1:
+                self.penDownPos = int(tmp[11][1:])
+                self.ui.penDownSpin.setValue(self.penDownPos)
+            self.robotState = IDLE
             self.initRobotCanvas()
     
     def prepareMove(self,target,absolute=False):
@@ -203,20 +213,32 @@ class WallRobot(QGraphicsItem):
         self.moveThread = WorkInThread(self.moveStep)
         self.moveThread.setDaemon(True)
         self.moveThread.start()
-    
+        
+    def robotGoBusy(self):
+        self.robotState = BUSYING
+        self.ui.labelMachineState.setText("BUSY")
+        
     def M1(self,pos):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        self.robotState = BUSYING
+        self.robotGoBusy()
+        self.sendCmd(cmd)
+        
+    def M2(self):
+        if self.robotState != IDLE: return
+        posUp = int(self.ui.penUpSpin.value())
+        posDown = int(self.ui.penDownSpin.value())
+        cmd = "M2 U%d D%d\n" %(posUp,posDown)
+        self.robotGoBusy()
         self.sendCmd(cmd)
 
     def M5(self):
         if self.robotState != IDLE: return
-        cmd = "M5 A%d B%d H%d W%d S%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.motorSwitch)
-        self.robotState = BUSYING
+        cmd = "M5 A%d B%d H%d W%d S%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.speed)
+        self.robotGoBusy()
         self.sendCmd(cmd)
-    
+        self.robotSig.emit("toggleComPort")
 
     def G1(self,x,y,feedrate=0,auxdelay=None):
         if self.robotState != IDLE: return
@@ -224,7 +246,8 @@ class WallRobot(QGraphicsItem):
         if auxdelay!=None:
             cmd += " A%d" %(auxdelay)
         cmd += '\n'
-        self.robotState = BUSYING
+        #print(cmd)
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def G28(self):
@@ -286,10 +309,10 @@ class WallRobot(QGraphicsItem):
     
     def printPic(self):
         #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
         
         while not self.q.empty():
             self.q.get()

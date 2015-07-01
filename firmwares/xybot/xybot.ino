@@ -249,8 +249,6 @@ void parseRobotSetup(char * cmd)
       roboSetup.data.width = atoi(str+1);
     }else if(str[0]=='S'){
       roboSetup.data.speed = atoi(str+1);
-    }else if(str[0]=='D'){
-      roboSetup.data.speed = atoi(str+1);
     }
   }
   syncRobotSetup();
