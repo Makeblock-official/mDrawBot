@@ -20,7 +20,6 @@ union{
 }roboSetup;
 
 // arduino only handle A,B step mapping
-float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
 float tarX,tarY,tarZ; // target xyz position
 float curVecX,curVecY;
@@ -136,37 +135,38 @@ void updateHermitVector(float s)
 
 #define STEPS_PER_CIRCLE 3200 // 200*16
 #define DIAMETER 64.0 // wheel diameter mm
-#define WIDTH 141     // distance between wheel
+#define WIDTH 141 // distance between wheel
 #define STEP_PER_MM (STEPS_PER_CIRCLE/PI/DIAMETER)
 void prepareMove()
 {
-  int maxD,segs,i; 
+  int segs,i;
   unsigned long t0,t1;
-  float segInterval;
   float ang0,x0,y0;
   float ang,dLeft,dRight;
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);
-  float distanceMoved=0,distanceLast=0;
-  //Serial.print("distance=");Serial.println(distance);
+
+  tarD = atan2(dy,dx);
+  if(tarD>PI)
+  {
+    tarD-=(2*PI);
+  }
+  else if(tarD<-PI)
+  {
+      tarD+=(2*PI);
+  }
+
+  calcVector(curX,curY,tarX,tarY);
+  tarVecX = tmpVecX;  tarVecY = tmpVecY;
+ 
   if (distance < 0.001)
   {
     return;
   }
   if(distance > 20)
   {
-    // update new vector
-    calcVector(curX,curY,tarX,tarY);
-    curVecX = tmpVecX;  curVecY = tmpVecY;
-
-    // heading to correct direction 
-    tarD = atan2(dy,dx);
-    if(tarD>PI)
-    {
-      tarD-=(2*PI);
-    }
-    float dAng = tarD - curD; 
+    float dAng = tarD - curD;
     if(dAng>PI)
     {
       dAng-=(2*PI);
@@ -182,23 +182,19 @@ void prepareMove()
     Serial.print("dir:"); Serial.print((tarD)/PI*180);
     Serial.print(" "); Serial.print(dx);Serial.print(" "); Serial.print(dy);Serial.print(" "); Serial.println(dL);
     doMove();
-    curD = tarD;
     // move to targe xy position
     dStep = distance*STEP_PER_MM;
     tarA = curA+dStep;
     tarB = curB-dStep;
     Serial.print("dis:"); Serial.println(distance);
-    doMove();  
+    doMove();
   }
   else
   {
-    // update new vector
-    calcVector(curX,curY,tarX,tarY);
-    tarVecX = tmpVecX;  tarVecY = tmpVecY;
     segs = (int)distance+1;
     x0 = curX; y0=curY;
     Serial.print("Move:");Serial.print(curVecX);Serial.print(" ");Serial.print(curVecY);Serial.print(" ");Serial.print(tarVecX);Serial.print(" ");Serial.println(tarVecY);
-    ang0 = atan2(curVecY,curVecX); 
+    ang0 = atan2(curVecY,curVecX);
     if(ang0>PI) 
     {
       ang0-=(2*PI);
@@ -209,7 +205,7 @@ void prepareMove()
       // inverse to left right movement
       dx = hx-x0; dy = hy-y0;
       float dv = sqrt(dx*dx+dy*dy);
-      ang = atan2(dy,dx); 
+      ang = atan2(dy,dx);
       if(ang>PI)
       {
         ang-=(2*PI);
@@ -223,21 +219,26 @@ void prepareMove()
       {
         dw+=(2*PI);
       }
-      
       Serial.print(i);Serial.print("hermit ");Serial.print(hx);Serial.print(" ");Serial.print(hy);Serial.print(" ");Serial.print(dv);Serial.print(" ");Serial.print(dw/PI*180);
-      Serial.print(" ");Serial.println(dw/2*roboSetup.data.width);
       dLeft = (dv+dw/2*roboSetup.data.width)*STEP_PER_MM;
       dRight = (dv-dw/2*roboSetup.data.width)*STEP_PER_MM;
       Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
+      tarA = curA+dLeft;
+      tarB = curB-dRight;
+      doMove();
+      ang0 = ang;
+      x0=hx;y0=hy;
     }
   }
+  curD = tarD;
   curX = tarX;
   curY = tarY;
+  curVecX = tarVecX;  curVecY = tarVecY;
 }
 
 void initPosition()
 {
-  //servoPen.write(120);
+  servoPen.write(130);
   curX=0; curY=0;
   curA = 0;
   curB = 0;
@@ -261,11 +262,6 @@ void parseCordinate(char * cmd)
       tarY = atof(str+1);
     }else if(str[0]=='Z'){
       tarZ = atof(str+1);
-    }else if(str[0]=='F'){
-      float speed = atof(str+1);
-      tarSpd = speed/60; // mm/min -> mm/s
-    }else if(str[0]=='D'){ // vector direction
-      
     }
   }
   prepareMove();
@@ -294,8 +290,7 @@ void echoRobotSetup()
   Serial.print(roboSetup.data.width);Serial.print(' ');
   Serial.print(DIAMETER);Serial.print(' ');
   Serial.print(curX);Serial.print(' ');
-  Serial.print(curY);Serial.print(' ');
-  Serial.println(curD/PI*180);
+  Serial.println(curY);
 }
 
 void parsePen(char * cmd)
@@ -373,7 +368,7 @@ void parseMcode(char * cmd)
 void parseCmd(char * cmd)
 {
   if(cmd[0]=='G'){ // gcode
-    parseGcode(cmd+1);  
+    parseGcode(cmd+1);
     Serial.println("OK");
   }else if(cmd[0]=='M'){ // mcode
     parseMcode(cmd+1);
@@ -405,5 +400,3 @@ void loop() {
     }
   }
 }
-
-
