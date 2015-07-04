@@ -306,10 +306,10 @@ class EggBot(QGraphicsItem):
     def printPic(self):
         #update pen servo position
         #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
         
         while not self.q.empty():
             self.q.get()

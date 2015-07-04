@@ -30,6 +30,7 @@ class RobotSetupUI(QWidget):
     def updateUI(self):
         self.ui.lineWidth.setText(str(self.robot.carWidth))
         self.ui.lineScale.setText(str(self.robot.scaler))
+        self.ui.radioHermit.setChecked(self.robot.useHermit)
         if self.robot.motoADir == 0:
             self.ui.motoA_CK.setStyleSheet(motorSelectedStyle)
             self.ui.motoA_CCK.setStyleSheet("")
@@ -46,6 +47,7 @@ class RobotSetupUI(QWidget):
     def applySetup(self):
         self.robot.scaler = float(str(self.ui.lineScale.text()))
         self.robot.carWidth = float(str(self.ui.lineWidth.text()))
+        self.robot.useHermit = int(self.ui.radioHermit.isChecked())
         self.robot.M5()
         self.hide()
         self.robot.initRobotCanvas()
@@ -80,12 +82,14 @@ class CarBot(QGraphicsItem):
         self.scaler = 0.5
         self.motoADir = 0
         self.motoBDir = 0
+        self.useHermit = 1
         self.path = None
         self.pathPtr = None
         self.q = queue.Queue()
         self.moving = False
         self.robotCent = None
         self.printing = False
+        self.pausing = False
         self.lastx = 9999
         self.lasty = 9999
         self.ui.label.setText("X(mm)")
@@ -157,54 +161,75 @@ class CarBot(QGraphicsItem):
         self.dir = atan(dy/dx)/pi*180
         if dx<0:
             self.dir+=180
-        print("dir",self.dir,dx,dy)
+        #print("dir",self.dir,dx,dy)
         distance = sqrt(dx*dx+dy*dy)
         maxD = max(abs(dx),abs(dy))*0.5
         maxStep = ceil(maxD)
         self.deltaStep = (dx/maxStep,dy/maxStep)
         self.maxStep = maxStep
-        print("move to",target,maxStep)
+        #print("move to",target,maxStep)
 
     def moveTo(self,pos):
         if self.moving:
             self.moving = False
             self.moveThread.join()
         self.prepareMove(pos,True)
-        self.G1(pos.x()/self.scaler,-pos.y()/self.scaler)
+        pos=pos/self.scaler
+        self.G1(pos.x(),-pos.y())
         self.moving = True
         self.moveThread = WorkInThread(self.moveStep)
         self.moveThread.setDaemon(True)
         self.moveThread.start()
-
+    
+    def parseEcho(self,msg):
+        if "M10" in msg:
+            tmp = msg.split()
+            # todo: add firmware version echo
+            if tmp[1]!="MCAR": return
+            self.carWidth = int(tmp[2])
+            if len(tmp)>6:
+                self.useHermit = int(tmp[6][1])
+                self.penUpPos = int(tmp[7][1:])
+                self.ui.penUpSpin.setValue(self.penUpPos)
+                self.penDownPos = int(tmp[8][1:])
+                self.ui.penDownSpin.setValue(self.penDownPos)
+            self.initRobotCanvas()
+            self.robotState = IDLE
+    
+    def robotGoBusy(self):
+        self.robotState = BUSYING
+        self.ui.labelMachineState.setText("BUSY")
+    
     def G1(self,x,y,feedrate=0,direction=None):
         if self.robotState != IDLE: return
         cmd = "G1 X%.2f Y%.2f" %(x,y)
         if direction!=None:
             cmd += " D%d" %(direction)
         cmd += '\n'
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
-    
-    def parseEcho(self,msg):
-        if "M10" in msg:
-            tmp = msg.split()
-            if tmp[1]!="MCAR": return
-            self.carWidth = int(tmp[2])
-            self.initRobotCanvas()
-            self.robotState = IDLE
-    
+             
     def M1(self,pos):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        self.robotState = BUSYING
+        self.robotGoBusy()
         self.sendCmd(cmd)
-    
+        
+    def M2(self):
+        if self.robotState != IDLE: return
+        posUp = int(self.ui.penUpSpin.value())
+        posDown = int(self.ui.penDownSpin.value())
+        cmd = "M2 U%d D%d\n" %(posUp,posDown)
+        self.robotGoBusy()
+        self.sendCmd(cmd)
+
     def M5(self):
         if self.robotState != IDLE: return
-        cmd = "M5 W%d\n" %(self.carWidth)
-        self.robotState = BUSYING
+        cmd = "M5 W%d H%d\n" %(self.carWidth,self.useHermit)
+        self.robotGoBusy()
         self.sendCmd(cmd)
+        self.robotSig.emit("toggleComPort")
     
     def G28(self):
         if self.moving:
@@ -236,8 +261,9 @@ class CarBot(QGraphicsItem):
                 if self.printing == False:
                     return
                 self.G1(x,y)
-                dx = x - self.x
-                dy = y - self.y
+                # update canvas content
+                dx = x - self.x/self.scaler
+                dy = y - self.y/self.scaler
                 if dx==0:
                     if dy>0:
                         self.dir = 90
@@ -247,8 +273,8 @@ class CarBot(QGraphicsItem):
                     self.dir = atan(dy/dx)/pi*180
                 if dx<0:
                     self.dir+=180
-                self.x = x
-                self.y = y
+                self.x = x*self.scaler
+                self.y = y*self.scaler
                 self.q.get()
                 if i == 0:
                     self.M1(self.penDownPos)
@@ -268,10 +294,10 @@ class CarBot(QGraphicsItem):
         
     def printPic(self):
         #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
         
         while not self.q.empty():
             self.q.get()

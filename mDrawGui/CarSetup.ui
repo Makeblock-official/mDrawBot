@@ -206,7 +206,7 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>70</y>
+      <y>60</y>
       <width>151</width>
       <height>16</height>
      </rect>
@@ -219,7 +219,7 @@
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>70</y>
+      <y>60</y>
       <width>113</width>
       <height>20</height>
      </rect>
@@ -246,6 +246,19 @@
       <width>113</width>
       <height>20</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioHermit">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>281</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Use Hermit interpolation Algorithm</string>
     </property>
    </widget>
   </widget>

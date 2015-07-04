@@ -1,5 +1,9 @@
 <RCC>
   <qresource>
+    <file>images/mDraw_UI-icon-help_info.png</file>
+    <file>images/mDraw_UI-icon-help_info-click.png</file>
+    <file>images/mDraw_UI-icon-help_info-hover.png</file>
+    <file>images/xy_setup.png</file>
     <file>images/scara_laser.png</file>
     <file>images/mDraw-info-icon.png</file>
     <file>images/mDraw-info-icon-click.png</file>

@@ -845,7 +845,7 @@ class Ui_Form(object):
 "background-color: rgb(249, 249, 249);")
         self.labelMachineState.setObjectName("labelMachineState")
         self.btnHFlip = QtWidgets.QPushButton(Form)
-        self.btnHFlip.setGeometry(QtCore.QRect(350, 20, 60, 40))
+        self.btnHFlip.setGeometry(QtCore.QRect(340, 20, 60, 40))
         self.btnHFlip.setStyleSheet(" QPushButton {\n"
 "    background-color: rgb(249, 249, 249);\n"
 "    border-image:url(:/images/mDraw_UI-icon-VSymmetric.png) 0;\n"
@@ -865,7 +865,7 @@ class Ui_Form(object):
         self.btnHFlip.setText("")
         self.btnHFlip.setObjectName("btnHFlip")
         self.btnVFlip = QtWidgets.QPushButton(Form)
-        self.btnVFlip.setGeometry(QtCore.QRect(420, 20, 60, 40))
+        self.btnVFlip.setGeometry(QtCore.QRect(410, 20, 60, 40))
         self.btnVFlip.setStyleSheet(" QPushButton {\n"
 "    background-color: rgb(249, 249, 249);\n"
 "    border-image:url(:/images/mDraw_UI-icon-HSymmetric.png) 0;\n"
@@ -885,7 +885,7 @@ class Ui_Form(object):
         self.btnVFlip.setText("")
         self.btnVFlip.setObjectName("btnVFlip")
         self.btnRollC = QtWidgets.QPushButton(Form)
-        self.btnRollC.setGeometry(QtCore.QRect(490, 20, 60, 40))
+        self.btnRollC.setGeometry(QtCore.QRect(480, 20, 60, 40))
         self.btnRollC.setStyleSheet(" QPushButton {\n"
 "    background-color: rgb(249, 249, 249);\n"
 "    border-image:url(:/images/mDraw_UI-icon-clockwise-rotation.png) 0;\n"
@@ -905,7 +905,7 @@ class Ui_Form(object):
         self.btnRollC.setText("")
         self.btnRollC.setObjectName("btnRollC")
         self.btnRollAC = QtWidgets.QPushButton(Form)
-        self.btnRollAC.setGeometry(QtCore.QRect(560, 20, 60, 40))
+        self.btnRollAC.setGeometry(QtCore.QRect(550, 20, 60, 40))
         self.btnRollAC.setStyleSheet(" QPushButton {\n"
 "    background-color: rgb(249, 249, 249);\n"
 "    border-image:url(:/images/mDraw_UI-icon-anticlockwise-rotation.png) 0;\n"
@@ -924,6 +924,26 @@ class Ui_Form(object):
 "")
         self.btnRollAC.setText("")
         self.btnRollAC.setObjectName("btnRollAC")
+        self.btnHelp = QtWidgets.QPushButton(Form)
+        self.btnHelp.setGeometry(QtCore.QRect(620, 20, 60, 40))
+        self.btnHelp.setStyleSheet(" QPushButton {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image:url(:/images/mDraw_UI-icon-help_info.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:hover {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-help_info-hover.png) 0;\n"
+" }\n"
+"\n"
+" QPushButton:pressed  {\n"
+"    background-color: rgb(249, 249, 249);\n"
+"    border-image: url(:/images/mDraw_UI-icon-help_info-click.png) 0;\n"
+" }\n"
+"\n"
+"")
+        self.btnHelp.setText("")
+        self.btnHelp.setObjectName("btnHelp")
 
         self.retranslateUi(Form)
         self.tabWidget.setCurrentIndex(0)

@@ -69,6 +69,7 @@ class MainUI(QWidget):
         self.ui.btnUpdateFirmware.clicked.connect(self.uploadFirmware)
         self.ui.btnHome.clicked.connect(self.robotGoHome)
         self.ui.btnSavePos.clicked.connect(self.savePenPos)
+        self.ui.btnHelp.clicked.connect(self.linkToFAQ)
         
         self.ui.btnHFlip.clicked.connect(self.xReflect)
         self.ui.btnVFlip.clicked.connect(self.yReflect)
@@ -134,8 +135,9 @@ class MainUI(QWidget):
             self.ui.progressBar.setValue(0)
             self.robot.printPic()
             self.ui.progressBar.setVisible(True)
-            self.ui.labelEstTime.setVisible(True)
-            self.ui.labelEstTime.setText("TotalTime %s" %(self.pic.pathLen))
+            """ todo: add precise time estimation """
+            #self.ui.labelEstTime.setVisible(True)
+            #self.ui.labelEstTime.setText("TotalTime %s" %(self.pic.pathLen))
             self.switchPrintButton("Pause")
         else:
             if self.robot.pausing == False:
@@ -220,6 +222,7 @@ class MainUI(QWidget):
                     try:
                         self.robot.moveTo(pos)
                     except Exception as e:
+                        print(e)
                         pass
                 else:
                     self.firstClickMillis = int(round(time.time() * 1000))

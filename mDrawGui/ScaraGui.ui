@@ -1550,7 +1550,7 @@ background-color: rgb(249, 249, 249);</string>
   <widget class="QPushButton" name="btnHFlip">
    <property name="geometry">
     <rect>
-     <x>350</x>
+     <x>340</x>
      <y>20</y>
      <width>60</width>
      <height>40</height>
@@ -1581,7 +1581,7 @@ background-color: rgb(249, 249, 249);</string>
   <widget class="QPushButton" name="btnVFlip">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>410</x>
      <y>20</y>
      <width>60</width>
      <height>40</height>
@@ -1612,7 +1612,7 @@ background-color: rgb(249, 249, 249);</string>
   <widget class="QPushButton" name="btnRollC">
    <property name="geometry">
     <rect>
-     <x>490</x>
+     <x>480</x>
      <y>20</y>
      <width>60</width>
      <height>40</height>
@@ -1643,7 +1643,7 @@ background-color: rgb(249, 249, 249);</string>
   <widget class="QPushButton" name="btnRollAC">
    <property name="geometry">
     <rect>
-     <x>560</x>
+     <x>550</x>
      <y>20</y>
      <width>60</width>
      <height>40</height>
@@ -1663,6 +1663,37 @@ background-color: rgb(249, 249, 249);</string>
  QPushButton:pressed  {
 	background-color: rgb(249, 249, 249);
 	border-image: url(:/images/mDraw_UI-icon-anticlockwise-rotation-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnHelp">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-help_info.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-help_info-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-help_info-click.png) 0;
  }
 
 </string>
