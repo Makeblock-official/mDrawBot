@@ -6,9 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>310</height>
+    <width>1053</width>
+    <height>500</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1053</width>
+    <height>500</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1053</width>
+    <height>500</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -92,7 +110,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper A Directoin:</string>
+     <string>Motor A Directoin:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -105,7 +123,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper B Directoin:</string>
+     <string>Motor B Directoin:</string>
     </property>
    </widget>
    <widget class="QLabel" name="motoA_CK">
@@ -254,7 +272,7 @@
   <widget class="QPushButton" name="btnOk">
    <property name="geometry">
     <rect>
-     <x>290</x>
+     <x>300</x>
      <y>280</y>
      <width>91</width>
      <height>23</height>
@@ -262,6 +280,22 @@
    </property>
    <property name="text">
     <string>Ok</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>30</y>
+     <width>651</width>
+     <height>431</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="images.qrc">:/images/mScara_setup.png</pixmap>
    </property>
   </widget>
  </widget>

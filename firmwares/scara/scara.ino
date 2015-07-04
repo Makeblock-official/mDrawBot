@@ -25,6 +25,8 @@ union{
       int arm0len;
       int arm1len;
       int speed;
+      int penUpPos;
+      int penDownPos;
     }data;
     char buf[64];
 }roboSetup;
@@ -297,6 +299,8 @@ void parseGcode(char * cmd)
     case 28: // home
       stepAuxDelay = 0;
       tarX=-(roboSetup.data.arm0len+roboSetup.data.arm1len-0.01); tarY=0;
+      servoPen.write(roboSetup.data.penUpPos);
+      laser.run(0);
       prepareMove();
       break; 
   }
@@ -311,7 +315,9 @@ void echoArmSetup(char * cmd)
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
   Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
-  Serial.print(" D");Serial.println((int)roboSetup.data.speed);
+  Serial.print(" S");Serial.print((int)roboSetup.data.speed);
+  Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
+  Serial.print(" D");Serial.println((int)roboSetup.data.penDownPos);
 }
 
 void parseRobotSetup(char * cmd)
@@ -323,24 +329,40 @@ void parseRobotSetup(char * cmd)
     str = strtok_r(0, " ", &tmp);
     if(str[0]=='A'){
       roboSetup.data.motoADir = atoi(str+1);
-      Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
+      //Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
     }else if(str[0]=='B'){
       roboSetup.data.motoBDir = atoi(str+1);
-      Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
+      //Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
     }else if(str[0]=='M'){
       roboSetup.data.arm0len = atoi(str+1);
-      Serial.print("ARML1 ");Serial.print(roboSetup.data.arm0len);
+      //Serial.print("ARML1 ");Serial.print(roboSetup.data.arm0len);
     }else if(str[0]=='N'){
       roboSetup.data.arm1len = atoi(str+1);
-      Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
+      //Serial.print("ARML2 ");Serial.print(roboSetup.data.arm1len);
     }else if(str[0]=='D'){
       roboSetup.data.speed = atoi(str+1);
-      Serial.print("Speed ");Serial.print(roboSetup.data.speed);
+      //Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
   syncRobotSetup();
 }
 
+void parsePenPosSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='U'){
+      roboSetup.data.penUpPos = atoi(str+1);
+    }else if(str[0]=='D'){
+      roboSetup.data.penDownPos = atoi(str+1);    
+    }
+  }
+  Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
+  syncRobotSetup();
+}
 
 void parseMcode(char * cmd)
 {
@@ -350,8 +372,8 @@ void parseMcode(char * cmd)
     case 1:
       parseServo(cmd);
       break;
-    case 2:
-    
+    case 2: // set pen position
+      parsePenPosSetup(cmd);
       break;
     case 3:
       parseAuxDelay(cmd);
@@ -392,16 +414,18 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"SCARA3",6)!=0){
+  if(strncmp(roboSetup.data.name,"SCARA4",6)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"SCARA3",6);
+    memcpy(roboSetup.data.name,"SCARA4",6);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
     roboSetup.data.arm0len = ARML1;
     roboSetup.data.arm1len = ARML2;
     roboSetup.data.speed = 80;
+    roboSetup.data.penUpPos = 160;
+    roboSetup.data.penDownPos = 90;
     syncRobotSetup();
   }
   // init motor direction
@@ -434,7 +458,7 @@ void setup() {
   Serial.begin(115200);
   initRobotSetup();
   servoPen.attach(servopin);
-  servoPen.write(10);
+  servoPen.write(roboSetup.data.penUpPos);
   initPosition();
 }
 

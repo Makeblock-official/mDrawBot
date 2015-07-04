@@ -6,9 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>310</height>
+    <width>990</width>
+    <height>480</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>990</width>
+    <height>480</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>990</width>
+    <height>480</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -88,7 +106,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper A Directoin:</string>
+     <string>Motor A Directoin:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_4">
@@ -101,7 +119,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stepper B Directoin:</string>
+     <string>Motor B Directoin:</string>
     </property>
    </widget>
    <widget class="QLabel" name="motoA_CK">
@@ -252,6 +270,22 @@
    </property>
    <property name="text">
     <string>Ok</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>10</y>
+     <width>581</width>
+     <height>471</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="images.qrc">:/images/mSpider_setup.png</pixmap>
    </property>
   </widget>
  </widget>

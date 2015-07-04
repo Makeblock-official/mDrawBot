@@ -1,19 +1,17 @@
 import sys
 import SerialCom
 import threading
-import Queue
+import queue
 import time
 from ScaraGui import *
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
+from PyQt5.QtGui import*
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from RobotUtils import *
 from math import *
 import SpiderSetup
 
-IDLE = 0
-BUSYING = 1
-motorSelectedStyle = "border: 1px solid rgb(67,67,67);\r\nborder-radius: 4px;\r\n"
-
-class RobotSetupUI(QtGui.QWidget):
+class RobotSetupUI(QWidget):
     def __init__(self,uidialog,robot):
         super(RobotSetupUI, self).__init__()
         self.ui = uidialog()
@@ -73,16 +71,7 @@ class RobotSetupUI(QtGui.QWidget):
         self.robot.motoBDir = 1
         self.updateUI()
 
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
-
-class WallRobot(QtGui.QGraphicsItem):
+class WallRobot(QGraphicsItem):
     
     def __init__(self, scene, ui, parent=None):
         super(WallRobot, self).__init__(parent)
@@ -101,7 +90,8 @@ class WallRobot(QtGui.QGraphicsItem):
         self.y = 0
         self.motoADir = 0
         self.motoBDir = 0
-        self.q = Queue.Queue()
+        self.speed = 50
+        self.q = queue.Queue()
         self.pXLine = None
         self.pYLine = None
         self.moveList = None
@@ -177,6 +167,15 @@ class WallRobot(QtGui.QGraphicsItem):
                 self.motoBDir = 0
             else:
                 self.motoBDir = 1
+            if msg.find("S")>-1:
+                self.speed = int(tmp[9][1:])
+            if msg.find("U")>-1:
+                self.penUpPos = int(tmp[10][1:])
+                self.ui.penUpSpin.setValue(self.penUpPos)
+            if msg.find("D")>-1:
+                self.penDownPos = int(tmp[11][1:])
+                self.ui.penDownSpin.setValue(self.penDownPos)
+            self.robotState = IDLE
             self.initRobotCanvas()
     
     def prepareMove(self,target,absolute=False):
@@ -191,7 +190,7 @@ class WallRobot(QtGui.QGraphicsItem):
         maxStep = ceil(maxD)
         self.deltaStep = (dx/maxStep,dy/maxStep)
         self.maxStep = maxStep
-        print "move to",target,maxStep
+        print("move to",target,maxStep)
         
     def moveStep(self):
         while True:
@@ -214,21 +213,32 @@ class WallRobot(QtGui.QGraphicsItem):
         self.moveThread = WorkInThread(self.moveStep)
         self.moveThread.setDaemon(True)
         self.moveThread.start()
-    
+        
+    def robotGoBusy(self):
+        self.robotState = BUSYING
+        self.ui.labelMachineState.setText("BUSY")
+        
     def M1(self,pos):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        print cmd
-        self.robotState = BUSYING
+        self.robotGoBusy()
+        self.sendCmd(cmd)
+        
+    def M2(self):
+        if self.robotState != IDLE: return
+        posUp = int(self.ui.penUpSpin.value())
+        posDown = int(self.ui.penDownSpin.value())
+        cmd = "M2 U%d D%d\n" %(posUp,posDown)
+        self.robotGoBusy()
         self.sendCmd(cmd)
 
     def M5(self):
         if self.robotState != IDLE: return
-        cmd = "M5 A%d B%d H%d W%d S%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.motorSwitch)
-        self.robotState = BUSYING
+        cmd = "M5 A%d B%d H%d W%d S%d\n" %(self.motoADir,self.motoBDir,self.height,self.width,self.speed)
+        self.robotGoBusy()
         self.sendCmd(cmd)
-    
+        self.robotSig.emit("toggleComPort")
 
     def G1(self,x,y,feedrate=0,auxdelay=None):
         if self.robotState != IDLE: return
@@ -236,8 +246,8 @@ class WallRobot(QtGui.QGraphicsItem):
         if auxdelay!=None:
             cmd += " A%d" %(auxdelay)
         cmd += '\n'
-        print cmd
-        self.robotState = BUSYING
+        #print(cmd)
+        self.robotGoBusy()
         self.sendCmd(cmd)
     
     def G28(self):
@@ -262,7 +272,6 @@ class WallRobot(QtGui.QGraphicsItem):
                 p = move[i]
                 x=(p[0]-self.robotCent[0])/self.scaler
                 y=-(p[1]-self.robotCent[1])/self.scaler
-                print "goto",x,y
                 try:
                     if self.printing == False:
                         return
@@ -300,10 +309,10 @@ class WallRobot(QtGui.QGraphicsItem):
     
     def printPic(self):
         #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
         
         while not self.q.empty():
             self.q.get()

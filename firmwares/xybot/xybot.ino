@@ -10,10 +10,12 @@ static union{
       char name[8];
       unsigned char motoADir;
       unsigned char motoBDir;
-      int8_t motorSwitch;
+      unsigned char motorSwitch;
       int height;
       int width;
       int speed;
+      int penUpPos;
+      int penDownPos;
     }data;
     char buf[64];
 }roboSetup;
@@ -23,8 +25,7 @@ float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
 float tarX,tarY,tarZ; // target xyz position
 // step value
-long curA,curB;
-long tarA,tarB;
+int tarA,tarB,posA,posB; // target stepper position
 int8_t motorAfw,motorAbk;
 int8_t motorBfw,motorBbk;
 
@@ -44,7 +45,7 @@ Servo servoPen;
 /************** motor movements ******************/
 void stepperMoveA(int dir)
 {
-  //Serial.printf("stepper A %d\n",dir);
+  //Serial.print('A');Serial.println(dir);
   if(dir>0){
     stpA.dWrite1(LOW);
   }else{
@@ -56,7 +57,7 @@ void stepperMoveA(int dir)
 
 void stepperMoveB(int dir)
 {
-  //Serial.printf("stepper B %d\n",dir);
+  //Serial.print('B');Serial.println(dir);
   if(dir>0){
     stpB.dWrite1(LOW);
   }else{
@@ -84,41 +85,34 @@ void doMove()
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
   int d;
-  dA = tarA - curA;
-  dB = tarB - curB;
+  dA = tarA - posA;
+  dB = tarB - posB;
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
+  //Serial.printf("target: %d %d\n",tarA,tarB);
   //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
   //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
-  for(int i=0;i<maxD;i++){
-    //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
+  for(int i=0;(posA!=tarA)||(posB!=tarB);i++){                         // Robbo1 2015/6/8 Changed - change loop terminate test to test for moving not finished rather than a preset amount of moves
+    //Serial.printf("step %d A:%d B;%d tar:%d %d\n",i,posA,posB,tarA,tarB);
     // move A
-    if(curA!=tarA){
+    if(posA!=tarA){
       cntA+=stepA;
       if(cntA>=1){
         d = dA>0?motorAfw:motorAbk;
-        if(roboSetup.data.motorSwitch){
-          stepperMoveA(d);
-        }else{
-          stepperMoveB(d);
-        }
+        posA+=(dA>0?1:-1);
+        stepperMoveA(d);
         cntA-=1;
-        curA+=d;
       }
     }
     // move B
-    if(curB!=tarB){
+    if(posB!=tarB){
       cntB+=stepB;
       if(cntB>=1){
         d = dB>0?motorBfw:motorBbk;
-        if(roboSetup.data.motorSwitch){
-          stepperMoveB(d);
-        }else{
-          stepperMoveA(d);
-        }
+        posB+=(dB>0?1:-1);
+        stepperMoveB(d);
         cntB-=1;
-        curB+=d;
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
@@ -128,8 +122,8 @@ void doMove()
     }
   }
   //Serial.printf("finally %d A:%d B;%d\n",maxD,posA,posB);
-  curA = tarA;
-  curB = tarB;
+  posA = tarA;
+  posB = tarB;
 }
 
 /******** mapping xy position to steps ******/
@@ -161,15 +155,15 @@ void goHome()
 {
   // stop on either endstop touches
   while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
-    stepperMoveB(motorBfw);
+    stepperMoveB(-motorBfw);
     delayMicroseconds(stepdelay_min);
   }
   while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
-    stepperMoveA(motorAfw);
+    stepperMoveA(-motorAfw);
     delayMicroseconds(stepdelay_min);
   }
-  curA = 0;
-  curB = 0;
+  posA = 0;
+  posB = 0;
   curX = 0;
   curY = 0;
 }
@@ -177,8 +171,7 @@ void goHome()
 void initPosition()
 {
   curX=0; curY=0;
-  curA = 0;
-  curB = 0;
+  posA = 0;posB = 0;
 }
 
 /************** calculate movements ******************/
@@ -191,13 +184,10 @@ void parseCordinate(char * cmd)
   tarY = curY;
   while(str!=NULL){
     str = strtok_r(0, " ", &tmp);
-    //Serial.printf("%s;",str);
     if(str[0]=='X'){
       tarX = atof(str+1);
-      //Serial.print("tarX ");Serial.print(tarX);
     }else if(str[0]=='Y'){
       tarY = atof(str+1);
-      //Serial.print("tarY ");Serial.print(tarY);
     }else if(str[0]=='Z'){
       tarZ = atof(str+1);
     }else if(str[0]=='F'){
@@ -207,7 +197,6 @@ void parseCordinate(char * cmd)
       stepAuxDelay = atoi(str+1);
     }
   }
-  //Serial.print("G1 ");Serial.print(tarX);Serial.print(" ");Serial.println(tarY);
   prepareMove();
 }
 
@@ -220,8 +209,10 @@ void echoRobotSetup()
   Serial.print(curY);Serial.print(' ');
   Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
   Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
-  Serial.print(" S");Serial.print((int)roboSetup.data.motorSwitch);
-  Serial.print(" D");Serial.println((int)roboSetup.data.speed);
+  Serial.print(" H");Serial.print((int)roboSetup.data.motorSwitch);
+  Serial.print(" S");Serial.print((int)roboSetup.data.speed);
+  Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
+  Serial.print(" D");Serial.println((int)roboSetup.data.penDownPos);
 }
 
 void echoEndStop()
@@ -250,22 +241,14 @@ void parseRobotSetup(char * cmd)
     str = strtok_r(0, " ", &tmp);
     if(str[0]=='A'){
       roboSetup.data.motoADir = atoi(str+1);
-      Serial.print("motorADir ");Serial.print(roboSetup.data.motoADir);
     }else if(str[0]=='B'){
       roboSetup.data.motoBDir = atoi(str+1);
-      Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
     }else if(str[0]=='H'){
       roboSetup.data.height = atoi(str+1);
-      Serial.print("Height ");Serial.print(roboSetup.data.height);
     }else if(str[0]=='W'){
       roboSetup.data.width = atoi(str+1);
-      Serial.print("Width ");Serial.print(roboSetup.data.width);
     }else if(str[0]=='S'){
-      roboSetup.data.motorSwitch = atoi(str+1);
-      Serial.print("Switch ");Serial.print(roboSetup.data.motorSwitch);
-    }else if(str[0]=='D'){
       roboSetup.data.speed = atoi(str+1);
-      Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
   syncRobotSetup();
@@ -294,6 +277,23 @@ void parsePen(char * cmd)
   servoPen.write(pos);
 }
 
+void parsePenPosSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='U'){
+      roboSetup.data.penUpPos = atoi(str+1);
+    }else if(str[0]=='D'){
+      roboSetup.data.penDownPos = atoi(str+1);    
+    }
+  }
+  //Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
+  syncRobotSetup();
+}
+
 void parseMcode(char * cmd)
 {
   int code;
@@ -301,6 +301,9 @@ void parseMcode(char * cmd)
   switch(code){
     case 1:
       parsePen(cmd);
+      break;
+    case 2: // set pen position
+      parsePenPosSetup(cmd);
       break;
     case 3:
       parseAuxDelay(cmd);
@@ -358,30 +361,34 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"XY3",3)!=0){
+  if(strncmp(roboSetup.data.name,"XY4",3)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"XY3",3);
+    memcpy(roboSetup.data.name,"XY4",3);
     // default connection move inversely
-    roboSetup.data.motoADir = 1;
-    roboSetup.data.motoBDir = 1;
+    roboSetup.data.motoADir = 0;
+    roboSetup.data.motoBDir = 0;
     roboSetup.data.width = WIDTH;
     roboSetup.data.height = HEIGHT;
     roboSetup.data.motorSwitch = 0;
     roboSetup.data.speed = 80;
+    roboSetup.data.penUpPos = 160;
+    roboSetup.data.penDownPos = 90;
     syncRobotSetup();
   }
   // init motor direction
+  // yzj, match to standard connection of xy
+  // A = x, B = y
   if(roboSetup.data.motoADir==0){
-    motorAfw=1;motorAbk=-1;
-  }else{
     motorAfw=-1;motorAbk=1;
+  }else{
+    motorAfw=1;motorAbk=-1;
   }
   if(roboSetup.data.motoBDir==0){
-    motorBfw=1;motorBbk=-1;
-  }else{
     motorBfw=-1;motorBbk=1;
+  }else{
+    motorBfw=1;motorBbk=-1;
   }
   int spd = 100 - roboSetup.data.speed;
   stepdelay_min = spd*10;
@@ -399,21 +406,26 @@ void setup() {
   initRobotSetup();
   initPosition();
   servoPen.attach(servopin);
+  delay(100);
+  servoPen.write(roboSetup.data.penUpPos);
+  laser.run(0);
 }
 
 char buf[64];
 int8_t bufindex;
-char buf2[64];
-char bufindex2;
 
 void loop() {
   if(Serial.available()){
     char c = Serial.read();
-    buf[bufindex++]=c;
+    buf[bufindex++]=c; 
     if(c=='\n'){
+      buf[bufindex]='\0';              // Robbo1 2015/6/8 Add     - Null terminate the string - Essential for first use of 'buf' and good programming practice
       parseCmd(buf);
       memset(buf,0,64);
       bufindex = 0;
+    }
+    if(bufindex>=64){
+      bufindex=0;
     }
   }
   /*

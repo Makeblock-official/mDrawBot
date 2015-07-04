@@ -4,35 +4,38 @@ import sys
 import serial
 import platform
 import threading
-import time
-import platform
 
-try:
-    import _winreg
-except:
-    pass
-
-
+# http://stackoverflow.com/questions/12090503/listing-available-com-ports-with-python
 def serialList():
-    """
-        Retrieve a list of serial ports found in the system.
-    :param forAutoDetect: if true then only the USB serial ports are listed. Else all ports are listed.
-    :return: A list of strings where each string is a serial port.
-    """
-    baselist=[]
-    if platform.system() == "Windows":
-        try:
-            key=_winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,"HARDWARE\\DEVICEMAP\\SERIALCOMM")
-            i=0
-            while True:
-                values = _winreg.EnumValue(key, i)
-                baselist+=[values[1]]
-                i+=1
-        except:
-            pass
+    """Lists serial ports
 
-    baselist = baselist + glob.glob('/dev/ttyUSB*') + glob.glob('/dev/ttyACM*') + glob.glob("/dev/cu.*") + glob.glob("/dev/tty.usb*") + glob.glob("/dev/rfcomm*") + glob.glob('/dev/serial/by-id/*')
-    return baselist
+    :raises EnvironmentError:
+        On unsupported or unknown platforms
+    :returns:
+        A list of available serial ports
+    """
+    if sys.platform.startswith('win'):
+        ports = ['COM' + str(i + 1) for i in range(256)]
+
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this is to exclude your current terminal "/dev/tty"
+        ports = glob.glob('/dev/tty[A-Za-z]*')
+
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/tty.*')
+
+    else:
+        raise EnvironmentError('Unsupported platform')
+
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
 
 class serialRead(threading.Thread):
     def __init__(self,ser,cb):
@@ -43,7 +46,7 @@ class serialRead(threading.Thread):
     
     def run(self):
         while self.running:
-            l = self.ser.readline()
+            l = self.ser.readline().decode('utf-8')
             self.cb(l)
 
 class serialCom():
@@ -53,12 +56,6 @@ class serialCom():
         return
     
     def connect(self,port,baud=115200):
-        if "Linux" in platform.system():
-            connection = serial.serial_for_url(port, baud, timeout=2, rtscts=True)
-            time.sleep(0.1)
-            connection.close()
-            time.sleep(2)
-
         self.ser = serial.Serial(port, baud)
         self.rxth = serialRead(self.ser,self.rxcb)
         self.rxth.setDaemon(True)
@@ -74,8 +71,7 @@ class serialCom():
     def send(self,msg):
         if self.ser == None:
             return
-        self.ser.write(msg)
-        self.ser.flush()
+        self.ser.write(msg.encode('utf-8'))
         
 
 

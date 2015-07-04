@@ -15,6 +15,9 @@ union{
     struct{
       char name[8];
       int width;
+      int useHermit;
+      int penUpPos;
+      int penDownPos;
     }data;
     char buf[64];
 }roboSetup;
@@ -164,7 +167,7 @@ void prepareMove()
   {
     return;
   }
-  if(distance > 20)
+  if(roboSetup.data.useHermit==0) // algorithm for normal straight line
   {
     float dAng = tarD - curD;
     if(dAng>PI)
@@ -179,21 +182,21 @@ void prepareMove()
     float dStep = dL*STEP_PER_MM;
     tarA = curA+dStep;
     tarB = curB+dStep;
-    Serial.print("dir:"); Serial.print((tarD)/PI*180);
-    Serial.print(" "); Serial.print(dx);Serial.print(" "); Serial.print(dy);Serial.print(" "); Serial.println(dL);
+    //Serial.print("dir:"); Serial.print((tarD)/PI*180);
+    //Serial.print(" "); Serial.print(dx);Serial.print(" "); Serial.print(dy);Serial.print(" "); Serial.println(dL);
     doMove();
     // move to targe xy position
     dStep = distance*STEP_PER_MM;
     tarA = curA+dStep;
     tarB = curB-dStep;
-    Serial.print("dis:"); Serial.println(distance);
+    //Serial.print("dis:"); Serial.println(distance);
     doMove();
   }
-  else
+  else // hermit interpolation algorithm
   {
     segs = (int)distance+1;
     x0 = curX; y0=curY;
-    Serial.print("Move:");Serial.print(curVecX);Serial.print(" ");Serial.print(curVecY);Serial.print(" ");Serial.print(tarVecX);Serial.print(" ");Serial.println(tarVecY);
+    //Serial.print("Move:");Serial.print(curVecX);Serial.print(" ");Serial.print(curVecY);Serial.print(" ");Serial.print(tarVecX);Serial.print(" ");Serial.println(tarVecY);
     ang0 = atan2(curVecY,curVecX);
     if(ang0>PI) 
     {
@@ -219,10 +222,10 @@ void prepareMove()
       {
         dw+=(2*PI);
       }
-      Serial.print(i);Serial.print("hermit ");Serial.print(hx);Serial.print(" ");Serial.print(hy);Serial.print(" ");Serial.print(dv);Serial.print(" ");Serial.print(dw/PI*180);
+      //Serial.print(i);Serial.print("hermit ");Serial.print(hx);Serial.print(" ");Serial.print(hy);Serial.print(" ");Serial.print(dv);Serial.print(" ");Serial.print(dw/PI*180);
       dLeft = (dv+dw/2*roboSetup.data.width)*STEP_PER_MM;
       dRight = (dv-dw/2*roboSetup.data.width)*STEP_PER_MM;
-      Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
+      //Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
       tarA = curA+dLeft;
       tarB = curB-dRight;
       doMove();
@@ -238,7 +241,7 @@ void prepareMove()
 
 void initPosition()
 {
-  servoPen.write(130);
+  //servoPen.write(120);
   curX=0; curY=0;
   curA = 0;
   curB = 0;
@@ -278,6 +281,7 @@ void parseGcode(char * cmd)
       break;
     case 28: // home
       tarX=0; tarY=0;
+      servoPen.write(roboSetup.data.penUpPos);
       prepareMove();
       initPosition();
       break; 
@@ -290,7 +294,10 @@ void echoRobotSetup()
   Serial.print(roboSetup.data.width);Serial.print(' ');
   Serial.print(DIAMETER);Serial.print(' ');
   Serial.print(curX);Serial.print(' ');
-  Serial.println(curY);
+  Serial.print(curY);
+  Serial.print(" H");Serial.print(roboSetup.data.useHermit);
+  Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
+  Serial.print(" D");Serial.println((int)roboSetup.data.penDownPos);
 }
 
 void parsePen(char * cmd)
@@ -311,7 +318,8 @@ void parseRobotSetup(char * cmd)
     str = strtok_r(0, " ", &tmp);
     if(str[0]=='W'){
       roboSetup.data.width = atoi(str+1);
-      Serial.print("Width ");Serial.print(roboSetup.data.width);
+    }else if(str[0]=='H'){
+      roboSetup.data.useHermit = atoi(str+1);
     }
   }
   syncRobotSetup();
@@ -336,15 +344,35 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"CAR",3)!=0){
+  if(strncmp(roboSetup.data.name,"CAR1",4)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"CAR",3);
+    memcpy(roboSetup.data.name,"CAR1",4);
     // default connection move inversely
     roboSetup.data.width = WIDTH;
+    roboSetup.data.useHermit = 1;
+    roboSetup.data.penUpPos = 160;
+    roboSetup.data.penDownPos = 90;
     syncRobotSetup();
   }
+}
+
+void parsePenPosSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='U'){
+      roboSetup.data.penUpPos = atoi(str+1);
+    }else if(str[0]=='D'){
+      roboSetup.data.penDownPos = atoi(str+1);    
+    }
+  }
+  Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
+  syncRobotSetup();
 }
 
 void parseMcode(char * cmd)
@@ -354,6 +382,9 @@ void parseMcode(char * cmd)
   switch(code){
     case 1:
       parsePen(cmd);
+      break;
+    case 2: // set pen position
+      parsePenPosSetup(cmd);
       break;
     case 5:
       parseRobotSetup(cmd);
@@ -368,7 +399,7 @@ void parseMcode(char * cmd)
 void parseCmd(char * cmd)
 {
   if(cmd[0]=='G'){ // gcode
-    parseGcode(cmd+1);
+    parseGcode(cmd+1);  
     Serial.println("OK");
   }else if(cmd[0]=='M'){ // mcode
     parseMcode(cmd+1);
@@ -382,6 +413,7 @@ void setup() {
   servoPen.attach(servopin);
   initRobotSetup();
   initPosition();
+  servoPen.write(roboSetup.data.penUpPos);
 }
 
 char buf[64];
@@ -400,3 +432,5 @@ void loop() {
     }
   }
 }
+
+

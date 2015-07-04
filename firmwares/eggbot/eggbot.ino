@@ -161,11 +161,13 @@ void parseCordinate(char * cmd)
 {
   char * tmp;
   char * str;
-  str = strtok_r(cmd, " ", &tmp);
+
   tarX = curX;
   tarY = curY;
-  while(str!=NULL){
-    str = strtok_r(0, " ", &tmp);
+  str = strtok_r(cmd, " ", &tmp);             // Robbo1 2015/6/8 comment - this removes the G code token from the input string - potential for future errors if method of processing G codes changes
+  while((str=strtok_r(0, " ", &tmp))!=NULL){  // Robbo1 2015/6/8 changed - placed strtok_r into loop test so that the pointer tested is the one used in the current loop
+    //str = strtok_r(0, " ", &tmp);           // Robbo1 2015/6/8 removed - removed from here and place in the while loop test
+
     //Serial.printf("%s;",str);
     if(str[0]=='X'){
       tarX = atof(str+1);
@@ -192,8 +194,11 @@ void echoRobotSetup()
   Serial.print(STEPS_PER_CIRCLE);
   Serial.print(' ');Serial.print(curX);
   Serial.print(' ');Serial.print(curY);
-  Serial.print(" A");Serial.print((int)roboSetup.data.motoADir);
-  Serial.print(" B");Serial.println((int)roboSetup.data.motoBDir);
+  Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
+  Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
+  Serial.print(" S");Serial.print((int)roboSetup.data.speed);
+  Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
+  Serial.print(" D");Serial.println((int)roboSetup.data.penDownPos);
 }
 
 void parseAuxDelay(char * cmd)
@@ -235,8 +240,28 @@ void parseRobotSetup(char * cmd)
     }else if(str[0]=='B'){
       roboSetup.data.motoBDir = atoi(str+1);
       //Serial.print("motoBDir ");Serial.print(roboSetup.data.motoBDir);
+    }else if(str[0]=='D'){
+      roboSetup.data.speed = atoi(str+1);
+      //Serial.print("Speed ");Serial.print(roboSetup.data.speed);
     }
   }
+  syncRobotSetup();
+}
+
+void parsePenPosSetup(char * cmd)
+{
+  char * tmp;
+  char * str;
+  str = strtok_r(cmd, " ", &tmp);
+  while(str!=NULL){
+    str = strtok_r(0, " ", &tmp);
+    if(str[0]=='U'){
+      roboSetup.data.penUpPos = atoi(str+1);
+    }else if(str[0]=='D'){
+      roboSetup.data.penDownPos = atoi(str+1);    
+    }
+  }
+  Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
   syncRobotSetup();
 }
 
@@ -247,6 +272,9 @@ void parseMcode(char * cmd)
   switch(code){
     case 1:
       parsePen(cmd);
+      break;
+    case 2: // set pen position
+      parsePenPosSetup(cmd);
       break;
     case 3:
       parseAuxDelay(cmd);
@@ -300,11 +328,11 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"EGG",3)!=0){
+  if(strncmp(roboSetup.data.name,"EGG1",4)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"EGG",3);
+    memcpy(roboSetup.data.name,"EGG1",4);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
     syncRobotSetup();
@@ -336,12 +364,15 @@ char bufindex2;
 void loop() {
   if(Serial.available()){
     char c = Serial.read();
-    buf[bufindex++]=c;
+    //buf[bufindex++]=c;                 // Robbo1 2015/6/8 Removed - Do not store the \n
     if(c=='\n'){
+      buf[bufindex++]='\0';              // Robbo1 2015/6/8 Add     - Null terminate the string - Essential for first use of 'buf' and good programming practice
       parseCmd(buf);
       memset(buf,0,64);
       bufindex = 0;
-    }
+    }else if(bufindex<64){               // Robbo1 2015/6/8 Add     - Only add char to string if the string can fit it and still be null terminated 
+      buf[bufindex++]=c;                 // Robbo1 2015/6/8 Moved   - Store the character here now
+	}
   }
 }
 

@@ -1,10 +1,32 @@
 <RCC>
   <qresource>
+    <file>images/mDraw_UI-icon-help_info.png</file>
+    <file>images/mDraw_UI-icon-help_info-click.png</file>
+    <file>images/mDraw_UI-icon-help_info-hover.png</file>
+    <file>images/xy_setup.png</file>
     <file>images/scara_laser.png</file>
     <file>images/mDraw-info-icon.png</file>
     <file>images/mDraw-info-icon-click.png</file>
+    <file>images/mDraw_UI-icon-anticlockwise-rotation.png</file>
+    <file>images/mDraw_UI-icon-anticlockwise-rotation-click.png</file>
+    <file>images/mDraw_UI-icon-anticlockwise-rotation-hover.png</file>
+    <file>images/mDraw_UI-icon-clockwise-rotation.png</file>
+    <file>images/mDraw_UI-icon-clockwise-rotation-click.png</file>
+    <file>images/mDraw_UI-icon-clockwise-rotation-hover.png</file>
+    <file>images/mDraw_UI-icon-HSymmetric.png</file>
+    <file>images/mDraw_UI-icon-HSymmetric-click.png</file>
+    <file>images/mDraw_UI-icon-HSymmetric-hover.png</file>
+    <file>images/mDraw_UI-icon-VSymmetric.png</file>
+    <file>images/mDraw_UI-icon-VSymmetric-click.png</file>
+    <file>images/mDraw_UI-icon-VSymmetric-hover.png</file>
     <file>images/mDraw-info-icon-hover.png</file>
     <file>images/caricon.png</file>
+    <file>images/mCar_setup.png</file>
+    <file>images/mEggBot_setup.png</file>
+    <file>images/mEggBot_machine.png</file>
+    <file>images/wire.png</file>
+    <file>images/mScara_setup.png</file>
+    <file>images/mSpider_setup.png</file>
     <file>images/egg.png</file>
     <file>images/car.png</file>
     <file>images/xy.png</file>

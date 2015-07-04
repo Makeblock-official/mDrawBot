@@ -2,8 +2,10 @@ import sys
 import os
 import time
 from xml.dom import minidom
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
+from PyQt5.QtGui import*
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from RobotUtils import *
 from math import *
 
 
@@ -133,10 +135,12 @@ class SvgParser():
         self.tmpPath = None
         self.xbias = 0
         self.ybias = 0
+        self.pathLen = 0
         self.whratio = 1
         self.scene = scene
         self.scale = scale
         self.tf = []
+        self.usertf = [1,0,0,1,0,0]
         self.parse(filename)
     
     # tranform matrix = [ a c e ]
@@ -165,9 +169,9 @@ class SvgParser():
     
     def plotToScene(self):
         self.ptrList = []
-        pen = QtGui.QPen(QtGui.QColor(124, 124, 124))
+        pen = QPen(QColor(124, 124, 124))
         for line in self.pathList:
-            tmpPath = QtGui.QPainterPath()
+            tmpPath = QPainterPath()
             for i in range(len(line)):
                 point = line[i]
                 if i==0:
@@ -176,15 +180,33 @@ class SvgParser():
                     tmpPath.lineTo(point[0],point[1])
             ptr = self.scene.addPath(tmpPath,pen=pen)
             self.ptrList.append(ptr)
-    
-   
+
     def resize(self,drawRect=(150,150,150,150)):
         #self.pathList = copy.deepcopy(self.originPathList)
         self.pathList=[]
+        self.pathLen = 0
+        
+        # avoid the deep copy
         for p in self.originPathList:
-            self.pathList.append(p)
+            self.pathList.append(list(p))
+        
+        #print("resize",len(self.pathList))
+        #print(self.originPathList[0][0])
+        #print(self.pathList[0][0])
+        
+        # user define transform
+        for i in range(len(self.pathList)):
+            for j in range(len(self.pathList[i])):
+                x = self.pathList[i][j][0]
+                y = self.pathList[i][j][1]
+                x1=self.usertf[0]*x+self.usertf[2]*y+self.usertf[4]
+                y1=self.usertf[1]*x+self.usertf[3]*y+self.usertf[5]
+                self.pathList[i][j] = (x1,y1)
+        
+        #print(self.pathList[0][0])
         
         (x,y) = self.pathList[0][0]
+        (x0,y0) = (x,y)
         xmin = x*self.scale[0]
         xmax = x*self.scale[0]
         ymin = y*self.scale[1]
@@ -194,6 +216,10 @@ class SvgParser():
             for p in line:
                 x = p[0]*self.scale[0]
                 y = p[1]*self.scale[1]
+                tmpdx = x-x0
+                tmpdy = y-y0
+                self.pathLen+=sqrt(tmpdx*tmpdx+tmpdy*tmpdy)
+                (x0,y0) = (x,y)
                 if x<xmin:
                     xmin = p[0]
                 if x>xmax:
@@ -215,6 +241,7 @@ class SvgParser():
                 x = (x-xmin)*scaler+drawRect[0]                    
                 y = (y-ymin)*scaler+drawRect[1]
                 self.pathList[i][j] = (x,y)
+        print("total len",self.pathLen)
         return (dx*scaler,dy*scaler)
     
     # stretch for eggbot surface curve
@@ -484,7 +511,7 @@ class SvgParser():
                     self.lineTo(ax,ay)
                 else:
                     ptr+=1
-                    print "unknow state",state
+                    print("unknow state",state)
         return
         
     def parseRect(self,node):
@@ -492,7 +519,7 @@ class SvgParser():
         h = float(node.getAttribute("height"))+self.xbias
         x = float(node.getAttribute("x"))+self.ybias
         y = float(node.getAttribute("y"))+self.ybias
-        print ">> Rect",w,h,x,y
+        print(">> Rect",w,h,x,y)
         self.moveTo(x,y)
         self.lineTo(x+w,y)
         self.lineTo(x+w,y+h)
@@ -505,7 +532,7 @@ class SvgParser():
         x2 = float(node.getAttribute("x2"))+self.xbias
         y1 = float(node.getAttribute("y1"))+self.ybias
         y2 = float(node.getAttribute("y2"))+self.ybias
-        print ">> Line",x1,y1,x2,y2
+        print(">> Line",x1,y1,x2,y2)
         #path = QtGui.QPainterPath()
         #path.moveTo(x1,y1)
         self.moveTo(x1,y1)
@@ -521,7 +548,7 @@ class SvgParser():
         tmp = []
         pstr = node.getAttribute("points")
         points = pstr.split(" ")
-        print ">> polygon:"
+        print(">> polygon:")
         isinit=0
         #path = QtGui.QPainterPath()
         initx=0
@@ -529,7 +556,7 @@ class SvgParser():
         for p in points:
             if len(p)==0: continue
             xstr,ystr = p.split(',')
-            print ">>\t",xstr,ystr
+            print(">>\t",xstr,ystr)
             x=float(xstr)+self.xbias
             y=float(ystr)+self.ybias
             tmp.append((x,y))
@@ -554,14 +581,14 @@ class SvgParser():
         tmp = []
         pstr = node.getAttribute("points")
         points = pstr.split(" ")
-        print ">> polyline:"
+        print(">> polyline:")
         isinit=0
         #path = QtGui.QPainterPath()
         #pen(0)
         for p in points:
             if len(p)==0: continue
             xstr,ystr = p.split(',')
-            print ">>\t",xstr,ystr
+            print(">>\t",xstr,ystr)
             x=float(xstr)+self.xbias
             y=float(ystr)+self.ybias
             tmp.append((x,y))
@@ -604,7 +631,7 @@ class SvgParser():
             return None
         attrs = sib._attrs
         if "transform" in attrs:
-            print "trans",attrs
+            print("trans",attrs)
             tf = [1,0,0,1,0,0]
             trans = attrs["transform"].value.split()
             for t in trans:
@@ -622,7 +649,7 @@ class SvgParser():
                     self.tf.append(tf)
                 elif "matrix" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = map(float,list(t[p0+1:-1].split(",")))
                     tf = tmp
                     self.tf.append(tf)
             return tf
@@ -637,17 +664,17 @@ class SvgParser():
             for t in trans:
                 if "scale" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf[0] = tmp[0]
                     tf[3] = tmp[1]
                 elif "translate" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf[4] = tmp[0]
                     tf[5] = tmp[1]
                 elif "matrix" in t:
                     p0 = t.find('(')
-                    tmp = map(float,t[p0+1:-1].split(","))
+                    tmp = list(map(float,t[p0+1:-1].split(",")))
                     tf = tmp
             self.tf.append(tf)
             return trans
@@ -655,7 +682,7 @@ class SvgParser():
             return None
         
     def parseNode(self,node,deep):
-        print " "*deep,">>",node.nodeName,node.nodeType
+        print(" "*deep,">>",node.nodeName,node.nodeType)
         tf = None
         if node.nodeType==1:
             tf = self.parseTransform(node)
@@ -672,11 +699,11 @@ class SvgParser():
         elif node.nodeName=="circle":
             self.parseCircle(node)
         else:
-            print " "*deep,"unknow",node.nodeName
+            print(" "*deep,"unknow",node.nodeName)
         return tf
     
     def parseChildNodes(self,node,deep=1):
-        print " "*deep,"parse->",node.nodeName
+        print(" "*deep,"parse->",node.nodeName)
         # escape marker
         if node.nodeName == "marker" or node.nodeName == "clipPath":
             return

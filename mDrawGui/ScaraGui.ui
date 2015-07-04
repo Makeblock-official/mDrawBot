@@ -365,39 +365,6 @@ QTabBar::tab {
        <string>Pen Up</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="linePenUp">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>20</y>
-        <width>61</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"> QLineEdit {
-     border: 0px ;
-	 color: rgb(255, 255, 255);
-	 selection-color: rgb(108, 199, 232);
-	 selection-background-color: rgb(76, 76, 76);
-	 border-bottom : 1px dashed white;
- }
-</string>
-      </property>
-      <property name="text">
-       <string>M1 90</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QPushButton" name="btnPenDown">
       <property name="geometry">
        <rect>
@@ -438,13 +405,51 @@ QTabBar::tab {
        <string>Pen Down</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="linePenDown">
+     <widget class="QSpinBox" name="penUpSpin">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>20</y>
+        <width>71</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(230,230,230)</string>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
+      <property name="value">
+       <number>130</number>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="penDownSpin">
       <property name="geometry">
        <rect>
         <x>100</x>
         <y>60</y>
-        <width>61</width>
-        <height>20</height>
+        <width>71</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(230,230,230);</string>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
+      <property name="value">
+       <number>90</number>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnSavePos">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>75</width>
+        <height>23</height>
        </rect>
       </property>
       <property name="font">
@@ -455,20 +460,27 @@ QTabBar::tab {
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true"> QLineEdit {
-     border: 0px ;
-	 color: rgb(255, 255, 255);
-	 selection-color: rgb(108, 199, 232);
-	 selection-background-color: rgb(76, 76, 76);
-	 border-bottom : 1px dashed white;
+       <string notr="true"> QPushButton {
+	 color: rgb(230,230,230);
+     border: 1px solid rgb(67,67,67);
+     border-radius: 3px;
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
  }
+
+ QPushButton::hover {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);
+ }
+
+ QPushButton:pressed {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);
+ }
+
 </string>
       </property>
       <property name="text">
-       <string>M1 130</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <string>Save</string>
       </property>
      </widget>
     </widget>
@@ -479,8 +491,8 @@ QTabBar::tab {
      <widget class="QSlider" name="slideLaserPower">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>20</y>
+        <x>20</x>
+        <y>60</y>
         <width>121</width>
         <height>19</height>
        </rect>
@@ -501,7 +513,7 @@ QSlider::groove:horizontal {
 }</string>
       </property>
       <property name="maximum">
-       <number>254</number>
+       <number>100</number>
       </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -511,7 +523,7 @@ QSlider::groove:horizontal {
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>70</y>
+        <y>100</y>
         <width>41</width>
         <height>16</height>
        </rect>
@@ -536,8 +548,8 @@ QSlider::groove:horizontal {
      <widget class="QSlider" name="slideLaserDelay">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>70</y>
+        <x>20</x>
+        <y>110</y>
         <width>121</width>
         <height>19</height>
        </rect>
@@ -567,9 +579,9 @@ QSlider::groove:horizontal {
      <widget class="QLabel" name="label_13">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>41</width>
+        <x>20</x>
+        <y>90</y>
+        <width>71</width>
         <height>16</height>
        </rect>
       </property>
@@ -584,14 +596,14 @@ QSlider::groove:horizontal {
        <string notr="true">color:rgb(204,204,204);</string>
       </property>
       <property name="text">
-       <string>Delay</string>
+       <string>Delay (ms)</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_12">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>0</y>
+        <x>20</x>
+        <y>40</y>
         <width>51</width>
         <height>16</height>
        </rect>
@@ -607,14 +619,14 @@ QSlider::groove:horizontal {
        <string notr="true">color:rgb(204,204,204);</string>
       </property>
       <property name="text">
-       <string>Power</string>
+       <string>Power %</string>
       </property>
      </widget>
      <widget class="QLabel" name="labelLaserPower">
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>20</y>
+        <y>50</y>
         <width>41</width>
         <height>16</height>
        </rect>
@@ -636,12 +648,41 @@ QSlider::groove:horizontal {
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QPushButton" name="btnLaserStart">
+     <widget class="QRadioButton" name="radioLaserMode">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>10</y>
+        <width>131</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <family>Arial</family>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">	 color: rgb(230,230,230);
+</string>
+      </property>
+      <property name="text">
+       <string>Enable Laser Mode</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tabUtil">
+     <attribute name="title">
+      <string>Utils</string>
+     </attribute>
+     <widget class="QPushButton" name="btnPenUp_2">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>110</y>
-        <width>61</width>
+        <y>10</y>
+        <width>151</width>
         <height>23</height>
        </rect>
       </property>
@@ -656,7 +697,7 @@ QSlider::groove:horizontal {
        <string notr="true"> QPushButton {
 	 color: rgb(230,230,230);
      border: 1px solid rgb(67,67,67);
-     border-radius: 3px;
+     border-radius: 4px;
 	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
  }
 
@@ -673,47 +714,7 @@ QSlider::groove:horizontal {
 </string>
       </property>
       <property name="text">
-       <string>On</string>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="btnLaserReset">
-      <property name="geometry">
-       <rect>
-        <x>100</x>
-        <y>110</y>
-        <width>61</width>
-        <height>23</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Arial</family>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="styleSheet">
-       <string notr="true"> QPushButton {
-	 color: rgb(230,230,230);
-     border: 1px solid rgb(67,67,67);
-     border-radius: 3px;
-	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
- }
-
- QPushButton::hover {
-	 color: rgb(231,231,231);
-	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);
- }
-
- QPushButton:pressed {
-	 color: rgb(231,231,231);
-	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);
- }
-
-</string>
-      </property>
-      <property name="text">
-       <string>Reset</string>
+       <string>Sync Position (G92)</string>
       </property>
      </widget>
     </widget>
@@ -1175,7 +1176,7 @@ border-image: url(:/images/scara.png);</string>
      <rect>
       <x>10</x>
       <y>150</y>
-      <width>131</width>
+      <width>111</width>
       <height>23</height>
      </rect>
     </property>
@@ -1213,8 +1214,8 @@ border-image: url(:/images/scara.png);</string>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>120</y>
+      <x>140</x>
+      <y>20</y>
       <width>18</width>
       <height>18</height>
      </rect>
@@ -1238,6 +1239,46 @@ border-image: url(:/images/scara.png);</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnWiring">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>150</y>
+      <width>41</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"> QPushButton {
+	 color: rgb(230,230,230);
+     border: 1px solid rgb(67,67,67);
+     border-radius: 4px;
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #6E6E6E,stop:1 #5F5F5F);
+ }
+
+ QPushButton::hover {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #858585,stop:1 #787878);
+ }
+
+ QPushButton:pressed {
+	 color: rgb(231,231,231);
+	 background-color: qlineargradient(x1:0,y1:0,x2:0,y2:1,stop:0 #646464,stop:0.7 #828282,stop:1 #6E6E6E);
+ }
+
+</string>
+    </property>
+    <property name="text">
+     <string>Wire</string>
     </property>
    </widget>
   </widget>
@@ -1457,6 +1498,209 @@ background-color:  rgb(243,243,243);</string>
      <string>height</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLabel" name="labelEstTime">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>660</y>
+     <width>161</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(124, 124, 124);
+background-color: rgb(249, 249, 249);</string>
+   </property>
+   <property name="text">
+    <string>Time Left: 00:00:00</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelMachineState">
+   <property name="geometry">
+    <rect>
+     <x>720</x>
+     <y>200</y>
+     <width>41</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Arial</family>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(124, 124, 124);
+background-color: rgb(249, 249, 249);</string>
+   </property>
+   <property name="text">
+    <string>IDLE</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnHFlip">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-VSymmetric.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-VSymmetric-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-VSymmetric-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnVFlip">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-HSymmetric.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-HSymmetric-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-HSymmetric-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRollC">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-clockwise-rotation.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-clockwise-rotation-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-clockwise-rotation-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRollAC">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-anticlockwise-rotation.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-anticlockwise-rotation-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-anticlockwise-rotation-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnHelp">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>20</y>
+     <width>60</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QPushButton {
+	background-color: rgb(249, 249, 249);
+	border-image:url(:/images/mDraw_UI-icon-help_info.png) 0;
+ }
+
+ QPushButton:hover {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-help_info-hover.png) 0;
+ }
+
+ QPushButton:pressed  {
+	background-color: rgb(249, 249, 249);
+	border-image: url(:/images/mDraw_UI-icon-help_info-click.png) 0;
+ }
+
+</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
   </widget>
  </widget>
  <resources>

@@ -1,21 +1,17 @@
 import sys
 import SerialCom
 import threading
-import Queue
+import queue
 import time
-from robot_gui import *
 from ScaraGui import *
-from PyQt4 import QtGui
-from PyQt4.QtCore import *
+from PyQt5.QtGui import*
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+from RobotUtils import *
 from math import *
 import EggSetup
 
-IDLE = 0
-BUSYING = 1
-motorSelectedStyle = "border: 1px solid rgb(67,67,67);\r\nborder-radius: 4px;\r\n"
-
-
-class RobotSetupUI(QtGui.QWidget):
+class RobotSetupUI(QWidget):
     def __init__(self,uidialog,robot):
         super(RobotSetupUI, self).__init__()
         self.ui = uidialog()
@@ -64,17 +60,8 @@ class RobotSetupUI(QtGui.QWidget):
     def setMotorBcck(self,event):
         self.robot.motoBDir = 1
         self.updateUI()
-        
-class WorkInThread(threading.Thread):
-    def __init__(self, target, *args):
-        self._target = target
-        self._args = args
-        threading.Thread.__init__(self)
- 
-    def run(self):
-        self._target(*self._args)
 
-class EggBot(QtGui.QGraphicsItem):
+class EggBot(QGraphicsItem):
     
     def __init__(self, scene, ui, parent=None):
         super(EggBot, self).__init__(parent)
@@ -96,7 +83,7 @@ class EggBot(QtGui.QGraphicsItem):
         self.stretch = None
         self.origin = None
         self.xyorigin = None
-        self.q = Queue.Queue()
+        self.q = queue.Queue()
         self.pRect = None
         self.moveList = None
         self.printing = False
@@ -123,12 +110,12 @@ class EggBot(QtGui.QGraphicsItem):
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
         
-        pTxt = self.scene.addText("Y")
+        pTxt = self.scene.addText("Latitude")
         cent = QPointF(self.origin[0]-10,self.origin[1]-10)
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
         
-        pTxt = self.scene.addText("X")
+        pTxt = self.scene.addText("Longitude")
         cent = QPointF(self.origin[0]+self.width,self.origin[1]+self.height)
         pTxt.setPos(cent)
         pTxt.setDefaultTextColor(QtGui.QColor(124, 124, 124))
@@ -160,6 +147,9 @@ class EggBot(QtGui.QGraphicsItem):
         x = self.x+self.origin[0]-self.robotCent[0]
         y = self.y+self.origin[1]-self.robotCent[1]+self.height
         
+        img = QtGui.QImage(":/images/mEggBot_machine.png")
+        painter.translate(0,0);
+        painter.drawImage(-450,-220,img) # minus the center of image
         #painter.drawText(x-30,y+10,"(%.2f,%.2f)" %(self.x,-self.y))
         pen = QtGui.QPen(QtGui.QColor(124, 124, 124))
         painter.setBrush(QtCore.Qt.darkGray)
@@ -193,7 +183,7 @@ class EggBot(QtGui.QGraphicsItem):
         self.maxStep = maxStep
         x = target[0]
         y = -target[1]
-        print "move to",(x,y),maxStep
+        print("move to",(x,y),maxStep)
         if x<0 or x>self.width or y<0 or y>self.height:
             return None
         return (x,y)
@@ -229,7 +219,6 @@ class EggBot(QtGui.QGraphicsItem):
         if auxdelay!=None:
             cmd += " A%d" %(auxdelay)
         cmd += '\n'
-        print cmd
         self.robotState = BUSYING
         self.sendCmd(cmd)
 
@@ -244,7 +233,6 @@ class EggBot(QtGui.QGraphicsItem):
         if self.robotState != IDLE: return
         cmd = "M1 %d" %(pos)
         cmd += '\n'
-        print cmd
         self.robotState = BUSYING
         self.sendCmd(cmd)
     
@@ -257,7 +245,6 @@ class EggBot(QtGui.QGraphicsItem):
     def M4(self,laserPower,rate=1): # setup laser power
         if self.robotState != IDLE: return
         cmd = "M4 %d\n" %(int(laserPower*rate))
-        self.laserPower = laserPower
         self.robotState = BUSYING
         self.sendCmd(cmd)
     
@@ -281,7 +268,6 @@ class EggBot(QtGui.QGraphicsItem):
                 p = move[i]
                 x=(p[0]-self.origin[0])
                 y=(p[1]-self.origin[1]-self.height)
-                print "goto",x,-y
                 try:
                     if self.printing == False:
                         return
@@ -320,10 +306,10 @@ class EggBot(QtGui.QGraphicsItem):
     def printPic(self):
         #update pen servo position
         #update pen servo position
-        mStr = str(self.ui.linePenUp.text())
-        self.penUpPos = int(mStr.split()[1])
-        mStr = str(self.ui.linePenDown.text())
-        self.penDownPos = int(mStr.split()[1])
+        mStr = str(self.ui.penUpSpin.value())
+        self.penUpPos = int(mStr)
+        mStr = str(self.ui.penDownSpin.value())
+        self.penDownPos = int(mStr)
         
         while not self.q.empty():
             self.q.get()
