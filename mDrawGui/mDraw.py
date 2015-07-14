@@ -514,7 +514,7 @@ class MainUI(QWidget):
         if self.robot.printing:
             return        
         if filename==False:
-            filename = QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg;.bmp(*.svg;*.bmp)")[0]
+            filename = QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg .bmp(*.svg *.bmp)")[0]
         self.dbg(filename)
         if len(filename)==0:
             return
