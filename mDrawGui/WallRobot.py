@@ -10,6 +10,20 @@ from PyQt5.QtCore import *
 from RobotUtils import *
 from math import *
 import SpiderSetup
+# segmentize all path as scara do
+def sliceSegment(x,y,tarX,tarY):
+    segList=[]
+    dx = tarX - x
+    dy = tarY - y
+    maxD = max(abs(dx),abs(dy))
+    maxSteps = int(ceil(maxD)) # 1:1mm per segment, 2:0.5mm
+    if maxSteps==0:
+        return []
+    dxStep = float(dx)/maxSteps
+    dyStep = float(dy)/maxSteps
+    for i in range(0,maxSteps+1):
+        segList.append((x+dxStep*i,y+dyStep*i))
+    return segList[1:]
 
 class RobotSetupUI(QWidget):
     def __init__(self,uidialog,robot):
@@ -272,36 +286,42 @@ class WallRobot(QGraphicsItem):
                 p = move[i]
                 x=(p[0]-self.robotCent[0])/self.scaler
                 y=-(p[1]-self.robotCent[1])/self.scaler
-                try:
-                    if self.printing == False:
-                        return
-                    elif self.pausing == True:
-                        while self.pausing==True:
-                            time.sleep(0.5)
-                    auxDelay = 0
-                    #if self.laserMode and i>0:
-                    #    auxDelay = 10000
-                    if self.laserMode:
-                        if i>0:
-                            auxDelay = self.laserBurnDelay*1000
-                        elif i==0:
-                            self.M4(self.laserPower,0.0) # turn laser power down when perform transition
-                            self.q.get()
-                    self.G1(x,y,auxdelay = auxDelay)
-                    self.x = x
-                    self.y = y
-                    self.q.get()
-                    if not self.laserMode and i == 0 and lineNode>1:
-                        self.M1(self.penDownPos)
+                if i==0:
+                    segList = [(x,y)]
+                else:
+                    segList = sliceSegment(self.x, self.y, x, y)
+                for s in segList:
+                    try:
+                        if self.printing == False:
+                            return
+                        elif self.pausing == True:
+                            while self.pausing==True:
+                                time.sleep(0.5)
+                        auxDelay = 0
+                        #if self.laserMode and i>0:
+                        #    auxDelay = 10000
+                        if self.laserMode:
+                            if i>0:
+                                auxDelay = self.laserBurnDelay*1000
+                            elif i==0:
+                                self.M4(self.laserPower,0.0) # turn laser power down when perform transition
+                                self.q.get()
+                        self.G1(s[0],s[1],auxdelay = auxDelay)
+                        self.x = s[0]
+                        self.y = s[1]
                         self.q.get()
-                        time.sleep(0.2)
-                except:
-                    pass
+                        if not self.laserMode and i == 0 and lineNode>1:
+                            self.M1(self.penDownPos)
+                            self.q.get()
+                            time.sleep(0.2)
+                    except:
+                        pass
             moveCnt+=1
             self.robotSig.emit("pg %d" %(int(moveCnt*100/moveLen)))
             self.M1(self.penUpPos)
             self.q.get()
             time.sleep(0.2)
+        self.M1(self.penUpPos)
         self.G28()
         self.q.get()
         self.printing = False

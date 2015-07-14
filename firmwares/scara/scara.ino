@@ -147,9 +147,9 @@ void doMove()
       cntA+=stepA;
       if(cntA>=1){
         d = dA>0?motorAfw:motorAbk;
+        posA+=(dA>0?1:-1);
         stepperMoveA(d);
         cntA-=1;
-        posA+=d;
       }
     }
     // move B
@@ -157,9 +157,9 @@ void doMove()
       cntB+=stepB;
       if(cntB>=1){
         d = dB>0?motorBfw:motorBbk;
+        posB+=(dB>0?1:-1);
         stepperMoveB(d);
         cntB-=1;
-        posB+=d;
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
@@ -183,6 +183,7 @@ void prepareMove()
   float distance = sqrt(dx*dx+dy*dy);
   float distanceMoved=0,distanceLast=0;
   //Serial.print("distance=");Serial.println(distance);
+  //Serial.print(tarX);Serial.print(' ');Serial.println(tarY);
   if (distance < 0.001) 
     return;
   scaraInverseKinect(tarX,tarY);

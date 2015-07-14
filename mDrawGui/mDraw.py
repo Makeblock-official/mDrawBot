@@ -23,7 +23,7 @@ from RobotUtils import *
 import time
 import math
 
-robotVersion="1.1 2015-6-25"
+robotVersion="1.15 2015-7-15"
 
 class MainUI(QWidget):
     sceneUpdateSig = pyqtSignal()
@@ -319,7 +319,6 @@ class MainUI(QWidget):
             self.tempPicRect =  self.scene.addRect(x,y,w,h,pen)
             self.rectBias = (px-x,py-y)
 
-
     def sceneRefresh(self):
         while True:
             self.sceneUpdateSig.emit()
@@ -514,12 +513,12 @@ class MainUI(QWidget):
     def loadPic(self,filename=False):
         if self.robot.printing:
             return        
-        self.clearPic()
         if filename==False:
             filename = QFileDialog.getOpenFileName(self, 'Open Svg/Bmp', '', ".svg .bmp(*.svg *.bmp)")[0]
         self.dbg(filename)
         if len(filename)==0:
             return
+        self.clearPic()
         filetype =filename.split(".")[-1] 
         if filetype=="svg":
             self.pic = SvgParser.SvgParser(filename,self.scene)
