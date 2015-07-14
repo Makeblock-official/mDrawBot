@@ -225,7 +225,7 @@ void prepareMove()
       //Serial.print(i);Serial.print("hermit ");Serial.print(hx);Serial.print(" ");Serial.print(hy);Serial.print(" ");Serial.print(dv);Serial.print(" ");Serial.print(dw/PI*180);
       dLeft = (dv+dw/2*roboSetup.data.width)*STEP_PER_MM;
       dRight = (dv-dw/2*roboSetup.data.width)*STEP_PER_MM;
-      //Serial.print(" ");Serial.println(dLeft);Serial.print(" ");Serial.println(dRight);
+      //Serial.print(" ");Serial.print(dLeft);Serial.print(" ");Serial.println(dRight);
       tarA = curA+dLeft;
       tarB = curB-dRight;
       doMove();
