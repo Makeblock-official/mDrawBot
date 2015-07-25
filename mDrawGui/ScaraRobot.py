@@ -218,7 +218,7 @@ class Scara(QGraphicsItem):
         if self.moveList == None: return
         moveLen = len(self.moveList)
         moveCnt = 0
-        self.M4(self.laserPower,0) # turn laser power down when perform transition
+        self.M4(0) # turn laser power down when perform transition
         self.q.get()
         for move in self.moveList:
             #loop for all points
@@ -228,7 +228,6 @@ class Scara(QGraphicsItem):
                 x=p[0]-self.robotCent[0]
                 y=-p[1]+self.robotCent[1] # y in reverse dir from qt graph
                 (x1,y1,x2,y2) = self.sceraDirectKinect(self.th)
-                #print "goto",x,y
                 # slice into 1mm (1pix = 1mm)
                 if i==0:
                     segList = [(x,y)]
@@ -237,19 +236,17 @@ class Scara(QGraphicsItem):
                 for s in segList:
                     try:
                         if self.printing == False:
+                            if self.laserMode:
+                                self.M4(0) # turn off the laser when the user aborts the printing process
                             return
-                        elif self.pausing == True:
-                            while self.pausing==True:
-                                time.sleep(0.5)
+                        self.waitWhilePaused(self.laserMode and i>0)
                         self.th = self.scaraInverseKinect((s[0],s[1]))
                         auxDelay = 0
-                        #if self.laserMode and i>0:
-                        #    auxDelay = 10000
                         if self.laserMode:
                             if i>0:
                                 auxDelay = self.laserBurnDelay*1000
                             elif i==0:
-                                self.M4(self.laserPower,0) # turn laser power down when perform transition
+                                self.M4(0) # turn laser power down when perform transition
                                 self.q.get()
                         self.G1(s[0],s[1],auxdelay = auxDelay)
                         while self.robotState==BUSYING:
@@ -299,6 +296,15 @@ class Scara(QGraphicsItem):
     
     def pausePrinting(self,v):
         self.pausing = v
+    
+    def waitWhilePaused(self, isLaserOn):
+        if self.pausing:
+            if isLaserOn:
+                self.M4(0) # turn off the laser while the printing is paused
+            while self.pausing:
+                time.sleep(0.5)
+            if isLaserOn:
+                self.M4(self.laserPower) # turn on laser when the printing is continued, and it was on before pausing
     
     """
     simulate the actual movement of steppermotor
@@ -435,8 +441,3 @@ class Scara(QGraphicsItem):
     
     def showSetup(self):
         self.robotSetup =  RobotSetupUI(ScaraSetup.Ui_Dialog,self)
-    
-        
-        
-            
-        
