@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>mDraw</title>
+
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/jquery-ui-1.9.2.custom.css">
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+<body>
+<div class="container-fluid" id="panel">
+    <div id="panel-left">
+        <div class="row-fluid" id="menu-buttons">
+            <a href="#" class="btn btn-primary menu-button" id="btnLoadPic"><span class="glyphicon glyphicon-folder-open"></span></a>
+            <a href="#" class="btn btn-primary menu-button" id="btnClearPic"><span class="glyphicon glyphicon-trash"></span></a>
+            <a href="#" class="btn btn-primary menu-button" id="btnDrawPic"><span class="glyphicon glyphicon-play"></span></a>
+            <a href="#" class="btn btn-primary menu-button" id="btnStop"><span class="glyphicon glyphicon-stop"></span></a>
+            <a href="#" class="btn btn-primary menu-button" id="btnHelp"><span class="glyphicon glyphicon-question-sign"></span></a>
+            <a href="#" class="btn btn-primary menu-button" id="btnHome"><span class="glyphicon glyphicon-home"></span></a>
+        </div>
+
+        <svg id="canvas" class="embed-responsive" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+
+        </svg>
+        <div id="tips">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Extruder Position</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">X(MM)</span>
+                        <input type="text" class="form-control" placeholder="0" aria-describedby="sizing-addon3" id="robot-pos-x">
+                    </div>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">Y(MM)</span>
+                        <input type="text" class="form-control" placeholder="0" aria-describedby="sizing-addon3" id="robot-pos-y">
+                    </div>
+                    <span class="label label-success" id="label-idle">IDLE</span><span class="label label-danger hidden" id="label-busy">BUSY</span>
+                </div>
+            </div>
+        </div>
+        <div id="load-pic">
+
+        </div>
+    </div>
+    <div id="panel-right">
+        <div class="row-fluid">
+            <div class="btn-group" id="select-robot">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="robot-current">
+                    mScara<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id="robot-dropdown">
+                    <li><a href="#">mScara</a></li>
+                    <li><a href="#">mSpider</a></li>
+                    <li><a href="#">mEgg</a></li>
+                    <li><a href="#">mCar</a></li>
+                    <li><a href="#">XY</a></li>
+                </ul>
+            </div>
+            <a href="#" class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span></a>
+        </div>
+
+        <div class="group" id="robot-group">
+            <img src="./res/scara.png" class="img-rounded" id="image-robot">
+            <div class="row-fluid">
+                <a href="#" class="btn btn-primary btn-xs" id="btnUpdateFirm">Update Firmware</a>
+                <a href="#" class="btn btn-primary btn-xs" id="btnWire" data-toggle="modal" data-target=".bs-wire-modal">Wire</a>
+            </div>
+            <div class="modal fade bs-wire-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <img src="./res/wire.png" class="img-rounded">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="group" id="function-group">
+            <div class="tabbable"> <!-- Only required for left/right tabs -->
+                <ul class="nav nav-pills">
+                    <li class="active"><a href="#tab1" data-toggle="tab">Pen</a></li>
+                    <li><a href="#tab2" data-toggle="tab">Laser</a></li>
+                </ul>
+                <div class="tab-content" id="function-tab">
+                    <div class="tab-pane active" id="tab1">
+                        <br>
+                        <div class="row-fluid">
+                            <a href="#" class="btn btn-primary btn-ms btn-pen" id="btnPenUp">Up</a>
+                            <input type="text" id="penup-spin" name="value" value="0" class="pen-spin">
+                        </div>
+                        <div class="row-fluid">
+                            <a href="#" class="btn btn-primary btn-ms btn-pen" id="btnPenDown">Down</a>
+                            <input type="text" id="pendown-spin" name="value" value="0" class="pen-spin">
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="tab2">
+                        <p>Howdy, I'm in Section 2.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="group" id="comm-group">
+            <div class="row-fluid">
+                <div class="btn-group" id="serial-port">
+                    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="serial-current">
+                        COM1<span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" id="serial-dropdown">
+
+                    </ul>
+                </div>
+                <a href="#" class="btn btn-primary" id="btnConnect">connect</a>
+            </div>
+            <textarea id="console-log"></textarea>
+            <form class="form-inline">
+                <input type="text" class="input-sm form-control" id="input-line">
+                <a href="#" class="btn btn-primary btn-xs" id="btnSend">send</a>
+            </form>
+        </div>
+
+    </div>
+</div>
+<script src="./js/serial.js"></script>
+<script src="./js/robotScara.js"></script>
+<script src="./js/robotSpider.js"></script>
+<script src="./js/robotEgg.js"></script>
+<script src="./js/robotCar.js"></script>
+<script src="./js/robotXY.js"></script>
+<script src="./js/robotUtils.js"></script>
+<script src="./js/vendor/jquery.min.js"></script>
+<script src="./js/vendor/bootstrap.min.js"></script>
+<script src="./js/vendor/jquery-ui-1.9.2.custom.min.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>

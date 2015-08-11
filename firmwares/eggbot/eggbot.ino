@@ -10,6 +10,9 @@ union{
       char name[8];
       unsigned char motoADir;
       unsigned char motoBDir;
+      int speed;
+      int penUpPos;
+      int penDownPos;
     }data;
     char buf[64];
 }roboSetup;
@@ -19,8 +22,9 @@ float curSpd,tarSpd; // speed profile
 float curX,curY,curZ;
 float tarX,tarY,tarZ; // target xyz position
 // step value
-long curA,curB;
-long tarA,tarB;
+int tarA,tarB,posA,posB; // target stepper position
+int8_t motorAfw,motorAbk;
+int8_t motorBfw,motorBbk;
 
 MePort stpA(PORT_1);
 MePort stpB(PORT_2);
@@ -79,41 +83,34 @@ void doMove()
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
   int d;
-  dA = tarA - curA;
-  dB = tarB - curB;
+  dA = tarA - posA;
+  dB = tarB - posB;
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
-  Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
-  Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
-  for(int i=0;i<maxD;i++){
-    //Serial.printf("step %d A:%d B;%d\n",i,posA,posB);
+  //Serial.printf("target: %d %d\n",tarA,tarB);
+  //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
+  //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
+  for(int i=0;(posA!=tarA)||(posB!=tarB);i++){                         // Robbo1 2015/6/8 Changed - change loop terminate test to test for moving not finished rather than a preset amount of moves
+    //Serial.printf("step %d A:%d B;%d tar:%d %d\n",i,posA,posB,tarA,tarB);
     // move A
-    if(curA!=tarA){
+    if(posA!=tarA){
       cntA+=stepA;
       if(cntA>=1){
-        if(roboSetup.data.motoADir==0){
-          d = dA>0?-1:1;
-        }else{
-          d = dA>0?1:-1;
-        }
+        d = dA>0?motorAfw:motorAbk;
+        posA+=(dA>0?1:-1);
         stepperMoveA(d);
         cntA-=1;
-        curA+=d;
       }
     }
     // move B
-    if(curB!=tarB){
+    if(posB!=tarB){
       cntB+=stepB;
       if(cntB>=1){
-        if(roboSetup.data.motoBDir==0){
-          d = dB>0?-1:1;
-        }else{
-          d = dB>0?1:-1;
-        }
+        d = dB>0?motorBfw:motorBbk;
+        posB+=(dB>0?1:-1);
         stepperMoveB(d);
         cntB-=1;
-        curB+=d;
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
@@ -123,8 +120,8 @@ void doMove()
     }
   }
   //Serial.printf("finally %d A:%d B;%d\n",maxD,posA,posB);
-  curA = tarA;
-  curB = tarB;
+  posA = tarA;
+  posB = tarB;
 }
 
 /******** mapping xy position to steps ******/
@@ -142,8 +139,7 @@ void prepareMove()
     return;
   tarA = tarX*STEPS_PER_CIRCLE/360;
   tarB = tarY*STEPS_PER_CIRCLE/360*YRATIO;
-  Serial.print("tarX:");Serial.print(tarX);Serial.print(' ');Serial.print("tarY:");Serial.println(tarY);
-  Serial.printf("tar Pos %ld %ld\r\n",tarA,tarB);
+  
   doMove();
   curX = tarX;
   curY = tarY;
@@ -152,8 +148,8 @@ void prepareMove()
 void initPosition()
 {
   curX=0; curY=60;
-  curA = 0;
-  curB = (STEPS_PER_CIRCLE*curY/360*YRATIO);
+  posA = 0;
+  posB = (STEPS_PER_CIRCLE*curY/360*YRATIO);
 }
 
 /************** calculate movements ******************/
@@ -194,7 +190,7 @@ void echoRobotSetup()
   Serial.print(STEPS_PER_CIRCLE);
   Serial.print(' ');Serial.print(curX);
   Serial.print(' ');Serial.print(curY);
-  Serial.print("A");Serial.print((int)roboSetup.data.motoADir);
+  Serial.print(" A");Serial.print((int)roboSetup.data.motoADir);
   Serial.print(" B");Serial.print((int)roboSetup.data.motoBDir);
   Serial.print(" S");Serial.print((int)roboSetup.data.speed);
   Serial.print(" U");Serial.print((int)roboSetup.data.penUpPos);
@@ -261,7 +257,6 @@ void parsePenPosSetup(char * cmd)
       roboSetup.data.penDownPos = atoi(str+1);    
     }
   }
-  Serial.printf("M2 U:%d D:%d\r\n",roboSetup.data.penUpPos,roboSetup.data.penDownPos);
   syncRobotSetup();
 }
 
@@ -328,14 +323,24 @@ void initRobotSetup()
     //Serial.print(roboSetup.buf[i],16);Serial.print(' ');
   }
   //Serial.println();
-  if(strncmp(roboSetup.data.name,"EGG1",4)!=0){
+  if(strncmp(roboSetup.data.name,"EGG3",4)!=0){
     Serial.println("set to default setup");
     // set to default setup
     memset(roboSetup.buf,0,64);
-    memcpy(roboSetup.data.name,"EGG1",4);
+    memcpy(roboSetup.data.name,"EGG3",4);
     roboSetup.data.motoADir = 0;
     roboSetup.data.motoBDir = 0;
     syncRobotSetup();
+  }
+  if(roboSetup.data.motoADir==0){
+    motorAfw=1;motorAbk=-1;
+  }else{
+    motorAfw=-1;motorAbk=1;
+  }
+  if(roboSetup.data.motoBDir==0){
+    motorBfw=-1;motorBbk=1;
+  }else{
+    motorBfw=1;motorBbk=-1;
   }
 }
 

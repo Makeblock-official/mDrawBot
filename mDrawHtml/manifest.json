@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "mDraw",
+    "description": "Host app for mDrawBot",
+    "version": "0.1",
+    "offline_enabled": true,
+    "app":{
+        "background":{
+            "scripts":["background.js"]
+        }
+    },
+    "permissions": [
+        "serial",
+        "fileSystem"
+    ],
+
+    "icons": {
+        "256": "mDraw.png"
+    }
+}

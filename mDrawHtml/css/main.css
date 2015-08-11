@@ -1,0 +1,129 @@
+body {
+    background-color: #4c4c4c;
+}
+
+#panel-left{
+    float: left;
+    margin-top: 10px;
+    background-color: #f9f9f9;
+    width: 80%;
+    height: 700px;
+    position: relative;
+}
+#tips {
+    position: absolute;
+    top: 45px;
+    right: 10px;
+    width: 200px;
+    height: 150px;
+}
+
+#load-pic{
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    width: 200px;
+    height: 200px;
+    background-color: #c1e2b3;
+}
+
+#panel-right{
+    float: right;
+    width: 20%;
+    height: 700px;
+    margin-top: 10px;
+}
+
+#canvas{
+    height: 100%;
+    width: 100%;
+    background-color: #d9edf7;
+}
+
+.btn{
+    margin-top: 5px;
+}
+
+.menu-button{
+    width: 100px;
+}
+
+#btnLoadPic{
+    margin-left: 5px;
+}
+
+#select-robot{
+    margin-left: 10px;
+}
+
+.group{
+    border-radius:5px;
+    border: 1px solid #000 ;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+#robot-group{
+    height: 180px;
+}
+
+#function-group{
+    height: 170px;
+}
+
+#comm-group{
+    height: 290px;
+}
+
+#image-robot{
+    width: 161px;
+    height: 131px;
+    margin-left: 5px;
+    margin-top: 5px;
+    background-color: #ffffff;
+}
+
+#btnUpdateFirm{
+    margin-left: 5px;
+}
+
+#function-tab{
+    height: 120px;
+    color: #ffffff;
+}
+
+#console-log{
+    height: 210px;
+    border-radius:5px;
+    border: 1px solid #000 ;
+    margin-top: 5px;
+    margin-left: 1px;
+    background-color: #333333;
+    color: #ffffff;
+    resize:none;
+}
+
+#serial-port{
+    margin-left: 5px;
+    width: 85px;
+}
+
+#btnConnect{
+    width: 75px;
+}
+
+#input-line{
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 120px;
+    height: 22px;
+}
+
+.pen-spin{
+    width: 60px;
+}
+
+.btn-pen{
+    margin-left: 10px;
+    width: 60px;
+}
