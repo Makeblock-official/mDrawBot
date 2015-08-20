@@ -5,6 +5,11 @@
 
 mDrawbot is a four-in-one drawing robotic kit, you can assembly into 4 different configuration drawing robots: **mScara, mCar, mSpide and mEggBot**. This kit consists of Makeblock parts. We designed a powerful software named mDraw to control these robots, it also can control the XY Plotter V2.0 based on Makeblock platform.
 
+![mDrawBot](http://learn.makeblock.cc/wp-content/uploads/2015/08/B17.png)
+
+This kit consists of over 60 components from Makeblock, including beams, brackets, motor, etc. It also comes with a specially-designed software named mDraw to control these robots. Here's the picture of all the components.
+
+![mDrawBot parts](http://learn.makeblock.cc/wp-content/uploads/2015/08/B02.png)
 
 #### **mScara**
 
@@ -30,19 +35,36 @@ mCar is a three-wheel robot car, it contains two stepper motor drive wheels and 
 
 ![mCar](https://ksr-ugc.imgix.net/assets/003/427/650/40e345b7722cc8968147957a29bbde88_original.gif?v=1426170301&w=700&h=&fit=max&auto=format&q=92&s=4fbb7a0331a44c49365210776bb21679)
 
-## What is mDraw ?
+## How to Use mDrawBot? 
 
-mDraw is quite a powerful software designed for mDrawBot, here are some features:
+Each mDrawBot kit can be assembled into any of the 4 different configurations. We provide the detailed assembling instructions that enables you to build any configuration in an hour. 
+The assembly instructions and the user guide can be downloaded here: [http://learn.makeblock.cc/mdrawbot/](http://learn.makeblock.cc/mdrawbot/)
 
-- Support import svg-format pictures
-- Support conversion from bmp-format to svg-format
-- Support Gray-scale laser engraving 
-- Support customizable parameter including limit switch location, stepper motor direction, drawing range 
-- Support zooming svg-format pictures by rolling mouse wheeled 
+## Software 
 
-![mDraw](https://ksr-ugc.imgix.net/assets/003/446/145/8131c2677e593fb0f4d75de257e1ca93_original.gif?v=1426475014&w=700&h=&fit=max&auto=format&q=92&s=18894874c7f3d1855e45e6cfb1d696c9)
+mDraw is the software specially designed for mDrawBot. After installing the mDraw software, you can import images that you wish your robot to draw. It is completely compatible with the four forms of mDrawBot and also both the servo mode and laser mode of Makeblock XY Plotter V2.0. 
 
+## Features of mDraw 
 
-## User Guide
+ - Support mScara, mSpider, mEggBot, mCar, XY  
+ - Support both pen drawing and laser engraving  
+ - Support custom settings of motor direction, drawing range, etc  
+ - Support saving parameters  
+ - Support SVG. file  
+ - Support conversion from BMP to SVG  
+ - Support zooming, rotating, mirroring, and moving the SVG graphics  
+ - Support Windows7 or later. (Will be available in Mac OS X, Linux soon.)  
 
-User Guide: [https://github.com/Cration/mDrawBot-resources]  
+## About mDrawBot’s upgrade.
+
+You can also design your own upgrade pack for your mDrawBot. By adding an [accelerometer and gyro sensor](http://www.makeblock.cc/me-3-axis-accelerometer-and-gyro-sensor/), it will become a two-wheeled self-balancing vehicle. Add some additional Makeblock mechanical parts and it may be transformed into a [XY plotter](http://www.makeblock.cc/xy-plotter-robot-kit-v2-0-with-electronic/). The only limit is your imagination.
+
+(Note: You need to prepare the parts needed.)
+
+## FAQ
+
+Please refer to mDrawBot Download Package. 
+
+Use mDraw software, refer to this address: [https://www.youtube.com/watch?v=um0TXejmmmQ](https://www.youtube.com/watch?v=um0TXejmmmQ)
+
+Technical support：[support@makeblock.cc](mailto:support.makeblock.cc)
