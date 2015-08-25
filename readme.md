@@ -63,7 +63,7 @@ You can also design your own upgrade pack for your mDrawBot. By adding an [accel
 
 ## FAQ
 
-Please refer to mDrawBot Download Package. 
+[Please refer to mDrawBot Download Package.](http://learn.makeblock.cc/mdrawbot/)  
 
 Use mDraw software, refer to this address: [https://www.youtube.com/watch?v=um0TXejmmmQ](https://www.youtube.com/watch?v=um0TXejmmmQ)
 
