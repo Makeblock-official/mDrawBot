@@ -4,6 +4,8 @@
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
+const char versionString[] = "Version1.0";
+
 // data stored in eeprom
 static union{
     struct{
@@ -71,7 +73,7 @@ void stepperMoveB(int dir)
 /************** calculate movements ******************/
 //#define STEPDELAY_MIN 200 // micro second
 //#define STEPDELAY_MAX 1000
-int stepAuxDelay=0;
+long stepAuxDelay=0; // int not sufficient because only supports delay up to 32ms
 int stepdelay_min=200;
 int stepdelay_max=1000;
 #define ACCELERATION 2 // mm/s^2 don't get inertia exceed motor could handle
@@ -80,7 +82,7 @@ int stepdelay_max=1000;
 
 void doMove()
 {
-  int mDelay=stepdelay_max;
+  long mDelay=stepdelay_max; // int not sufficient because only supports delay up to 32ms
   int speedDiff = -SPEED_STEP;
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
@@ -100,8 +102,15 @@ void doMove()
       cntA+=stepA;
       if(cntA>=1){
         d = dA>0?motorAfw:motorAbk;
+        if(d>0 && digitalRead(ylimit_pin2)==1 || d<0 && digitalRead(ylimit_pin1)==1) {
+          if(roboSetup.data.motorSwitch == 0) {
+            stepperMoveA(d);
+          }
+          else {
+            stepperMoveB(d);
+          }
+        }
         posA+=(dA>0?1:-1);
-        stepperMoveA(d);
         cntA-=1;
       }
     }
@@ -110,13 +119,25 @@ void doMove()
       cntB+=stepB;
       if(cntB>=1){
         d = dB>0?motorBfw:motorBbk;
+        if(d>0 && digitalRead(xlimit_pin2)==1 || d<0 && digitalRead(xlimit_pin1)==1) {
+          if(roboSetup.data.motorSwitch == 0) {
+            stepperMoveB(d);
+          }
+          else {
+            stepperMoveA(d);
+          }
+        }
         posB+=(dB>0?1:-1);
-        stepperMoveB(d);
         cntB-=1;
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
-    delayMicroseconds(mDelay);
+    if(mDelay <= 16000) {
+      delayMicroseconds(mDelay);
+    }
+    else { // delayMicroseconds can only produce an accurate delay up to 16383 
+      delay(mDelay/1000);
+    }
     if((maxD-i)<((stepdelay_max-stepdelay_min)/SPEED_STEP)){
       speedDiff=SPEED_STEP;
     }
@@ -155,11 +176,21 @@ void goHome()
 {
   // stop on either endstop touches
   while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
-    stepperMoveB(motorBbk);
+    if(roboSetup.data.motorSwitch == 0) {
+      stepperMoveB(motorBbk);
+    }
+    else {
+      stepperMoveA(motorAbk);
+    }
     delayMicroseconds(stepdelay_min);
   }
   while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
-    stepperMoveA(motorAbk);
+    if(roboSetup.data.motorSwitch == 0) {
+      stepperMoveA(motorAbk);
+    }
+    else {
+      stepperMoveB(motorBbk);
+    }
     delayMicroseconds(stepdelay_min);
   }
   posA = 0;
@@ -194,7 +225,7 @@ void parseCordinate(char * cmd)
       float speed = atof(str+1);
       tarSpd = speed/60; // mm/min -> mm/s
     }else if(str[0]=='A'){
-      stepAuxDelay = atoi(str+1);
+      stepAuxDelay = atol(str+1);
     }
   }
   prepareMove();
@@ -222,6 +253,11 @@ void echoEndStop()
   Serial.print(digitalRead(xlimit_pin2)); Serial.print(" ");
   Serial.print(digitalRead(ylimit_pin1)); Serial.print(" ");
   Serial.println(digitalRead(ylimit_pin2));
+}
+
+void echoVersionString()
+{
+  Serial.println(versionString);
 }
 
 void syncRobotSetup()
@@ -258,7 +294,7 @@ void parseAuxDelay(char * cmd)
 {
   char * tmp;
   strtok_r(cmd, " ", &tmp);
-  stepAuxDelay = atoi(tmp);
+  stepAuxDelay = atol(tmp);
 }
 
 void parseLaserPower(char * cmd)
@@ -267,6 +303,7 @@ void parseLaserPower(char * cmd)
   strtok_r(cmd, " ", &tmp);
   int pwm = atoi(tmp);
   laser.run(pwm);
+  delay(100);
 }
 
 void parsePen(char * cmd)
@@ -275,6 +312,7 @@ void parsePen(char * cmd)
   strtok_r(cmd, " ", &tmp);
   int pos = atoi(tmp);
   servoPen.write(pos);
+  delay(100);
 }
 
 void parsePenPosSetup(char * cmd)
@@ -319,6 +357,9 @@ void parseMcode(char * cmd)
       break;
     case 11:
       echoEndStop();
+      break;
+    case 115:
+      echoVersionString();
       break;
   }
 }
@@ -373,8 +414,8 @@ void initRobotSetup()
     roboSetup.data.height = HEIGHT;
     roboSetup.data.motorSwitch = 0;
     roboSetup.data.speed = 80;
-    roboSetup.data.penUpPos = 160;
-    roboSetup.data.penDownPos = 90;
+    roboSetup.data.penUpPos = 90;
+    roboSetup.data.penDownPos = 130;
     syncRobotSetup();
   }
   // init motor direction
