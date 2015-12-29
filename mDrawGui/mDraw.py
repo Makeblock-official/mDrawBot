@@ -404,13 +404,19 @@ class MainUI(QWidget):
         elif tabindex==1:
             self.robot = WallRobot.WallRobot(self.scene, self.ui)
             self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "spider"))
-        elif tabindex==4:
+        if tabindex==2:
+            self.robot = ScaraRobot.Scara(self.scene, self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "scara"))
+        elif tabindex==3:
+            self.robot = WallRobot.WallRobot(self.scene, self.ui)
+            self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "spider"))
+        elif tabindex==6:
             self.robot = XYRobot.XYBot(self.scene,self.ui)
             self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "xy"))
-        elif tabindex==2:
+        elif tabindex==4:
             self.robot = EggBot.EggBot(self.scene,self.ui)
             self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "egg"))
-        elif tabindex==3:
+        elif tabindex==5:
             self.robot = CarRobot.CarBot(self.scene,self.ui)
             self.ui.labelModel.setStyleSheet(ssTemplate.replace("model", "car"))
         # connect robot delegate

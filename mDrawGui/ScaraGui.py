@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ScaraGui.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.2
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -11,14 +11,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(959, 720)
+        Form.resize(979, 720)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Form.sizePolicy().hasHeightForWidth())
         Form.setSizePolicy(sizePolicy)
         Form.setMinimumSize(QtCore.QSize(959, 720))
-        Form.setMaximumSize(QtCore.QSize(959, 768))
+        Form.setMaximumSize(QtCore.QSize(979, 720))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -108,7 +108,7 @@ class Ui_Form(object):
         self.progressBar.setProperty("value", 0)
         self.progressBar.setObjectName("progressBar")
         self.robotCombo = QtWidgets.QComboBox(Form)
-        self.robotCombo.setGeometry(QtCore.QRect(770, 10, 121, 31))
+        self.robotCombo.setGeometry(QtCore.QRect(770, 10, 161, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -142,8 +142,10 @@ class Ui_Form(object):
         self.robotCombo.addItem("")
         self.robotCombo.addItem("")
         self.robotCombo.addItem("")
+        self.robotCombo.addItem("")
+        self.robotCombo.addItem("")
         self.groupBox = QtWidgets.QGroupBox(Form)
-        self.groupBox.setGeometry(QtCore.QRect(770, 240, 181, 171))
+        self.groupBox.setGeometry(QtCore.QRect(770, 240, 201, 171))
         self.groupBox.setStyleSheet("QGroupBox {\n"
 "    background-color: rgb(49, 49, 49);\n"
 "    border: 1px solid rgb(108, 108, 108);\n"
@@ -152,7 +154,7 @@ class Ui_Form(object):
         self.groupBox.setTitle("")
         self.groupBox.setObjectName("groupBox")
         self.tabWidget = QtWidgets.QTabWidget(self.groupBox)
-        self.tabWidget.setGeometry(QtCore.QRect(1, 1, 179, 169))
+        self.tabWidget.setGeometry(QtCore.QRect(1, 1, 199, 169))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -185,7 +187,7 @@ class Ui_Form(object):
         self.tabPen = QtWidgets.QWidget()
         self.tabPen.setObjectName("tabPen")
         self.btnPenUp = QtWidgets.QPushButton(self.tabPen)
-        self.btnPenUp.setGeometry(QtCore.QRect(10, 20, 75, 23))
+        self.btnPenUp.setGeometry(QtCore.QRect(20, 20, 75, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -211,7 +213,7 @@ class Ui_Form(object):
 "")
         self.btnPenUp.setObjectName("btnPenUp")
         self.btnPenDown = QtWidgets.QPushButton(self.tabPen)
-        self.btnPenDown.setGeometry(QtCore.QRect(10, 60, 75, 23))
+        self.btnPenDown.setGeometry(QtCore.QRect(20, 60, 75, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -237,19 +239,19 @@ class Ui_Form(object):
 "")
         self.btnPenDown.setObjectName("btnPenDown")
         self.penUpSpin = QtWidgets.QSpinBox(self.tabPen)
-        self.penUpSpin.setGeometry(QtCore.QRect(100, 20, 71, 22))
+        self.penUpSpin.setGeometry(QtCore.QRect(110, 20, 71, 22))
         self.penUpSpin.setStyleSheet("color: rgb(230,230,230)")
         self.penUpSpin.setMaximum(180)
         self.penUpSpin.setProperty("value", 130)
         self.penUpSpin.setObjectName("penUpSpin")
         self.penDownSpin = QtWidgets.QSpinBox(self.tabPen)
-        self.penDownSpin.setGeometry(QtCore.QRect(100, 60, 71, 22))
+        self.penDownSpin.setGeometry(QtCore.QRect(110, 60, 71, 22))
         self.penDownSpin.setStyleSheet("color: rgb(230,230,230);")
         self.penDownSpin.setMaximum(180)
         self.penDownSpin.setProperty("value", 90)
         self.penDownSpin.setObjectName("penDownSpin")
         self.btnSavePos = QtWidgets.QPushButton(self.tabPen)
-        self.btnSavePos.setGeometry(QtCore.QRect(10, 100, 75, 23))
+        self.btnSavePos.setGeometry(QtCore.QRect(20, 100, 75, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -392,7 +394,7 @@ class Ui_Form(object):
         self.btnPenUp_2.setObjectName("btnPenUp_2")
         self.tabWidget.addTab(self.tabUtil, "")
         self.btnSetRobot = QtWidgets.QPushButton(Form)
-        self.btnSetRobot.setGeometry(QtCore.QRect(892, 10, 61, 31))
+        self.btnSetRobot.setGeometry(QtCore.QRect(940, 10, 31, 31))
         self.btnSetRobot.setStyleSheet(" QPushButton {\n"
 "     color: rgb(178,178,178);\n"
 "     border: 1px solid rgb(67,67,67);\n"
@@ -434,7 +436,7 @@ class Ui_Form(object):
         self.btnHome.setText("")
         self.btnHome.setObjectName("btnHome")
         self.groupBox_4 = QtWidgets.QGroupBox(Form)
-        self.groupBox_4.setGeometry(QtCore.QRect(770, 420, 181, 291))
+        self.groupBox_4.setGeometry(QtCore.QRect(770, 420, 201, 291))
         self.groupBox_4.setStyleSheet("QGroupBox {\n"
 "    background-color: rgb(77, 77, 77);\n"
 "    border: 1px solid rgb(107, 107, 107);\n"
@@ -447,7 +449,7 @@ class Ui_Form(object):
         self.groupBox_4.setTitle("")
         self.groupBox_4.setObjectName("groupBox_4")
         self.groupBox_3 = QtWidgets.QGroupBox(self.groupBox_4)
-        self.groupBox_3.setGeometry(QtCore.QRect(1, 1, 179, 289))
+        self.groupBox_3.setGeometry(QtCore.QRect(1, 1, 199, 289))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.groupBox_3.setFont(font)
@@ -463,7 +465,7 @@ class Ui_Form(object):
         self.groupBox_3.setTitle("")
         self.groupBox_3.setObjectName("groupBox_3")
         self.portCombo = QtWidgets.QComboBox(self.groupBox_3)
-        self.portCombo.setGeometry(QtCore.QRect(4, 10, 91, 31))
+        self.portCombo.setGeometry(QtCore.QRect(4, 10, 111, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -496,7 +498,7 @@ class Ui_Form(object):
         self.portCombo.addItem("")
         self.portCombo.addItem("")
         self.btnConnect = QtWidgets.QPushButton(self.groupBox_3)
-        self.btnConnect.setGeometry(QtCore.QRect(97, 10, 77, 31))
+        self.btnConnect.setGeometry(QtCore.QRect(120, 10, 71, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -522,7 +524,7 @@ class Ui_Form(object):
 "")
         self.btnConnect.setObjectName("btnConnect")
         self.textConsole = QtWidgets.QTextEdit(self.groupBox_3)
-        self.textConsole.setGeometry(QtCore.QRect(4, 50, 170, 201))
+        self.textConsole.setGeometry(QtCore.QRect(4, 50, 191, 201))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -536,7 +538,7 @@ class Ui_Form(object):
 " }")
         self.textConsole.setObjectName("textConsole")
         self.lineSend = QtWidgets.QLineEdit(self.groupBox_3)
-        self.lineSend.setGeometry(QtCore.QRect(4, 260, 121, 23))
+        self.lineSend.setGeometry(QtCore.QRect(4, 260, 141, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -550,7 +552,7 @@ class Ui_Form(object):
 "")
         self.lineSend.setObjectName("lineSend")
         self.btnSend = QtWidgets.QPushButton(self.groupBox_3)
-        self.btnSend.setGeometry(QtCore.QRect(130, 260, 41, 23))
+        self.btnSend.setGeometry(QtCore.QRect(150, 260, 41, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -632,7 +634,7 @@ class Ui_Form(object):
 "background-color: rgb(249, 249, 249);")
         self.label_2.setObjectName("label_2")
         self.groupBox_2 = QtWidgets.QGroupBox(Form)
-        self.groupBox_2.setGeometry(QtCore.QRect(770, 50, 181, 181))
+        self.groupBox_2.setGeometry(QtCore.QRect(770, 50, 201, 181))
         self.groupBox_2.setStyleSheet("QGroupBox {\n"
 "    background-color: rgb(49, 49, 49);\n"
 "    border: 1px solid rgb(108, 108, 108);\n"
@@ -641,13 +643,13 @@ class Ui_Form(object):
         self.groupBox_2.setTitle("")
         self.groupBox_2.setObjectName("groupBox_2")
         self.labelModel = QtWidgets.QLabel(self.groupBox_2)
-        self.labelModel.setGeometry(QtCore.QRect(10, 10, 161, 131))
+        self.labelModel.setGeometry(QtCore.QRect(10, 10, 181, 131))
         self.labelModel.setStyleSheet("background-color: rgb(247, 247, 247);\n"
 "border-image: url(:/images/scara.png);")
         self.labelModel.setText("")
         self.labelModel.setObjectName("labelModel")
         self.btnUpdateFirmware = QtWidgets.QPushButton(self.groupBox_2)
-        self.btnUpdateFirmware.setGeometry(QtCore.QRect(10, 150, 111, 23))
+        self.btnUpdateFirmware.setGeometry(QtCore.QRect(10, 150, 121, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -692,7 +694,7 @@ class Ui_Form(object):
         self.pushButton.setText("")
         self.pushButton.setObjectName("pushButton")
         self.btnWiring = QtWidgets.QPushButton(self.groupBox_2)
-        self.btnWiring.setGeometry(QtCore.QRect(130, 150, 41, 23))
+        self.btnWiring.setGeometry(QtCore.QRect(140, 150, 51, 23))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setBold(True)
@@ -952,11 +954,13 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.robotCombo.setItemText(0, _translate("Form", "mScara"))
-        self.robotCombo.setItemText(1, _translate("Form", "mSpider"))
-        self.robotCombo.setItemText(2, _translate("Form", "mEggBot"))
-        self.robotCombo.setItemText(3, _translate("Form", "mCar"))
-        self.robotCombo.setItemText(4, _translate("Form", "XY"))
+        self.robotCombo.setItemText(0, _translate("Form", "UltimateLab Scara"))
+        self.robotCombo.setItemText(1, _translate("Form", "UltimateLab Spider"))
+        self.robotCombo.setItemText(2, _translate("Form", "mScara"))
+        self.robotCombo.setItemText(3, _translate("Form", "mSpider"))
+        self.robotCombo.setItemText(4, _translate("Form", "mEggBot"))
+        self.robotCombo.setItemText(5, _translate("Form", "mCar"))
+        self.robotCombo.setItemText(6, _translate("Form", "XY"))
         self.btnPenUp.setText(_translate("Form", "Pen Up"))
         self.btnPenDown.setText(_translate("Form", "Pen Down"))
         self.btnSavePos.setText(_translate("Form", "Save"))

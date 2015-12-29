@@ -2,7 +2,7 @@ import sys
 import os
 import time
 from xml.dom import minidom
-from PyQt5.QtGui import*
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from RobotUtils import *

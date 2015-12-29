@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>959</width>
+    <width>979</width>
     <height>720</height>
    </rect>
   </property>
@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>959</width>
-    <height>768</height>
+    <width>979</width>
+    <height>720</height>
    </size>
   </property>
   <property name="font">
@@ -195,7 +195,7 @@
     <rect>
      <x>770</x>
      <y>10</y>
-     <width>121</width>
+     <width>161</width>
      <height>31</height>
     </rect>
    </property>
@@ -232,6 +232,16 @@ QComboBox QAbstractItemView {
    </property>
    <item>
     <property name="text">
+     <string>UltimateLab Scara</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>UltimateLab Spider</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
      <string>mScara</string>
     </property>
    </item>
@@ -261,7 +271,7 @@ QComboBox QAbstractItemView {
     <rect>
      <x>770</x>
      <y>240</y>
-     <width>181</width>
+     <width>201</width>
      <height>171</height>
     </rect>
    </property>
@@ -280,7 +290,7 @@ QComboBox QAbstractItemView {
      <rect>
       <x>1</x>
       <y>1</y>
-      <width>179</width>
+      <width>199</width>
       <height>169</height>
      </rect>
     </property>
@@ -328,7 +338,7 @@ QTabBar::tab {
      <widget class="QPushButton" name="btnPenUp">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>20</y>
         <width>75</width>
         <height>23</height>
@@ -368,7 +378,7 @@ QTabBar::tab {
      <widget class="QPushButton" name="btnPenDown">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>60</y>
         <width>75</width>
         <height>23</height>
@@ -408,7 +418,7 @@ QTabBar::tab {
      <widget class="QSpinBox" name="penUpSpin">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>110</x>
         <y>20</y>
         <width>71</width>
         <height>22</height>
@@ -427,7 +437,7 @@ QTabBar::tab {
      <widget class="QSpinBox" name="penDownSpin">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>110</x>
         <y>60</y>
         <width>71</width>
         <height>22</height>
@@ -446,7 +456,7 @@ QTabBar::tab {
      <widget class="QPushButton" name="btnSavePos">
       <property name="geometry">
        <rect>
-        <x>10</x>
+        <x>20</x>
         <y>100</y>
         <width>75</width>
         <height>23</height>
@@ -723,9 +733,9 @@ QSlider::groove:horizontal {
   <widget class="QPushButton" name="btnSetRobot">
    <property name="geometry">
     <rect>
-     <x>892</x>
+     <x>940</x>
      <y>10</y>
-     <width>61</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
@@ -795,7 +805,7 @@ QSlider::groove:horizontal {
     <rect>
      <x>770</x>
      <y>420</y>
-     <width>181</width>
+     <width>201</width>
      <height>291</height>
     </rect>
    </property>
@@ -818,7 +828,7 @@ QGroupBox::title {
      <rect>
       <x>1</x>
       <y>1</y>
-      <width>179</width>
+      <width>199</width>
       <height>289</height>
      </rect>
     </property>
@@ -846,7 +856,7 @@ QGroupBox::title {
       <rect>
        <x>4</x>
        <y>10</y>
-       <width>91</width>
+       <width>111</width>
        <height>31</height>
       </rect>
      </property>
@@ -896,9 +906,9 @@ QComboBox QAbstractItemView {
     <widget class="QPushButton" name="btnConnect">
      <property name="geometry">
       <rect>
-       <x>97</x>
+       <x>120</x>
        <y>10</y>
-       <width>77</width>
+       <width>71</width>
        <height>31</height>
       </rect>
      </property>
@@ -938,7 +948,7 @@ QComboBox QAbstractItemView {
       <rect>
        <x>4</x>
        <y>50</y>
-       <width>170</width>
+       <width>191</width>
        <height>201</height>
       </rect>
      </property>
@@ -963,7 +973,7 @@ QComboBox QAbstractItemView {
       <rect>
        <x>4</x>
        <y>260</y>
-       <width>121</width>
+       <width>141</width>
        <height>23</height>
       </rect>
      </property>
@@ -986,7 +996,7 @@ QComboBox QAbstractItemView {
     <widget class="QPushButton" name="btnSend">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>150</x>
        <y>260</y>
        <width>41</width>
        <height>23</height>
@@ -1140,7 +1150,7 @@ background-color: rgb(249, 249, 249);</string>
     <rect>
      <x>770</x>
      <y>50</y>
-     <width>181</width>
+     <width>201</width>
      <height>181</height>
     </rect>
    </property>
@@ -1159,7 +1169,7 @@ background-color: rgb(249, 249, 249);</string>
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>161</width>
+      <width>181</width>
       <height>131</height>
      </rect>
     </property>
@@ -1176,7 +1186,7 @@ border-image: url(:/images/scara.png);</string>
      <rect>
       <x>10</x>
       <y>150</y>
-      <width>111</width>
+      <width>121</width>
       <height>23</height>
      </rect>
     </property>
@@ -1244,9 +1254,9 @@ border-image: url(:/images/scara.png);</string>
    <widget class="QPushButton" name="btnWiring">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>140</x>
       <y>150</y>
-      <width>41</width>
+      <width>51</width>
       <height>23</height>
      </rect>
     </property>
