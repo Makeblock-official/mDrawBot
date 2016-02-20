@@ -1,6 +1,5 @@
-#include <Makeblock.h>
+#include <MeOrion.h>
 #include <EEPROM.h>
-#include <Servo.h>
 #include <SoftwareSerial.h>
 #include <Wire.h>
 
@@ -71,7 +70,7 @@ void stepperMoveB(int dir)
 /************** calculate movements ******************/
 //#define STEPDELAY_MIN 200 // micro second
 //#define STEPDELAY_MAX 1000
-int stepAuxDelay=0;
+long stepAuxDelay=0;
 int stepdelay_min=200;
 int stepdelay_max=1000;
 #define ACCELERATION 2 // mm/s^2 don't get inertia exceed motor could handle
@@ -80,7 +79,7 @@ int stepdelay_max=1000;
 
 void doMove()
 {
-  int mDelay=stepdelay_max;
+  long mDelay=stepdelay_max;
   int speedDiff = -SPEED_STEP;
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
@@ -116,7 +115,15 @@ void doMove()
       }
     }
     mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
-    delayMicroseconds(mDelay);
+    if(mDelay > 10000)
+    {
+      delay(mDelay/1000);
+      delayMicroseconds(mDelay%1000);
+    }
+    else
+    {
+      delayMicroseconds(mDelay);
+    }
     if((maxD-i)<((stepdelay_max-stepdelay_min)/SPEED_STEP)){
       speedDiff=SPEED_STEP;
     }
@@ -194,7 +201,7 @@ void parseCordinate(char * cmd)
       float speed = atof(str+1);
       tarSpd = speed/60; // mm/min -> mm/s
     }else if(str[0]=='A'){
-      stepAuxDelay = atoi(str+1);
+      stepAuxDelay = atol(str+1);
     }
   }
   prepareMove();
@@ -258,7 +265,7 @@ void parseAuxDelay(char * cmd)
 {
   char * tmp;
   strtok_r(cmd, " ", &tmp);
-  stepAuxDelay = atoi(tmp);
+  stepAuxDelay = atol(tmp);
 }
 
 void parseLaserPower(char * cmd)
