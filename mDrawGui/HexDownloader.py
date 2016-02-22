@@ -56,7 +56,7 @@ class HexDownloader():
             avrdudepath = "avrdude.exe"
             confpath = "avrdude.conf"
         elif "Darwin" in systemType:
-            avrdudepath = "avrdude"
+            avrdudepath = "./avrdude"
             confpath = "avrdude.conf"
         cmd = u"%s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
         self.moveListThread = WorkInThread(self.downloadThread,cmd)

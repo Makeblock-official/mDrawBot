@@ -8,7 +8,7 @@ Usage:
 from setuptools import setup
 
 APP = ['../mDraw.py']
-DATA_FILES = ['./avrdude','../avrdude.conf','./potrace','../XY.hex','../mScara.hex','../mSpider.hex','../mEggBot.hex','../mCar.hex']
+DATA_FILES = ['./avrdude','./avrdude.conf','./potrace','../XY.hex','../mScara.hex','../mSpider.hex','../mEggBot.hex','../mCar.hex']
 OPTIONS = {
 'argv_emulation': True,
 'iconfile':'mDraw.icns',

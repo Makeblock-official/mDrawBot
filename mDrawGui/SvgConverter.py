@@ -89,6 +89,7 @@ class SvgConverter(QWidget):
             p  ="potrace.exe"
             cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
         elif "Darwin" in systemType:
+            p  ="./potrace"
             cmd = "%s -k %f -t 5 -s -o %s %s" %(p,th,self.svgout,self.bitmapFile)
         p = subprocess.Popen(cmd,stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         p.wait()
