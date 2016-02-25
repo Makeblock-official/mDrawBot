@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ParserGui.ui'
+# Form implementation generated from reading ui file 'ParserGUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.2
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -34,7 +34,7 @@ class Ui_Form(object):
         self.groupBox.setFont(font)
         self.groupBox.setObjectName("groupBox")
         self.btnConvert = QtWidgets.QPushButton(self.groupBox)
-        self.btnConvert.setGeometry(QtCore.QRect(60, 110, 101, 23))
+        self.btnConvert.setGeometry(QtCore.QRect(40, 110, 121, 23))
         self.btnConvert.setObjectName("btnConvert")
         self.slideThr = QtWidgets.QSlider(self.groupBox)
         self.slideThr.setGeometry(QtCore.QRect(10, 50, 151, 19))
@@ -52,7 +52,8 @@ class Ui_Form(object):
         self.textBrowser.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.textBrowser.setObjectName("textBrowser")
         self.groupBox_2 = QtWidgets.QGroupBox(Form)
-        self.groupBox_2.setGeometry(QtCore.QRect(480, 150, 171, 71))
+        self.groupBox_2.setEnabled(False)
+        self.groupBox_2.setGeometry(QtCore.QRect(1480, 150, 171, 71))
         font = QtGui.QFont()
         font.setFamily("Arial")
         self.groupBox_2.setFont(font)
@@ -86,8 +87,8 @@ class Ui_Form(object):
         self.textBrowser.setHtml(_translate("Form", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Arial\'; font-size:9pt; font-weight:600; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-weight:400;\">Note that only laser kit support original format, if you are using pen or other servo driven kit, please translate bitmap to svg path.</span></p></body></html>"))
+"</style></head><body style=\" font-family:\'Arial\'; font-size:13pt; font-weight:600; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400;\">Note that only laser kit support original format, if you are using pen or other servo driven kit, please translate bitmap to svg path.</span></p></body></html>"))
         self.groupBox_2.setTitle(_translate("Form", "Bitmap(only for laser)"))
         self.btnConvert_2.setText(_translate("Form", "Convert to Grey"))
         self.btnPlotToMain.setText(_translate("Form", "Plot to Main Scene"))
