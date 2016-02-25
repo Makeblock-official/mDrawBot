@@ -31,11 +31,11 @@ int8_t motorBfw,motorBbk;
 MePort stpA(PORT_1);
 MePort stpB(PORT_2);
 MePort ylimit(PORT_3);
-int ylimit_pin1 = ylimit.pin1();
-int ylimit_pin2 = ylimit.pin2();
+int ylimit_pin1 = ylimit.pin1();  //limit 2
+int ylimit_pin2 = ylimit.pin2();  //limit 1
 MePort xlimit(PORT_6);
-int xlimit_pin1 = xlimit.pin1();
-int xlimit_pin2 = xlimit.pin2();
+int xlimit_pin1 = xlimit.pin1();  //limit 4
+int xlimit_pin2 = xlimit.pin2();  //limit 3
 MeDCMotor laser(M2);
 MePort servoPort(PORT_7);
 int servopin =  servoPort.pin2();
@@ -161,11 +161,11 @@ void prepareMove()
 void goHome()
 {
   // stop on either endstop touches
-  while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
+  while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
     stepperMoveB(motorBbk);
     delayMicroseconds(stepdelay_min);
   }
-  while(digitalRead(ylimit_pin2)==1 && digitalRead(ylimit_pin1)==1){
+  while(digitalRead(xlimit_pin2)==1 && digitalRead(xlimit_pin1)==1){
     stepperMoveA(motorAbk);
     delayMicroseconds(stepdelay_min);
   }
@@ -435,11 +435,11 @@ void loop() {
       bufindex=0;
     }
   }
-  /*
+  
   Serial.print(digitalRead(xlimit_pin1));Serial.print(' ');
   Serial.print(digitalRead(xlimit_pin2));Serial.print(' ');
   Serial.print(digitalRead(ylimit_pin1));Serial.print(' ');
   Serial.print(digitalRead(ylimit_pin2));Serial.println();  
-  */
+  
 }
 
