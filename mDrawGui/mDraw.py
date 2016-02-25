@@ -13,6 +13,7 @@ import ParserGUI
 import HexDownloader
 import WireHelper
 import WireGui
+import WireGui_XY
 
 from PyQt5.QtGui import*
 from PyQt5.QtWidgets import *
@@ -715,7 +716,10 @@ class MainUI(QWidget):
         self.robot.showSetup()
     
     def showWire(self):
-        self.wireHelp =  WireHelper.WireHelper(WireGui.Ui_Form)
+        if self.robot.__class__.__name__ == "XYBot":
+            self.wireHelp =  WireHelper.WireHelper(WireGui_XY.Ui_Form)
+        else:
+            self.wireHelp =  WireHelper.WireHelper(WireGui.Ui_Form)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'XySetup.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.2
+# Created by: PyQt5 UI code generator 5.5.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -124,7 +124,7 @@ class Ui_Form(object):
         self.label_5.setText(_translate("Form", "ClockWise"))
         self.label_6.setText(_translate("Form", "Anti ClockWise"))
         self.label_7.setText(_translate("Form", "Limit Switch Status:"))
-        self.label_8.setText(_translate("Form", "X-:0 X+:0 Y-:0 Y+:0 "))
+        self.label_8.setText(_translate("Form", "S1:0 S2:0 S3:0 S4:0 "))
         self.labelSpeed.setText(_translate("Form", "Speed (50%):"))
         self.btnOk.setText(_translate("Form", "Ok"))
 

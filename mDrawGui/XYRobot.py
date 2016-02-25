@@ -179,7 +179,7 @@ class XYBot(QGraphicsItem):
             self.robotState = IDLE
         elif "M11" in msg:
             t = msg.split()
-            self.robotSetup.ui.label_8.setText("X-:%s X+:%s Y-:%s Y+:%s " %(t[1],t[2],t[3],t[4]))
+            self.robotSetup.ui.label_8.setText("S1:%s S2:%s S3:%s S4:%s " %(t[1],t[2],t[3],t[4]))
             
 
     def paint(self, painter, option, widget=None):
