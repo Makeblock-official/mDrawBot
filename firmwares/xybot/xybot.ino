@@ -225,10 +225,10 @@ void echoRobotSetup()
 void echoEndStop()
 {
   Serial.print("M11 ");
-  Serial.print(digitalRead(xlimit_pin1)); Serial.print(" ");
-  Serial.print(digitalRead(xlimit_pin2)); Serial.print(" ");
+  Serial.print(digitalRead(ylimit_pin2)); Serial.print(" ");
   Serial.print(digitalRead(ylimit_pin1)); Serial.print(" ");
-  Serial.println(digitalRead(ylimit_pin2));
+  Serial.print(digitalRead(xlimit_pin2)); Serial.print(" ");
+  Serial.println(digitalRead(xlimit_pin1));
 }
 
 void syncRobotSetup()
@@ -435,11 +435,9 @@ void loop() {
       bufindex=0;
     }
   }
-  
-  Serial.print(digitalRead(xlimit_pin1));Serial.print(' ');
-  Serial.print(digitalRead(xlimit_pin2));Serial.print(' ');
-  Serial.print(digitalRead(ylimit_pin1));Serial.print(' ');
-  Serial.print(digitalRead(ylimit_pin2));Serial.println();  
-  
+//  Serial.print(digitalRead(xlimit_pin1));Serial.print(' ');
+//  Serial.print(digitalRead(xlimit_pin2));Serial.print(' ');
+//  Serial.print(digitalRead(ylimit_pin1));Serial.print(' ');
+//  Serial.print(digitalRead(ylimit_pin2));Serial.println();  
 }
 
