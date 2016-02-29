@@ -47,6 +47,7 @@ class serialRead(threading.Thread):
     def run(self):
         while self.running:
             l = self.ser.readline().decode('utf-8')
+            # print("read: "+l) receive log
             self.cb(l)
 
 class serialCom():
@@ -72,6 +73,7 @@ class serialCom():
         if self.ser == None:
             return
         self.ser.write(msg.encode('utf-8'))
+        # print("send: "+msg) # send log
         
 
 

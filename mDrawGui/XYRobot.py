@@ -265,11 +265,13 @@ class XYBot(QGraphicsItem):
         self.sendCmd(cmd)
 
     def G28(self):
-        if self.robotState != IDLE: return
+        # if self.robotState != IDLE: return
+        # self.M4(0)  # shutdown laser
         cmd = "G28\n"
         self.sendCmd(cmd)
         self.x = 0
         self.y = 0
+        self.robotState = IDLE
     
     def M1(self,pos):
         if self.robotState != IDLE: return
@@ -332,7 +334,7 @@ class XYBot(QGraphicsItem):
                     auxDelay = 0
                     if self.laserMode:
                         if i>0:
-                            auxDelay = self.laserBurnDelay*1000
+                            auxDelay = self.laserBurnDelay*200
                         elif i==0:
                             self.M4(self.laserPower,0.0) # turn laser power down when perform transition
                             self.q.get()
@@ -379,6 +381,8 @@ class XYBot(QGraphicsItem):
     def stopPrinting(self):
         self.printing = False
         self.pausing = False
+        self.robotState = IDLE
+        self.M4(0)  # shutdown laser
         
     def pausePrinting(self,v):
         self.pausing = v
