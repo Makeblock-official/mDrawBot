@@ -39,6 +39,7 @@ float tarTh1, tarTh2; // target angle of joint
 int tarA,tarB,posA,posB; // target stepper position
 int8_t motorAfw,motorAbk;
 int8_t motorBfw,motorBbk;
+long last_time;
 MePort stpB(PORT_2);
 MePort stpA(PORT_1);
 MeDCMotor laser(M2);
@@ -126,6 +127,7 @@ int stepdelay_max=2000;
 void doMove()
 {
   long mDelay=stepdelay_max;
+  long temp_delay;
   int speedDiff = -SPEED_STEP;
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
@@ -161,15 +163,26 @@ void doMove()
         cntB-=1;
       }
     }
-    mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
-    if(mDelay > 10000)
+    mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max);
+    temp_delay = mDelay + stepAuxDelay;
+    if(millis() - last_time > 400)
     {
-      delay(mDelay/1000);
-      delayMicroseconds(mDelay%1000);
+      last_time = millis();
+      if(true == process_serial())
+      {
+        return;
+      }
+    }
+
+    if(temp_delay > stepdelay_max)
+    {
+      temp_delay = stepAuxDelay;
+      delay(temp_delay/1000);
+      delayMicroseconds(temp_delay%1000);
     }
     else
     {
-      delayMicroseconds(mDelay);
+      delayMicroseconds(temp_delay);
     }
     if((maxD-i)<((stepdelay_max-stepdelay_min)/SPEED_STEP)){
       speedDiff=SPEED_STEP;
@@ -478,6 +491,28 @@ char bufindex;
 char buf2[64];
 char bufindex2;
 
+boolean process_serial(void)
+{
+  boolean result = false;
+  memset(buf,0,64);
+  bufindex = 0;
+  while(Serial.available()){
+    char c = Serial.read();
+    buf[bufindex++]=c; 
+    if(c=='\n'){
+      buf[bufindex]='\0';
+      parseCmd(buf);
+      result = true;
+      memset(buf,0,64);
+      bufindex = 0;
+    }
+    if(bufindex>=64){
+      bufindex=0;
+    }
+  }
+  return result;
+}
+
 /*
 	Robbo1 8/June/2015
 	
@@ -498,5 +533,4 @@ void loop() {
       buf[bufindex++]=c;                 // Robbo1 2015/6/8 Moved   - Store the character here now
 	}
   }
-
 }

@@ -33,9 +33,11 @@ MePort stpB(PORT_2);
 MePort ylimit(PORT_3);
 int ylimit_pin1 = ylimit.pin1();  //limit 2
 int ylimit_pin2 = ylimit.pin2();  //limit 1
+
 MePort xlimit(PORT_6);
 int xlimit_pin1 = xlimit.pin1();  //limit 4
 int xlimit_pin2 = xlimit.pin2();  //limit 3
+long last_time;
 MeDCMotor laser(M2);
 MePort servoPort(PORT_7);
 int servopin =  servoPort.pin2();
@@ -80,6 +82,7 @@ int stepdelay_max=1000;
 void doMove()
 {
   long mDelay=stepdelay_max;
+  long temp_delay;
   int speedDiff = -SPEED_STEP;
   int dA,dB,maxD;
   float stepA,stepB,cntA=0,cntB=0;
@@ -89,9 +92,12 @@ void doMove()
   maxD = max(abs(dA),abs(dB));
   stepA = (float)abs(dA)/(float)maxD;
   stepB = (float)abs(dB)/(float)maxD;
-  //Serial.printf("target: %d %d\n",tarA,tarB);
+//  Serial.print("tarA:");
+//  Serial.print(tarA);
+//  Serial.print(" ,tarB:");
+//  Serial.println(tarB);
   //Serial.printf("move: max:%d da:%d db:%d\n",maxD,dA,dB);
-  //Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
+//  Serial.print(stepA);Serial.print(' ');Serial.println(stepB);
   for(int i=0;(posA!=tarA)||(posB!=tarB);i++){                         // Robbo1 2015/6/8 Changed - change loop terminate test to test for moving not finished rather than a preset amount of moves
     //Serial.printf("step %d A:%d B;%d tar:%d %d\n",i,posA,posB,tarA,tarB);
     // move A
@@ -114,15 +120,30 @@ void doMove()
         cntB-=1;
       }
     }
-    mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max)+stepAuxDelay;
-    if(mDelay > 10000)
+    mDelay=constrain(mDelay+speedDiff,stepdelay_min,stepdelay_max);
+    temp_delay = mDelay + stepAuxDelay;
+    if(millis() - last_time > 400)
     {
-      delay(mDelay/1000);
-      delayMicroseconds(mDelay%1000);
+//      Serial.print("posA:");
+//      Serial.print(posA);
+//      Serial.print(" ,posB:");
+//      Serial.println(posB);
+      last_time = millis();
+      if(true == process_serial())
+      {
+        return;  
+      }
+    }
+
+    if(temp_delay > stepdelay_max)
+    {
+      temp_delay = stepAuxDelay;
+      delay(temp_delay/1000);
+      delayMicroseconds(temp_delay%1000);
     }
     else
     {
-      delayMicroseconds(mDelay);
+      delayMicroseconds(temp_delay);
     }
     if((maxD-i)<((stepdelay_max-stepdelay_min)/SPEED_STEP)){
       speedDiff=SPEED_STEP;
@@ -145,7 +166,7 @@ void prepareMove()
   float dx = tarX - curX;
   float dy = tarY - curY;
   float distance = sqrt(dx*dx+dy*dy);
-  //Serial.print("distance=");Serial.println(distance);
+  Serial.print("distance=");Serial.println(distance);
   if (distance < 0.001)
     return;
   tarA = tarX*STEPS_PER_MM;
@@ -169,10 +190,15 @@ void goHome()
     stepperMoveA(motorAbk);
     delayMicroseconds(stepdelay_min);
   }
+//  Serial.println("goHome!");
   posA = 0;
   posB = 0;
   curX = 0;
   curY = 0;
+  tarX = 0;
+  tarY = 0;
+  tarA = 0;
+  tarB = 0;
 }
 
 void initPosition()
@@ -204,6 +230,12 @@ void parseCordinate(char * cmd)
       stepAuxDelay = atol(str+1);
     }
   }
+//  Serial.print("tarX:");
+//  Serial.print(tarX);
+//  Serial.print(", tarY:");
+//  Serial.print(tarY);
+//  Serial.print(", stepAuxDelay:");
+//  Serial.println(stepAuxDelay);
   prepareMove();
 }
 
@@ -340,7 +372,10 @@ void parseGcode(char * cmd)
       parseCordinate(cmd);
       break;
     case 28: // home
+      stepAuxDelay = 0;
       tarX=0; tarY=0;
+      servoPen.write(roboSetup.data.penUpPos);
+      laser.run(0);
       goHome();
       break; 
   }
@@ -421,10 +456,32 @@ void setup() {
 char buf[64];
 int8_t bufindex;
 
+boolean process_serial(void)
+{
+  boolean result = false;
+  memset(buf,0,64);
+  bufindex = 0;
+  while(Serial.available()){
+    char c = Serial.read();
+    buf[bufindex++]=c; 
+    if(c=='\n'){
+      buf[bufindex]='\0';
+      parseCmd(buf);
+      result = true;
+      memset(buf,0,64);
+      bufindex = 0;
+    }
+    if(bufindex>=64){
+      bufindex=0;
+    }
+  }
+  return result;
+}
+
 void loop() {
   if(Serial.available()){
     char c = Serial.read();
-    buf[bufindex++]=c; 
+    buf[bufindex++]=c;
     if(c=='\n'){
       buf[bufindex]='\0';              // Robbo1 2015/6/8 Add     - Null terminate the string - Essential for first use of 'buf' and good programming practice
       parseCmd(buf);
