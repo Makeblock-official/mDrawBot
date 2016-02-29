@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>images/wire_xy.png</file>
     <file>images/mDraw_UI-icon-help_info.png</file>
     <file>images/mDraw_UI-icon-help_info-click.png</file>
     <file>images/mDraw_UI-icon-help_info-hover.png</file>

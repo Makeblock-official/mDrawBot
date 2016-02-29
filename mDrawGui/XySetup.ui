@@ -258,7 +258,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>X-:0 X+:0 Y-:0 Y+:0 </string>
+     <string>S1:0 S2:0 S3:0 S4:0 </string>
     </property>
    </widget>
    <widget class="QSlider" name="slidSpeed">
