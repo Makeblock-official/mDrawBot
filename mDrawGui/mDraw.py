@@ -123,6 +123,7 @@ class MainUI(QWidget):
         self.initGraphView()
         self.robot.initRobotCanvas()
         self.setWindowTitle('mDraw')
+        self.setWindowIcon(QtGui.QIcon('mDrawIcon.png'))
         self.show()
         # start refresh thread
         self.refreshThread = WorkInThread(self.sceneRefresh)

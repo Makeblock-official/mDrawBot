@@ -146,7 +146,7 @@ py2exe_options = dict(
 ##    dll_excludes = "MSVCP90.dll mswsock.dll powrprof.dll".split(),
     optimize=0,
     compressed=True, # uncompressed may or may not have a faster startup
-    bundle_files=1,
+    bundle_files=2,
     dist_dir='dist',
     includes=["sip"],
     )

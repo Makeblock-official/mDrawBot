@@ -517,8 +517,8 @@ class SvgParser():
     def parseRect(self,node):
         w = float(node.getAttribute("width"))+self.xbias
         h = float(node.getAttribute("height"))+self.xbias
-        x = float(node.getAttribute("x"))+self.ybias
-        y = float(node.getAttribute("y"))+self.ybias
+        x = float(node.getAttribute("x") if "" != node.getAttribute("x") else "0")+self.xbias
+        y = float(node.getAttribute("y") if "" != node.getAttribute("x") else "0")+self.ybias
         print(">> Rect",w,h,x,y)
         self.moveTo(x,y)
         self.lineTo(x+w,y)
@@ -533,7 +533,7 @@ class SvgParser():
         y1 = float(node.getAttribute("y1"))+self.ybias
         y2 = float(node.getAttribute("y2"))+self.ybias
         print(">> Line",x1,y1,x2,y2)
-        #path = QtGui.QPainterPath()
+        #path = QtGui.QPainterP ath()
         #path.moveTo(x1,y1)
         self.moveTo(x1,y1)
         #path.lineTo(x2,y2)
