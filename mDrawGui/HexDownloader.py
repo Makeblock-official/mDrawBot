@@ -1,10 +1,11 @@
 import sys
 import os
 import threading
-import threading
 import subprocess
 import platform
+import UnoProgrammer
 from RobotUtils import *
+from tkinter.tix import Shell
 
 class HexDownloader():
     def __init__(self, sig):
@@ -55,13 +56,21 @@ class HexDownloader():
         if "Windows" in systemType:
             avrdudepath = "avrdude.exe"
             confpath = "avrdude.conf"
+            cmd = u"printenv && pwd && ls && %s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
+            print(cmd)
+    #         os.system(cmd)
+            self.moveListThread = WorkInThread(self.downloadThread,cmd)
+            self.moveListThread.setDaemon(True)
+            self.moveListThread.start()
         elif "Darwin" in systemType:
-            avrdudepath = "./avrdude"
-            confpath = "avrdude.conf"
-        cmd = u"%s -C%s -v -v -v -v -patmega328p -carduino -P%s -b115200 -D -Uflash:w:%s:i" %(avrdudepath,confpath,com,hexfile)
-        self.moveListThread = WorkInThread(self.downloadThread,cmd)
-        self.moveListThread.setDaemon(True)
-        self.moveListThread.start()
+            # avrdudepath = "./avrdude"
+            # confpath = "avrdude.mac.conf"
+            # use a new homemade upload to upload mac os firmware
+            programmer = UnoProgrammer.UnoProgrammer(com, self.sig, hexfile)
+            self.moveListThread = WorkInThread(programmer.downloadThread)
+            self.moveListThread.setDaemon(True)
+            self.moveListThread.start()
+        
     
     def startDownloadLeonardo(self, com, hexfile):
         p = os.getcwd()

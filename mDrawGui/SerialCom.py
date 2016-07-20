@@ -30,8 +30,8 @@ def serialList():
     result = []
     for port in ports:
         try:
-            s = serial.Serial(port)
-            s.close()
+#             s = serial.Serial(port)
+#             s.close()
             result.append(port)
         except (OSError, serial.SerialException):
             pass

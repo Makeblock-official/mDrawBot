@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding/ParserGUI.py=utf-8
 encoding/ScaraGui.py=utf-8
+encoding/ScaraSetup.py=utf-8
+encoding/SpiderSetup.py=utf-8
 encoding/WireGui.py=utf-8
 encoding/XySetup.py=utf-8
 encoding/images_rc.py=utf-8

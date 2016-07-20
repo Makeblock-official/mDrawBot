@@ -468,7 +468,11 @@ class MainUI(QWidget):
             self.robotState = IDLE
         except Exception as e:
             self.dbg(e,-3)
-            raise Exception(e)
+            self.dbg("cannot open serial port. Please try another one")
+            self.ui.btnConnect.setText("Connect")
+#             self.ui.btnConnect.clicked.disconnect(self.disconnectPort)
+#             self.ui.btnConnect.clicked.connect(self.connectPort)
+#             raise Exception(e)
     
     def getRobotConfig(self):
         self.robot.M10()
