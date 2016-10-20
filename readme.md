@@ -5,11 +5,11 @@
 
 mDrawbot is a four-in-one drawing robotic kit, you can assembly into 4 different configuration drawing robots: **mScara, mCar, mSpide and mEggBot**. This kit consists of Makeblock parts. We designed a powerful software named mDraw to control these robots, it also can control the XY Plotter V2.0 based on Makeblock platform.
 
-![mDrawBot](http://learn.makeblock.cc/wp-content/uploads/2015/08/B17.png)
+![mDrawBot](http://learn.makeblock.cc/cn/wp-content/uploads/2015/08/B17.png)
 
 This kit consists of over 60 components from Makeblock, including beams, brackets, motor, etc. It also comes with a specially-designed software named mDraw to control these robots. Here's the picture of all the components.
 
-![mDrawBot parts](http://learn.makeblock.cc/wp-content/uploads/2015/08/B02.png)
+![mDrawBot parts](http://learn.makeblock.com/cn/wp-content/uploads/2015/08/B02.png)
 
 #### **mScara**
 
