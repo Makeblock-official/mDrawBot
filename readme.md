@@ -1,5 +1,10 @@
 #mDrawBot ---- Draw Your Own Legend
 
+## Notes for Mac Users
+
+1. Use [Version 1.2.2](http://www.mblock.cc/posts/run-makeblock-ch340-ch341-on-mac-os-sierra) - it fixed some issues on firmware update.
+2. If you use Mac Os Sierra, update the serial chip driver [following this guide](http://www.mblock.cc/posts/run-makeblock-ch340-ch341-on-mac-os-sierra). Apple changed the way drivers run.
+
 
 ## What is mDrawBot ?
 
