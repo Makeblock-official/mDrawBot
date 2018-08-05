@@ -186,33 +186,6 @@
      <pixmap resource="images.qrc">:/images/stepping_motor-anticlockwise.png</pixmap>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>350</x>
-      <y>10</y>
-      <width>24</width>
-      <height>24</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true"> QPushButton {
-	border-image: url(:/images/help-icon.png) 0;
- }
-
- QPushButton:hover {
-	border-image: url(:/images/help-icon-hover.png) 0;
- }
-
- QPushButton:pressed  {
-	border-image: url(:/images/help-icon-click.png) 0;
- }
-</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>

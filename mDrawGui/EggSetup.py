@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'EggSetup.ui'
 #
-# Created by: PyQt5 UI code generator 5.4.2
+# Created: Sun Aug  5 14:34:59 2018
+#      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -53,22 +54,6 @@ class Ui_Form(object):
         self.motoB_CCK.setGeometry(QtCore.QRect(270, 110, 51, 51))
         self.motoB_CCK.setPixmap(QtGui.QPixmap(":/images/stepping_motor-anticlockwise.png"))
         self.motoB_CCK.setObjectName("motoB_CCK")
-        self.pushButton = QtWidgets.QPushButton(self.groupBox)
-        self.pushButton.setGeometry(QtCore.QRect(350, 10, 24, 24))
-        self.pushButton.setStyleSheet(" QPushButton {\n"
-"    border-image: url(:/images/help-icon.png) 0;\n"
-" }\n"
-"\n"
-" QPushButton:hover {\n"
-"    border-image: url(:/images/help-icon-hover.png) 0;\n"
-" }\n"
-"\n"
-" QPushButton:pressed  {\n"
-"    border-image: url(:/images/help-icon-click.png) 0;\n"
-" }\n"
-"")
-        self.pushButton.setText("")
-        self.pushButton.setObjectName("pushButton")
         self.label_5 = QtWidgets.QLabel(self.groupBox)
         self.label_5.setGeometry(QtCore.QRect(170, 170, 71, 16))
         self.label_5.setObjectName("label_5")
