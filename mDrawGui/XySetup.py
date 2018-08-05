@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'XySetup.ui'
 #
-# Created: Sun Aug  5 15:24:23 2018
+# Created: Sun Aug  5 16:42:53 2018
 #      by: PyQt5 UI code generator 5.4
 #
 # WARNING! All changes made in this file will be lost!

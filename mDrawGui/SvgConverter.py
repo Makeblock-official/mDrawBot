@@ -52,16 +52,17 @@ class SvgConverter(QWidget):
             pm = QPixmap(self.svgout)
             print("svg pm",pm)
             pBitmap = self.scene.addPixmap(pm)
-            pBitmap.setOffset(100,100)
+            pBitmap.setOffset(0,0)
             self.scene.update()
             """
             pm = QGraphicsSvgItem(self.svgout)
+            self.scene.clear()
             self.scene.addItem(pm)
     
     def loadBitmap(self):
         self.scene.clear()
         pBitmap = self.scene.addPixmap(QPixmap(self.bitmapFile))
-        pBitmap.setOffset(100,100)
+        pBitmap.setOffset(0,0)
         self.scene.setSceneRect(pBitmap.boundingRect())
     
     def thresholdChanged(self):

@@ -122,7 +122,7 @@ class MainUI(QWidget):
         
         self.initGraphView()
         self.robot.initRobotCanvas()
-        self.setWindowTitle('mDraw')
+        self.setWindowTitle('mDraw V1.2.2')
         self.setWindowIcon(QtGui.QIcon('mDrawIcon.png'))
         self.show()
         # start refresh thread
@@ -715,7 +715,7 @@ class MainUI(QWidget):
             self.wireHelp.close()
 
     def linkToFAQ(self):
-        QDesktopServices.openUrl(QUrl("http://forum.makeblock.cc/t/the-lastest-update-of-mdrawbot-faqs/1116"))
+        QDesktopServices.openUrl(QUrl("http://forum.makeblock.com/t/the-lastest-update-of-mdrawbot-faqs/1116"))
 
     def showRobotSetup(self):
         self.robot.showSetup()

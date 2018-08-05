@@ -63,8 +63,14 @@ class RobotSetupUI(QWidget):
         self.robot.speed = value
 
     def applySetup(self):
-        self.robot.width = float(str(self.ui.lineWidth.text()))
-        self.robot.height = float(str(self.ui.lineHeight.text()))
+        lineWidth = float(str(self.ui.lineWidth.text()))
+        if(lineWidth > 700) or (lineWidth < 0):
+            lineWidth = 380
+        self.robot.width = lineWidth
+        lineHeight = float(str(self.ui.lineHeight.text()))
+        if(lineHeight > 500) or (lineHeight < 0):
+            lineHeight = 310
+        self.robot.height = lineHeight
         self.robot.M5()
         self.updating = False
         self.hide()
