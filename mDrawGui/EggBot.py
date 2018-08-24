@@ -270,21 +270,25 @@ class EggBot(QGraphicsItem):
                 y=(p[1]-self.origin[1]-self.height)
                 try:
                     if self.printing == False:
+                        if self.laserMode:
+                            self.M4(0) # turn off the laser when the user aborts the printing process
                         return
                     elif self.pausing == True:
                         while self.pausing==True:
                             time.sleep(0.5)
+                    self.waitWhilePaused(self.laserMode and i>0)
                     auxDelay = 0
                     if self.laserMode:
                         if i>0:
                             auxDelay = self.laserBurnDelay*1000
                         elif i==0:
-                            self.M4(self.laserPower,0.0) # turn laser power down when perform transition
+                            self.M4(0) # turn laser power down when perform transition
                             self.q.get()
                     self.G1(x,-y,auxdelay = auxDelay)
                     self.x = x
                     self.y = y
-                    self.q.get()
+                    while self.robotState==BUSYING:
+                        self.q.get()
                     if self.laserMode and i==0:
                         self.M4(self.laserPower) # turn laser power back to set value
                         self.q.get()
@@ -310,6 +314,9 @@ class EggBot(QGraphicsItem):
         self.penUpPos = int(mStr)
         mStr = str(self.ui.penDownSpin.value())
         self.penDownPos = int(mStr)
+        value = int(self.ui.slideLaserPower.value())
+        laserpwm = value*255/100
+        self.laserPower = laserpwm
         
         while not self.q.empty():
             self.q.get()
@@ -325,6 +332,14 @@ class EggBot(QGraphicsItem):
         
     def pausePrinting(self,v):
         self.pausing = v
+    def waitWhilePaused(self, isLaserOn):
+        if self.pausing:
+            if isLaserOn:
+                self.M4(0) # turn off the laser while the printing is paused
+            while self.pausing:
+                time.sleep(0.5)
+            if isLaserOn:
+                self.M4(self.laserPower) # turn on laser when the printing is continued, and it was on before pausing
         
     def showSetup(self):
         self.robotSetup =  RobotSetupUI(EggSetup.Ui_Form, self)
