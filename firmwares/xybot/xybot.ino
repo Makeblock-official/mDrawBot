@@ -217,6 +217,7 @@ void parseCordinate(char * cmd)
   tarY = curY;
   while(str!=NULL){
     str = strtok_r(0, " ", &tmp);
+    if (str==NULL) break;
     if(str[0]=='X'){
       tarX = atof(str+1);
     }else if(str[0]=='Y'){
