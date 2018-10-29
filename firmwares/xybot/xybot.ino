@@ -79,6 +79,7 @@ int stepdelay_max=1000;
 #define SEGMENT_DISTANCE 10 // 1 mm for each segment
 #define SPEED_STEP 1
 
+boolean process_serial(void);
 void doMove()
 {
   long mDelay=stepdelay_max;
