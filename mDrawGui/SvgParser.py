@@ -264,8 +264,8 @@ class SvgParser():
         d = node.getAttribute("d")
         ds = d.replace("e-","ee")
         ds=ds.replace("-"," -").replace("s", " s ").replace("S", " S ").replace("c", " c ").replace("C", " C ").replace("v", " v ").replace("V", " V ")
-        ds=ds.replace("l", " l ").replace("L"," L ").replace("A", " A ").replace("a", " a ").replace(",", " ").replace("M", "M ").replace("h", " h ").replace("H", " H ").replace("m"," m ").replace('z',' z ')
-        ds=ds.replace("q", " q ").replace("Q", " Q ")
+        ds=ds.replace("l", " l ").replace("L"," L ").replace("A", " A ").replace("a", " a ").replace(",", " ").replace("M", "M ").replace("h", " h ").replace("H", " H ").replace("m"," m ").replace("z"," z ")
+        ds=ds.replace("q", " q ").replace("Q", " Q ").replace("Z"," Z ")
         ss=ds.split()
         for i in range(len(ss)):
             ss[i] = ss[i].replace("ee","e-")
